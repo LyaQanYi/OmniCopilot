@@ -2,7 +2,7 @@
 	"name": "more-models-copilot-provider",
 	"displayName": "More Models Copilot Provider",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Doubao, SiliconFlow, Custom) in GitHub Copilot Chat as language model providers.",
-	"version": "0.1.1",
+	"version": "0.1.0-beta",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/More-Models-Copilot-Provider",

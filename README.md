@@ -1,6 +1,6 @@
 # More Models Copilot Provider
 
-[中文版](#中文说明)
+[中文版](README.zh-CN.md)
 
 A VS Code extension that lets you use models from multiple LLM platforms in GitHub Copilot Chat as language model providers.
 
@@ -70,72 +70,79 @@ You can add custom model IDs to any provider:
 | `moreModels.enableVision` | Enable vision for supported models | `true` |
 | `moreModels.<vendor>.customModelIds` | Custom model IDs for each vendor | `[]` |
 
+## Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [VS Code](https://code.visualstudio.com/) 1.108.0+
+- [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension installed
+
+### Setup
+
+```bash
+git clone https://github.com/LyaQanYi/More-Models-Copilot-Provider.git
+cd More-Models-Copilot-Provider
+npm install
+```
+
+### Build & Run
+
+```bash
+# Compile TypeScript
+npm run compile
+
+# Watch mode (auto-recompile on changes)
+npm run watch
+```
+
+To debug the extension, press **F5** in VS Code to launch an Extension Development Host with the extension loaded.
+
+### Package .vsix
+
+```bash
+npx @vscode/vsce package --no-dependencies
+```
+
+### Project Structure
+
+```
+src/
+├── extension.ts   # Extension entry point, activation & commands
+├── provider.ts    # Language model provider implementation
+├── api.ts         # API call logic (streaming, thinking, vision)
+├── models.ts      # Preset model definitions per vendor
+└── types.ts       # Shared TypeScript interfaces
+```
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feat/my-feature`
+3. **Commit** your changes: `git commit -m "feat: add my feature"`
+4. **Push** to the branch: `git push origin feat/my-feature`
+5. **Open** a Pull Request
+
+### Guidelines
+
+- Follow existing code style (TypeScript strict mode)
+- Test with at least one provider before submitting
+- Keep commit messages clear and descriptive
+- One feature/fix per PR when possible
+
+### Ways to Contribute
+
+- **Test a provider** — Pick an untested platform from the TODO list, test it, and report results
+- **Add a new provider** — Add model definitions in `models.ts` and register in `extension.ts`
+- **Fix bugs** — Check Issues for reported problems
+- **Improve docs** — Help with documentation or translations
+
 ## Requirements
 
 - VS Code 1.108.0+
 - GitHub Copilot extension
-
----
-
-## 中文说明
-
-一个 VS Code 扩展，允许你在 GitHub Copilot Chat 中使用来自多个大模型平台的模型作为语言模型提供方。
-
-### 支持的提供方
-
-| 提供方 | Vendor ID | 模型 |
-|--------|-----------|------|
-| DeepSeek | `deepseek` | deepseek-chat, deepseek-reasoner |
-| 智谱 (GLM) | `zhipu` | glm-5, glm-4.7, glm-4.7-flash, glm-4-long, glm-4.6v |
-| Moonshot (Kimi) | `moonshot` | kimi-for-coding |
-| 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
-| MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| 豆包 | `doubao` | doubao-seed-2.0-lite, doubao-1.5-pro-32k, doubao-1.5-pro-256k, doubao-1.5-thinking-pro, doubao-1.5-vision-pro |
-| 自定义 | `custom-openai` | 任意 OpenAI 兼容模型 |
-
-### 已测试且可用
-
-以下平台已经过测试并确认可用：
-
-- **DeepSeek 开放平台** (`platform.deepseek.com`)
-- **Kimi Code**（Kimi 编程模型）
-- **MiniMax Token Plan 国内版** (`platform.minimaxi.com`)
-- **通义千问 / 阿里百炼平台** (`dashscope.aliyuncs.com`)
-
-### 待办事项
-
-- [ ] 测试火山引擎（豆包）
-- [ ] 测试 GLM 开放平台
-- [ ] 测试 Qwen Coding Plan
-- [ ] 测试 GLM Coding Plan
-- [ ] 测试 Kimi 开放平台
-- [ ] 支持硅基流动
-- [ ] 支持 MiniMax 国际版
-- [ ] 支持 GLM 国际版
-- [ ] 支持硅基流动国际版
-- [ ] 验证思考力度（低 / 中 / 高）配置在各提供方上是否真实生效
-- [ ] 未完待续……
-
-### 功能
-
-- **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
-- **思考模式**：支持推理能力的模型会展示可折叠的思考过程
-- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus、glm-4.6v、doubao-1.5-vision-pro）可以读取 Copilot Chat 中附加的图片
-- **工具调用**：兼容模型的函数调用支持
-- **自定义模型 ID**：可通过设置或命令面板为任意提供方添加自定义模型 ID
-- **可配置思考力度**：低 / 中 / 高三档思考力度
-
-### 使用方法
-
-1. 安装扩展
-2. 打开 Copilot Chat → 管理模型 → 添加模型
-3. 选择提供方并输入 API 密钥
-4. 开始与所选模型对话
-
-### 环境要求
-
-- VS Code 1.108.0+
-- GitHub Copilot 扩展
 
 ## License
 
