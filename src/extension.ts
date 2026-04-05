@@ -95,7 +95,7 @@ const ENABLE_THINKING_LABELS: Record<string, string> = {
 };
 
 function updateStatusBar(): void {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const effort = config.get<string>("thinkingEffort", "medium");
 	const enableThinking = config.get<string>("enableThinking", "auto");
 
@@ -112,7 +112,7 @@ function updateStatusBar(): void {
 }
 
 async function setThinkingEffort(): Promise<void> {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const current = config.get<string>("thinkingEffort", "medium");
 
 	const items = THINKING_EFFORT_OPTIONS.map((opt) => ({
@@ -130,7 +130,7 @@ async function setThinkingEffort(): Promise<void> {
 }
 
 async function toggleThinking(): Promise<void> {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const current = config.get<string>("enableThinking", "auto");
 
 	const items = ENABLE_THINKING_OPTIONS.map((opt) => ({
@@ -257,28 +257,28 @@ export function activate(context: vscode.ExtensionContext): void {
 	// Register commands
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"moreModels.testConnection",
+			"omniCopilot.testConnection",
 			runConnectionTest,
 		),
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"moreModels.addCustomModelId",
+			"omniCopilot.addCustomModelId",
 			addCustomModelId,
 		),
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"moreModels.setThinkingEffort",
+			"omniCopilot.setThinkingEffort",
 			setThinkingEffort,
 		),
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"moreModels.toggleThinking",
+			"omniCopilot.toggleThinking",
 			toggleThinking,
 		),
 	);
@@ -288,7 +288,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.StatusBarAlignment.Right,
 		51,
 	);
-	enableThinkingStatusBar.command = "moreModels.toggleThinking";
+	enableThinkingStatusBar.command = "omniCopilot.toggleThinking";
 	context.subscriptions.push(enableThinkingStatusBar);
 
 	// Status bar: thinking effort indicator (right of thinking toggle)
@@ -296,7 +296,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.StatusBarAlignment.Right,
 		50,
 	);
-	thinkingEffortStatusBar.command = "moreModels.setThinkingEffort";
+	thinkingEffortStatusBar.command = "omniCopilot.setThinkingEffort";
 	context.subscriptions.push(thinkingEffortStatusBar);
 
 	updateStatusBar();
@@ -307,8 +307,8 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (
-				e.affectsConfiguration("moreModels.thinkingEffort") ||
-				e.affectsConfiguration("moreModels.enableThinking")
+				e.affectsConfiguration("omniCopilot.thinkingEffort") ||
+				e.affectsConfiguration("omniCopilot.enableThinking")
 			) {
 				updateStatusBar();
 			}

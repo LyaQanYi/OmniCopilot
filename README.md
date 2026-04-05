@@ -1,4 +1,4 @@
-# More Models Copilot Provider
+# OmniCopilot
 
 [中文版](README.zh-CN.md)
 
@@ -59,17 +59,17 @@ The following platforms have been tested and confirmed working:
 
 You can add custom model IDs to any provider:
 
-- **Command Palette**: Run `More Models: Add Custom Model ID`
-- **Settings**: Edit `moreModels.<vendor>.customModelIds` array in settings.json
+- **Command Palette**: Run `OmniCopilot: Add Custom Model ID`
+- **Settings**: Edit `omniCopilot.<vendor>.customModelIds` array in settings.json
 
 ## Configuration
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `moreModels.enableThinking` | Thinking mode (auto/always/never) | `auto` |
-| `moreModels.thinkingEffort` | Thinking effort level (low/medium/high) | `medium` |
-| `moreModels.enableVision` | Enable vision for supported models | `true` |
-| `moreModels.<vendor>.customModelIds` | Custom model IDs for each vendor | `[]` |
+| `omniCopilot.enableThinking` | Thinking mode (auto/always/never) | `auto` |
+| `omniCopilot.thinkingEffort` | Thinking effort level (low/medium/high) | `medium` |
+| `omniCopilot.enableVision` | Enable vision for supported models | `true` |
+| `omniCopilot.<vendor>.customModelIds` | Custom model IDs for each vendor | `[]` |
 
 ## Development
 
@@ -82,8 +82,8 @@ You can add custom model IDs to any provider:
 ### Setup
 
 ```bash
-git clone https://github.com/LyaQanYi/More-Models-Copilot-Provider.git
-cd More-Models-Copilot-Provider
+git clone https://github.com/LyaQanYi/OmniCopilot.git
+cd OmniCopilot
 npm install
 ```
 

@@ -1,4 +1,4 @@
-# More Models Copilot Provider
+# OmniCopilot
 
 [English](README.md)
 
@@ -59,17 +59,17 @@
 
 可以为任意提供方添加自定义模型 ID：
 
-- **命令面板**：执行 `More Models: Add Custom Model ID`
-- **设置**：编辑 settings.json 中的 `moreModels.<vendor>.customModelIds` 数组
+- **命令面板**：执行 `OmniCopilot: Add Custom Model ID`
+- **设置**：编辑 settings.json 中的 `omniCopilot.<vendor>.customModelIds` 数组
 
 ## 配置项
 
 | 设置 | 说明 | 默认值 |
 |------|------|--------|
-| `moreModels.enableThinking` | 思考模式（auto/always/never） | `auto` |
-| `moreModels.thinkingEffort` | 思考力度（low/medium/high） | `medium` |
-| `moreModels.enableVision` | 启用视觉/图片输入 | `true` |
-| `moreModels.<vendor>.customModelIds` | 各提供方的自定义模型 ID | `[]` |
+| `omniCopilot.enableThinking` | 思考模式（auto/always/never） | `auto` |
+| `omniCopilot.thinkingEffort` | 思考力度（low/medium/high） | `medium` |
+| `omniCopilot.enableVision` | 启用视觉/图片输入 | `true` |
+| `omniCopilot.<vendor>.customModelIds` | 各提供方的自定义模型 ID | `[]` |
 
 ## 开发
 
@@ -82,8 +82,8 @@
 ### 初始化
 
 ```bash
-git clone https://github.com/LyaQanYi/More-Models-Copilot-Provider.git
-cd More-Models-Copilot-Provider
+git clone https://github.com/LyaQanYi/OmniCopilot.git
+cd OmniCopilot
 npm install
 ```
 

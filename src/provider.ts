@@ -210,7 +210,7 @@ function emitToolCalls(
 			// Log parse error for debugging — still emit the tool call with empty args
 			// since the LLM intended to invoke the tool
 			void vscode.window.showWarningMessage(
-				`[MoreModels] Failed to parse tool call arguments for ${builder.name}: ${errMsg} | raw: ${builder.arguments}`,
+				`[OmniCopilot] Failed to parse tool call arguments for ${builder.name}: ${errMsg} | raw: ${builder.arguments}`,
 			);
 		}
 		progress.report(
@@ -221,7 +221,7 @@ function emitToolCalls(
 }
 
 function resolveThinking(modelDefault: boolean): boolean {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const setting = config.get<string>("enableThinking", "auto");
 	switch (setting) {
 		case "always":
@@ -234,7 +234,7 @@ function resolveThinking(modelDefault: boolean): boolean {
 }
 
 function getThinkingEffort(): ThinkingEffort {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const effort = config.get<string>("thinkingEffort", "medium");
 	if (effort === "low" || effort === "medium" || effort === "high") {
 		return effort;
@@ -243,7 +243,7 @@ function getThinkingEffort(): ThinkingEffort {
 }
 
 function isVisionEnabled(): boolean {
-	const config = vscode.workspace.getConfiguration("moreModels");
+	const config = vscode.workspace.getConfiguration("omniCopilot");
 	return config.get<boolean>("enableVision", true);
 }
 

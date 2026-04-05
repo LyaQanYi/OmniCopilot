@@ -1,6 +1,6 @@
 {
-	"name": "more-models-copilot-provider",
-	"displayName": "More Models Copilot Provider",
+	"name": "omni-copilot",
+	"displayName": "OmniCopilot",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Doubao, Custom) in GitHub Copilot Chat as language model providers.",
 	"version": "0.1.0",
 	"publisher": "LyaQanYi",
@@ -124,26 +124,26 @@
 		],
 		"commands": [
 			{
-				"command": "moreModels.testConnection",
-				"title": "More Models: Test Connection"
+				"command": "omniCopilot.testConnection",
+				"title": "OmniCopilot: Test Connection"
 			},
 			{
-				"command": "moreModels.addCustomModelId",
-				"title": "More Models: Add Custom Model ID"
+				"command": "omniCopilot.addCustomModelId",
+				"title": "OmniCopilot: Add Custom Model ID"
 			},
 			{
-				"command": "moreModels.setThinkingEffort",
-				"title": "More Models: Set Thinking Effort"
+				"command": "omniCopilot.setThinkingEffort",
+				"title": "OmniCopilot: Set Thinking Effort"
 			},
 			{
-				"command": "moreModels.toggleThinking",
-				"title": "More Models: Toggle Thinking Mode"
+				"command": "omniCopilot.toggleThinking",
+				"title": "OmniCopilot: Toggle Thinking Mode"
 			}
 		],
 		"configuration": {
-			"title": "More Models Copilot Provider",
+			"title": "OmniCopilot",
 			"properties": {
-				"moreModels.enableThinking": {
+				"omniCopilot.enableThinking": {
 					"type": "string",
 					"default": "auto",
 					"enum": [
@@ -158,7 +158,7 @@
 					],
 					"description": "Control whether thinking/reasoning mode is enabled"
 				},
-				"moreModels.thinkingEffort": {
+				"omniCopilot.thinkingEffort": {
 					"type": "string",
 					"default": "medium",
 					"enum": [
@@ -173,12 +173,12 @@
 					],
 					"description": "Default thinking effort level for models that support reasoning"
 				},
-				"moreModels.enableVision": {
+				"omniCopilot.enableVision": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enable vision/image input for models that support it"
 				},
-				"moreModels.deepseek.customModelIds": {
+				"omniCopilot.deepseek.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -186,7 +186,7 @@
 					"default": [],
 					"description": "Custom model IDs for DeepSeek (added to preset list)"
 				},
-				"moreModels.zhipu.customModelIds": {
+				"omniCopilot.zhipu.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -194,7 +194,7 @@
 					"default": [],
 					"description": "Custom model IDs for Zhipu/GLM (added to preset list)"
 				},
-				"moreModels.moonshot.customModelIds": {
+				"omniCopilot.moonshot.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -202,7 +202,7 @@
 					"default": [],
 					"description": "Custom model IDs for Moonshot/Kimi (added to preset list)"
 				},
-				"moreModels.qwen.customModelIds": {
+				"omniCopilot.qwen.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -210,7 +210,7 @@
 					"default": [],
 					"description": "Custom model IDs for Qwen (added to preset list)"
 				},
-				"moreModels.minimax.customModelIds": {
+				"omniCopilot.minimax.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
@@ -218,7 +218,7 @@
 					"default": [],
 					"description": "Custom model IDs for MiniMax (added to preset list)"
 				},
-				"moreModels.doubao.customModelIds": {
+				"omniCopilot.doubao.customModelIds": {
 					"type": "array",
 					"items": {
 						"type": "string"
