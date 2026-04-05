@@ -1,0 +1,242 @@
+{
+	"name": "more-models-copilot-provider",
+	"displayName": "More Models Copilot Provider",
+	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Doubao, SiliconFlow, Custom) in GitHub Copilot Chat as language model providers.",
+	"version": "0.1.1",
+	"publisher": "LyaQanYi",
+	"license": "MIT",
+	"repository": "https://github.com/LyaQanYi/More-Models-Copilot-Provider",
+	"icon": "images/icon.png",
+	"engines": {
+		"vscode": "^1.108.0"
+	},
+	"categories": [
+		"AI",
+		"Chat"
+	],
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languageModelChatProviders": [
+			{
+				"vendor": "deepseek",
+				"displayName": "DeepSeek",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from platform.deepseek.com",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "zhipu",
+				"displayName": "Zhipu (GLM)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from open.bigmodel.cn",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "moonshot",
+				"displayName": "Moonshot (Kimi)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from platform.moonshot.cn",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "qwen",
+				"displayName": "Qwen",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from dashscope.aliyuncs.com",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "minimax",
+				"displayName": "MiniMax",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from platform.minimaxi.com",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "doubao",
+				"displayName": "Doubao",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from console.volcengine.com",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "custom-openai",
+				"displayName": "Custom (OpenAI Compatible)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key for the custom endpoint",
+							"secret": true
+						},
+						"apiUrl": {
+							"type": "string",
+							"description": "Base URL of the OpenAI-compatible API (e.g. https://api.example.com/v1)"
+						},
+						"modelId": {
+							"type": "string",
+							"description": "Model ID to use (e.g. gpt-4o)"
+						},
+						"modelName": {
+							"type": "string",
+							"description": "Display name for the model"
+						}
+					}
+				}
+			}
+		],
+		"commands": [
+			{
+				"command": "moreModels.testConnection",
+				"title": "More Models: Test Connection"
+			},
+			{
+				"command": "moreModels.addCustomModelId",
+				"title": "More Models: Add Custom Model ID"
+			},
+			{
+				"command": "moreModels.setThinkingEffort",
+				"title": "More Models: Set Thinking Effort"
+			},
+			{
+				"command": "moreModels.toggleThinking",
+				"title": "More Models: Toggle Thinking Mode"
+			}
+		],
+		"configuration": {
+			"title": "More Models Copilot Provider",
+			"properties": {
+				"moreModels.enableThinking": {
+					"type": "string",
+					"default": "auto",
+					"enum": [
+						"auto",
+						"always",
+						"never"
+					],
+					"enumDescriptions": [
+						"Auto — use each model's default thinking setting",
+						"Always — force thinking on for all models that support it",
+						"Never — disable thinking for all models"
+					],
+					"description": "Control whether thinking/reasoning mode is enabled"
+				},
+				"moreModels.thinkingEffort": {
+					"type": "string",
+					"default": "medium",
+					"enum": [
+						"low",
+						"medium",
+						"high"
+					],
+					"enumDescriptions": [
+						"Low thinking effort — faster responses",
+						"Medium thinking effort — balanced",
+						"High thinking effort — deeper reasoning"
+					],
+					"description": "Default thinking effort level for models that support reasoning"
+				},
+				"moreModels.enableVision": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable vision/image input for models that support it"
+				},
+				"moreModels.deepseek.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs for DeepSeek (added to preset list)"
+				},
+				"moreModels.zhipu.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs for Zhipu/GLM (added to preset list)"
+				},
+				"moreModels.moonshot.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs for Moonshot/Kimi (added to preset list)"
+				},
+				"moreModels.qwen.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs for Qwen (added to preset list)"
+				},
+				"moreModels.minimax.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs for MiniMax (added to preset list)"
+				},
+				"moreModels.doubao.customModelIds": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "Custom model IDs / Endpoint IDs for Doubao (added to preset list)"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "20.19.29",
+		"@types/vscode": "1.108.0",
+		"typescript": "5.9.3"
+	}
+}
