@@ -205,7 +205,14 @@ function emitToolCalls(
 		let args: Record<string, unknown> = {};
 		try {
 			args = JSON.parse(builder.arguments || "{}");
-		} catch {}
+		} catch (e) {
+			const errMsg = e instanceof Error ? e.message : String(e);
+			// Log parse error for debugging — still emit the tool call with empty args
+			// since the LLM intended to invoke the tool
+			void vscode.window.showWarningMessage(
+				`[MoreModels] Failed to parse tool call arguments for ${builder.name}: ${errMsg}`,
+			);
+		}
 		progress.report(
 			new vscode.LanguageModelToolCallPart(builder.id, builder.name, args),
 		);

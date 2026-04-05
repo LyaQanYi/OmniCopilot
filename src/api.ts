@@ -1,5 +1,4 @@
 import type * as vscode from "vscode";
-import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
 import type {
 	OpenAIMessage,
@@ -19,7 +18,7 @@ export function getKimiExtraHeaders(): Record<string, string> {
 		"User-Agent": `KimiCLI/${LIB_VERSION}`,
 		"X-Msh-Platform": "kimi_cli",
 		"X-Msh-Version": LIB_VERSION,
-		"X-Msh-Device-Name": hostname() || "unknown",
+		"X-Msh-Device-Name": "anonymous",
 		"X-Msh-Device-Id": DEVICE_ID,
 	};
 }
@@ -49,46 +48,78 @@ export class OpenAICompatibleClient {
 		options?: ChatOptions,
 		cancellationToken?: vscode.CancellationToken,
 	): AsyncGenerator<StreamChunk> {
-		const response = await this.sendRequest(model, messages, baseUrl, true, options);
-
-		if (!response.body) {
-			throw new ApiError("No response body", 0);
-		}
-
-		const reader = response.body.getReader();
-		const decoder = new TextDecoder();
-		let buffer = "";
+		const abortController = new AbortController();
+		const onCancel = cancellationToken?.onCancellationRequested(() => {
+			abortController.abort();
+		});
 
 		try {
-			while (true) {
-				if (cancellationToken?.isCancellationRequested) {
-					reader.cancel();
-					break;
-				}
+			const response = await this.sendRequest(
+				model, messages, baseUrl, true, options, abortController.signal,
+			);
 
-				const { done, value } = await reader.read();
-				if (done) break;
+			if (!response.body) {
+				throw new ApiError("No response body", 0);
+			}
 
-				buffer += decoder.decode(value, { stream: true });
-				const lines = buffer.split("\n");
-				buffer = lines.pop() || "";
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+			let buffer = "";
 
-				for (const line of lines) {
-					const trimmed = line.trim();
-					if (!trimmed || !trimmed.startsWith("data:")) continue;
+			try {
+				while (true) {
+					if (cancellationToken?.isCancellationRequested) {
+						reader.cancel();
+						break;
+					}
 
-					const data = trimmed.slice(5).trim();
-					if (data === "[DONE]") return;
+					const { done, value } = await reader.read();
+					if (done) {
+						// Flush remaining buffer
+						buffer += decoder.decode();
+						break;
+					}
 
-					try {
-						yield JSON.parse(data) as StreamChunk;
-					} catch {
-						// Malformed SSE chunks are non-fatal; skip and continue
+					buffer += decoder.decode(value, { stream: true });
+					const lines = buffer.split("\n");
+					buffer = lines.pop() || "";
+
+					for (const line of lines) {
+						const trimmed = line.trim();
+						if (!trimmed || !trimmed.startsWith("data:")) continue;
+
+						const data = trimmed.slice(5).trim();
+						if (data === "[DONE]") return;
+
+						try {
+							yield JSON.parse(data) as StreamChunk;
+						} catch {
+							// Malformed SSE chunks are non-fatal; skip and continue
+						}
 					}
 				}
+
+				// Process any remaining data in the buffer after stream ends
+				if (buffer.trim()) {
+					for (const line of buffer.split("\n")) {
+						const trimmed = line.trim();
+						if (!trimmed || !trimmed.startsWith("data:")) continue;
+
+						const data = trimmed.slice(5).trim();
+						if (data === "[DONE]") return;
+
+						try {
+							yield JSON.parse(data) as StreamChunk;
+						} catch {
+							// Malformed SSE chunks are non-fatal; skip and continue
+						}
+					}
+				}
+			} finally {
+				reader.releaseLock();
 			}
 		} finally {
-			reader.releaseLock();
+			onCancel?.dispose();
 		}
 	}
 
@@ -223,6 +254,7 @@ export class OpenAICompatibleClient {
 		baseUrl: string,
 		stream: boolean,
 		options?: ChatOptions,
+		signal?: AbortSignal,
 	): Promise<Response> {
 		const url = `${baseUrl}${CHAT_ENDPOINT}`;
 		const headers = { ...this.getHeaders(), ...options?.extraHeaders };
@@ -230,6 +262,7 @@ export class OpenAICompatibleClient {
 			method: "POST",
 			headers,
 			body: this.buildRequestBody(model, messages, stream, options),
+			signal,
 		});
 
 		if (response.ok) {

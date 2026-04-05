@@ -13,7 +13,7 @@
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
 | MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| 豆包 | `doubao` | doubao-seed-2.0-lite, doubao-1.5-pro-32k, doubao-1.5-pro-256k, doubao-1.5-thinking-pro, doubao-1.5-vision-pro |
+| 豆包 | `doubao` | doubao-seed-2-0-lite-260215, doubao-1-5-pro-32k-250115, doubao-1-5-pro-256k-250115, doubao-1-5-thinking-pro-250415, doubao-1-5-vision-pro-32k-250115 |
 | 自定义 | `custom-openai` | 任意 OpenAI 兼容模型 |
 
 ## 已测试且可用
@@ -66,6 +66,7 @@
 
 | 设置 | 说明 | 默认值 |
 |------|------|--------|
+| `moreModels.enableThinking` | 思考模式（auto/always/never） | `auto` |
 | `moreModels.thinkingEffort` | 思考力度（low/medium/high） | `medium` |
 | `moreModels.enableVision` | 启用视觉/图片输入 | `true` |
 | `moreModels.<vendor>.customModelIds` | 各提供方的自定义模型 ID | `[]` |
@@ -106,7 +107,7 @@ npx @vscode/vsce package --no-dependencies
 
 ### 项目结构
 
-```
+```text
 src/
 ├── extension.ts   # 扩展入口，激活逻辑与命令注册
 ├── provider.ts    # 语言模型提供方实现

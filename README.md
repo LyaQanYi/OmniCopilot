@@ -13,7 +13,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | Qwen | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
 | MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| Doubao | `doubao` | doubao-seed-2.0-lite, doubao-1.5-pro-32k, doubao-1.5-pro-256k, doubao-1.5-thinking-pro, doubao-1.5-vision-pro |
+| Doubao | `doubao` | doubao-seed-2-0-lite-260215, doubao-1-5-pro-32k-250115, doubao-1-5-pro-256k-250115, doubao-1-5-thinking-pro-250415, doubao-1-5-vision-pro-32k-250115 |
 | Custom | `custom-openai` | Any OpenAI-compatible model |
 
 ## Tested & Working
@@ -66,6 +66,7 @@ You can add custom model IDs to any provider:
 
 | Setting | Description | Default |
 |---------|-------------|---------|
+| `moreModels.enableThinking` | Thinking mode (auto/always/never) | `auto` |
 | `moreModels.thinkingEffort` | Thinking effort level (low/medium/high) | `medium` |
 | `moreModels.enableVision` | Enable vision for supported models | `true` |
 | `moreModels.<vendor>.customModelIds` | Custom model IDs for each vendor | `[]` |
@@ -106,7 +107,7 @@ npx @vscode/vsce package --no-dependencies
 
 ### Project Structure
 
-```
+```text
 src/
 ├── extension.ts   # Extension entry point, activation & commands
 ├── provider.ts    # Language model provider implementation
