@@ -34,6 +34,22 @@ export class ApiError extends Error {
 	}
 }
 
+function* parseSSELines(lines: string[]): Generator<StreamChunk> {
+	for (const line of lines) {
+		const trimmed = line.trim();
+		if (!trimmed || !trimmed.startsWith("data:")) continue;
+
+		const data = trimmed.slice(5).trim();
+		if (data === "[DONE]") return;
+
+		try {
+			yield JSON.parse(data) as StreamChunk;
+		} catch {
+			// Malformed SSE chunks are non-fatal; skip and continue
+		}
+	}
+}
+
 export class OpenAICompatibleClient {
 	private readonly apiKey: string;
 
@@ -83,37 +99,12 @@ export class OpenAICompatibleClient {
 					buffer += decoder.decode(value, { stream: true });
 					const lines = buffer.split("\n");
 					buffer = lines.pop() || "";
-
-					for (const line of lines) {
-						const trimmed = line.trim();
-						if (!trimmed || !trimmed.startsWith("data:")) continue;
-
-						const data = trimmed.slice(5).trim();
-						if (data === "[DONE]") return;
-
-						try {
-							yield JSON.parse(data) as StreamChunk;
-						} catch {
-							// Malformed SSE chunks are non-fatal; skip and continue
-						}
-					}
+					yield* parseSSELines(lines);
 				}
 
-				// Process any remaining data in the buffer after stream ends
+				// Flush any remaining data after the stream ends
 				if (buffer.trim()) {
-					for (const line of buffer.split("\n")) {
-						const trimmed = line.trim();
-						if (!trimmed || !trimmed.startsWith("data:")) continue;
-
-						const data = trimmed.slice(5).trim();
-						if (data === "[DONE]") return;
-
-						try {
-							yield JSON.parse(data) as StreamChunk;
-						} catch {
-							// Malformed SSE chunks are non-fatal; skip and continue
-						}
-					}
+					yield* parseSSELines(buffer.split("\n"));
 				}
 			} finally {
 				reader.releaseLock();
@@ -129,39 +120,9 @@ export class OpenAICompatibleClient {
 		baseUrl: string,
 		options?: ChatOptions,
 	): Promise<ChatResponse> {
+		// Note: chat() has no AbortSignal — it's used only for short connection tests
 		const response = await this.sendRequest(model, messages, baseUrl, false, options);
 		return response.json() as Promise<ChatResponse>;
-	}
-
-	/**
-	 * Recursively fix JSON Schema objects: replace `"type": null` with
-	 * `"type": "object"` so strict APIs (DeepSeek, etc.) don't reject them.
-	 * Also ensures every tool function has a valid `parameters` schema.
-	 */
-	private static sanitizeSchema(obj: unknown): unknown {
-		if (obj === null || obj === undefined || typeof obj !== "object") {
-			return obj;
-		}
-		if (Array.isArray(obj)) {
-			return obj.map((item) => OpenAICompatibleClient.sanitizeSchema(item));
-		}
-		const record = obj as Record<string, unknown>;
-		const out: Record<string, unknown> = {};
-		for (const [key, value] of Object.entries(record)) {
-			if (key === "type" && value === null) {
-				out[key] = "object";
-			} else if (key === "parameters" && (value === null || value === undefined)) {
-				// Some VS Code tools have null/missing parameters — provide a valid empty schema
-				out[key] = { type: "object", properties: {} };
-			} else {
-				out[key] = OpenAICompatibleClient.sanitizeSchema(value);
-			}
-		}
-		// If this looks like a JSON Schema object (has "properties" but no "type"), add type
-		if (out["properties"] !== undefined && out["type"] === undefined) {
-			out["type"] = "object";
-		}
-		return out;
 	}
 
 	private buildRequestBody(
@@ -208,15 +169,17 @@ export class OpenAICompatibleClient {
 				break;
 
 			case "qwen":
-				// Qwen uses enable_thinking + thinking_budget
+				// Qwen uses enable_thinking + thinking_budget (token counts).
+				// Values sourced from Alibaba DashScope docs; units are tokens.
+				// low=1024 (fast/cheap), medium=4096 (balanced), high=16384 (deep reasoning)
 				body.enable_thinking = true;
 				if (effort) {
-					const budgetMap: Record<ThinkingEffort, number> = {
+					const THINKING_BUDGET: Record<ThinkingEffort, number> = {
 						low: 1024,
 						medium: 4096,
 						high: 16384,
 					};
-					body.thinking_budget = budgetMap[effort];
+					body.thinking_budget = THINKING_BUDGET[effort];
 				}
 				break;
 
@@ -303,7 +266,7 @@ export function mapApiError(error: ApiError, vendorName: string): Error {
 			);
 		case 429:
 			return new Error(
-				`Rate limit exceeded (429). Please wait and try again.`,
+				`Rate limit exceeded (429). Please wait and try again.${detail}`,
 			);
 		default:
 			return new Error(

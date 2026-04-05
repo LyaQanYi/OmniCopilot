@@ -210,7 +210,7 @@ function emitToolCalls(
 			// Log parse error for debugging — still emit the tool call with empty args
 			// since the LLM intended to invoke the tool
 			void vscode.window.showWarningMessage(
-				`[MoreModels] Failed to parse tool call arguments for ${builder.name}: ${errMsg}`,
+				`[MoreModels] Failed to parse tool call arguments for ${builder.name}: ${errMsg} | raw: ${builder.arguments}`,
 			);
 		}
 		progress.report(
@@ -436,6 +436,12 @@ export class MultiModelChatProvider
 		for (const part of text.content) {
 			if (part instanceof vscode.LanguageModelTextPart) {
 				totalChars += part.value.length;
+			} else if (part instanceof vscode.LanguageModelToolCallPart) {
+				totalChars += part.name.length + JSON.stringify(part.input).length;
+			} else if (part instanceof vscode.LanguageModelToolResultPart) {
+				totalChars += JSON.stringify(part.content).length;
+			} else {
+				totalChars += JSON.stringify(part).length;
 			}
 		}
 		return Promise.resolve(Math.ceil(totalChars / 4));
@@ -702,6 +708,22 @@ export class CustomOpenAIProvider
 					}
 				}
 			}
+
+			// Flush any thinking buffer remaining after the stream ends
+			if (thinkingState.buffer) {
+				let flushContent = thinkingState.buffer;
+				if (inReasoningStream) {
+					flushContent += THINK_CLOSE;
+				}
+				const flushResult = processThinkingContent(flushContent, { buffer: "", insideThinking: thinkingState.insideThinking }, false);
+				for (const part of flushResult.parts) {
+					reportThinkingPart(progress, part);
+				}
+			}
+		// Flush any pending tool calls not yet emitted
+			if (toolCallBuilders.size > 0) {
+				emitToolCalls(progress, toolCallBuilders);
+			}
 		} catch (error) {
 			if (!(error instanceof ApiError)) throw error;
 			throw mapApiError(error, "Custom");
@@ -720,6 +742,12 @@ export class CustomOpenAIProvider
 		for (const part of text.content) {
 			if (part instanceof vscode.LanguageModelTextPart) {
 				totalChars += part.value.length;
+			} else if (part instanceof vscode.LanguageModelToolCallPart) {
+				totalChars += part.name.length + JSON.stringify(part.input).length;
+			} else if (part instanceof vscode.LanguageModelToolResultPart) {
+				totalChars += JSON.stringify(part.content).length;
+			} else {
+				totalChars += JSON.stringify(part).length;
 			}
 		}
 		return Promise.resolve(Math.ceil(totalChars / 4));
