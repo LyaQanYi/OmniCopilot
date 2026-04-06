@@ -307,9 +307,11 @@ export class MultiModelChatProvider
 		const client = new OpenAICompatibleClient(this.apiKey);
 		const modelDef = this.findModelDef(model.id);
 		const baseUrl = modelDef?.baseUrl ?? this.vendorConfig.defaultBaseUrl;
-		// Only allow thinking for vendors that actually support controllable thinking
-		const thinking = this.vendorConfig.thinkingCapable
-			? resolveThinking(modelDef?.thinking ?? false)
+		// Only allow thinking when both vendor and model support it
+		const modelSupportsThinking =
+			this.vendorConfig.thinkingCapable && (modelDef?.thinking ?? false);
+		const thinking = modelSupportsThinking
+			? resolveThinking(true)
 			: false;
 		const supportsVision =
 			isVisionEnabled() && (modelDef?.capabilities.imageInput ?? false);
@@ -320,9 +322,11 @@ export class MultiModelChatProvider
 
 		// Read thinkingBudget from modelOptions (VS Code may send this in future)
 		const modelThinkingBudget = options.modelOptions?.thinkingBudget as string | undefined;
-		const thinkingEffort = thinking
-			? (modelThinkingBudget as ThinkingEffort | undefined) || getThinkingEffort()
-			: undefined;
+		const thinkingEffort =
+			thinking && (modelDef?.thinkingEffortSupport ?? false)
+				? (modelThinkingBudget as ThinkingEffort | undefined) ||
+					getThinkingEffort()
+				: undefined;
 
 		// Vendor-specific extra headers (Kimi requires special headers)
 		const extraHeaders =
@@ -651,6 +655,12 @@ export class CustomOpenAIProvider
 		const apiTools = this.convertTools(options.tools);
 		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
 
+		// Custom provider doesn't send thinking params to API but should
+		// respect the global setting when stripping <think> tags from output.
+		// Default to showing thinking (true) so "auto" preserves existing
+		// behaviour; only "never" will strip.
+		const showThinking = resolveThinking(true);
+
 		try {
 			const stream = client.streamChat(
 				model.id,
@@ -700,7 +710,7 @@ export class CustomOpenAIProvider
 						const result = processThinkingContent(
 							combinedContent,
 							thinkingState,
-							false,
+							!showThinking,
 						);
 						thinkingState = result.state;
 						for (const part of result.parts) {
@@ -735,7 +745,7 @@ export class CustomOpenAIProvider
 				if (inReasoningStream) {
 					flushContent += THINK_CLOSE;
 				}
-				const flushResult = processThinkingContent(flushContent, { buffer: "", insideThinking: thinkingState.insideThinking }, false);
+				const flushResult = processThinkingContent(flushContent, { buffer: "", insideThinking: thinkingState.insideThinking }, !showThinking);
 				for (const part of flushResult.parts) {
 					reportThinkingPart(progress, part);
 				}
