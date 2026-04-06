@@ -418,6 +418,26 @@ export class MultiModelChatProvider
 					}
 				}
 			}
+
+			// Flush any thinking buffer remaining after the stream ends
+			if (thinkingState.buffer) {
+				let flushContent = thinkingState.buffer;
+				if (inReasoningStream) {
+					flushContent += THINK_CLOSE;
+				}
+				const flushResult = processThinkingContent(
+					flushContent,
+					{ buffer: "", insideThinking: thinkingState.insideThinking },
+					!thinking,
+				);
+				for (const part of flushResult.parts) {
+					reportThinkingPart(progress, part);
+				}
+			}
+			// Flush any pending tool calls not yet emitted
+			if (toolCallBuilders.size > 0) {
+				emitToolCalls(progress, toolCallBuilders);
+			}
 		} catch (error) {
 			if (!(error instanceof ApiError)) throw error;
 			throw mapApiError(error, this.vendorConfig.displayName);
