@@ -343,7 +343,7 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 		defaultBaseUrl: MINIMAX_BASE_URL,
 		settingsKey: "omniCopilot.minimax.customModelIds",
 		models: MINIMAX_MODELS,
-		thinkingCapable: false,
+		thinkingCapable: true,
 	},
 	{
 		vendorId: "doubao",
