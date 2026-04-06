@@ -2,10 +2,10 @@
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Doubao, Custom) in GitHub Copilot Chat as language model providers.",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
-	"repository": "https://github.com/LyaQanYi/More-Models-Copilot-Provider",
+	"repository": "https://github.com/LyaQanYi/OmniCopilot",
 	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.108.0"
