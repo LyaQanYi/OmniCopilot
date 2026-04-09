@@ -39,7 +39,7 @@ const ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/coding/paas/v4";
 
 const ZHIPU_MODELS: ModelInfo[] = [
 	{
-		id: "GLM-5.1",
+		id: "glm-5.1",
 		name: "GLM-5.1",
 		family: "glm",
 		version: "5.1",
@@ -52,7 +52,7 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "GLM-5-Turbo",
+		id: "glm-5-turbo",
 		name: "GLM-5 Turbo",
 		family: "glm",
 		version: "5-turbo",
@@ -65,7 +65,7 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "GLM-4.7",
+		id: "glm-4.7",
 		name: "GLM-4.7",
 		family: "glm",
 		version: "4.7",
@@ -78,7 +78,7 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "GLM-4.5-Air",
+		id: "glm-4.5-air",
 		name: "GLM-4.5 Air",
 		family: "glm",
 		version: "4.5-air",
