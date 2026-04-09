@@ -33,17 +33,17 @@ const DEEPSEEK_MODELS: ModelInfo[] = [
 	},
 ];
 
-// ─── Zhipu / GLM ─────────────────────────────────────────────────────────────
+// ─── Bigmodel Plan ─────────────────────────────────────────────────────────────
 
-const ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
+const ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/coding/paas/v4";
 
 const ZHIPU_MODELS: ModelInfo[] = [
 	{
-		id: "glm-5",
-		name: "GLM-5",
+		id: "GLM-5.1",
+		name: "GLM-5.1",
 		family: "glm",
-		version: "5",
-		tooltip: "GLM-5 — latest flagship, 200K context, Agentic planning",
+		version: "5.1",
+		tooltip: "GLM-5.1 — latest flagship model",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: ZHIPU_BASE_URL,
@@ -52,11 +52,24 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "glm-4.7",
+		id: "GLM-5-Turbo",
+		name: "GLM-5 Turbo",
+		family: "glm",
+		version: "5-turbo",
+		tooltip: "GLM-5 Turbo — fast flagship model",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "GLM-4.7",
 		name: "GLM-4.7",
 		family: "glm",
 		version: "4.7",
-		tooltip: "GLM-4.7 — high-intelligence, 200K context",
+		tooltip: "GLM-4.7 — high-intelligence model",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: ZHIPU_BASE_URL,
@@ -65,43 +78,17 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "glm-4.7-flash",
-		name: "GLM-4.7 Flash",
+		id: "GLM-4.5-Air",
+		name: "GLM-4.5 Air",
 		family: "glm",
-		version: "4.7-flash",
-		tooltip: "GLM-4.7 Flash — free model, 200K context",
+		version: "4.5-air",
+		tooltip: "GLM-4.5 Air — lightweight model",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: ZHIPU_BASE_URL,
 		thinking: false,
 		thinkingEffortSupport: false,
 		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
-		id: "glm-4-long",
-		name: "GLM-4 Long",
-		family: "glm",
-		version: "4-long",
-		tooltip: "GLM-4 Long — 1M context window",
-		maxInputTokens: 1048576,
-		maxOutputTokens: 4096,
-		baseUrl: ZHIPU_BASE_URL,
-		thinking: false,
-		thinkingEffortSupport: false,
-		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
-		id: "glm-4.6v",
-		name: "GLM-4.6V",
-		family: "glm",
-		version: "4.6v",
-		tooltip: "GLM-4.6V — vision + reasoning, 128K context",
-		maxInputTokens: 131072,
-		maxOutputTokens: 32768,
-		baseUrl: ZHIPU_BASE_URL,
-		thinking: false,
-		thinkingEffortSupport: false,
-		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];
 
@@ -315,7 +302,7 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 	},
 	{
 		vendorId: "zhipu",
-		displayName: "Zhipu (GLM)",
+		displayName: "Bigmodel Plan",
 		defaultBaseUrl: ZHIPU_BASE_URL,
 		settingsKey: "omniCopilot.zhipu.customModelIds",
 		models: ZHIPU_MODELS,

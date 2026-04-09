@@ -9,7 +9,7 @@
 | 提供方 | Vendor ID | 模型 |
 |--------|-----------|------|
 | DeepSeek | `deepseek` | deepseek-chat, deepseek-reasoner |
-| 智谱 (GLM) | `zhipu` | glm-5, glm-4.7, glm-4.7-flash, glm-4-long, glm-4.6v |
+| Bigmodel Plan (GLM) | `zhipu` | GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air |
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
 | MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
@@ -24,13 +24,12 @@
 - **Kimi Code**（Kimi 编程模型）
 - **MiniMax Token Plan 国内版** (`platform.minimaxi.com`)
 - **通义千问 / 阿里百炼平台** (`dashscope.aliyuncs.com`)
+- **智谱编程计划 Bigmodel Plan** (`open.bigmodel.cn` Coding API)
 
 ## 待办事项
 
 - [ ] 测试火山引擎（豆包）
-- [ ] 测试 GLM 开放平台
 - [ ] 测试 Qwen Coding Plan
-- [ ] 测试 GLM Coding Plan
 - [ ] 测试 Kimi 开放平台
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
@@ -43,7 +42,7 @@
 
 - **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
 - **思考模式**：支持推理能力的模型会展示可折叠的思考过程
-- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus、glm-4.6v、doubao-1.5-vision-pro）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus、doubao-1.5-vision-pro）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 - **自定义模型 ID**：可通过设置或命令面板为任意提供方添加自定义模型 ID
 - **可配置思考力度**：低 / 中 / 高三档思考力度
