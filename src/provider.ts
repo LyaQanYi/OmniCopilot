@@ -316,7 +316,7 @@ export class MultiModelChatProvider
 		const supportsVision =
 			isVisionEnabled() && (modelDef?.capabilities.imageInput ?? false);
 
-		const apiMessages = this.convertMessages(messages, supportsVision);
+		let apiMessages = this.convertMessages(messages, supportsVision);
 		const apiTools = this.convertTools(options.tools);
 		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
 
@@ -333,6 +333,16 @@ export class MultiModelChatProvider
 			this.vendorConfig.vendorId === "moonshot"
 				? getKimiExtraHeaders()
 				: undefined;
+
+		// Kimi requires reasoning_content on all assistant messages when thinking is enabled
+		if (this.vendorConfig.vendorId === "moonshot" && thinking) {
+			apiMessages = apiMessages.map((msg) => {
+				if (msg.role === "assistant" && !msg.reasoning_content) {
+					return { ...msg, reasoning_content: "" };
+				}
+				return msg;
+			});
+		}
 
 		try {
 			const stream = client.streamChat(
@@ -500,6 +510,7 @@ export class MultiModelChatProvider
 		for (const msg of messages) {
 			const role = this.convertRole(msg.role);
 			let textContent = "";
+			let reasoningContent = "";
 			let toolCalls: OpenAIMessage["tool_calls"] | undefined;
 			let toolCallId: string | undefined;
 			const imageParts: OpenAIContentPart[] = [];
@@ -507,6 +518,12 @@ export class MultiModelChatProvider
 			for (const part of msg.content) {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					textContent += part.value;
+				} else if (
+					ThinkingPartCtor &&
+					part instanceof ThinkingPartCtor
+				) {
+					// Preserve reasoning content from ThinkingPart
+					reasoningContent += (part as any).value;
 				} else if (part instanceof vscode.LanguageModelToolCallPart) {
 					if (!toolCalls) toolCalls = [];
 					toolCalls.push({
@@ -547,11 +564,15 @@ export class MultiModelChatProvider
 					tool_call_id: toolCallId,
 				});
 			} else if (toolCalls && toolCalls.length > 0) {
-				result.push({
+				const message: OpenAIMessage = {
 					role: "assistant",
 					content: textContent || "",
 					tool_calls: toolCalls,
-				});
+				};
+				if (reasoningContent) {
+					message.reasoning_content = reasoningContent;
+				}
+				result.push(message);
 			} else if (imageParts.length > 0) {
 				// Multi-modal message with text + images
 				const contentParts: OpenAIContentPart[] = [];
@@ -561,7 +582,11 @@ export class MultiModelChatProvider
 				contentParts.push(...imageParts);
 				result.push({ role, content: contentParts, name: msg.name });
 			} else {
-				result.push({ role, content: textContent, name: msg.name });
+				const message: OpenAIMessage = { role, content: textContent, name: msg.name };
+				if (role === "assistant" && reasoningContent) {
+					message.reasoning_content = reasoningContent;
+				}
+				result.push(message);
 			}
 		}
 

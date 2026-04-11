@@ -13,7 +13,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | Qwen | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
 | MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| Doubao | `doubao` | doubao-seed-2-0-lite-260215, doubao-1-5-pro-32k-250115, doubao-1-5-pro-256k-250115, doubao-1-5-thinking-pro-250415, doubao-1-5-vision-pro-32k-250115 |
+| Volcengine Plan | `volcengine` | doubao-seed-2.0-code, doubao-seed-2.0-pro, doubao-seed-2.0-lite, doubao-seed-code, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5 |
 | Custom | `custom-openai` | Any OpenAI-compatible model |
 
 ## Tested & Working
@@ -28,7 +28,7 @@ The following platforms have been tested and confirmed working:
 
 ## TODO
 
-- [ ] Test Volcengine (Doubao)
+- [ ] Test Volcengine Plan
 - [ ] Test Qwen Coding Plan
 - [ ] Test Kimi Open Platform
 - [ ] Support SiliconFlow
@@ -42,7 +42,7 @@ The following platforms have been tested and confirmed working:
 
 - **Multiple Providers**: Access models from major LLM platforms plus any OpenAI-compatible endpoint
 - **Thinking Support**: Models with reasoning capabilities show collapsible thinking sections
-- **Vision Support**: Vision-capable models (kimi-for-coding, qwen3.6-plus, doubao-1.5-vision-pro) can read images attached in Copilot Chat
+- **Vision Support**: Vision-capable models (kimi-for-coding, qwen3.6-plus) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 - **Custom Model IDs**: Add custom model IDs to any provider via Settings or command palette
 - **Configurable Thinking Effort**: Low / Medium / High thinking effort levels

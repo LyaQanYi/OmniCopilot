@@ -13,7 +13,7 @@
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
 | MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| 豆包 | `doubao` | doubao-seed-2-0-lite-260215, doubao-1-5-pro-32k-250115, doubao-1-5-pro-256k-250115, doubao-1-5-thinking-pro-250415, doubao-1-5-vision-pro-32k-250115 |
+| 火山引擎编程计划 | `volcengine` | doubao-seed-2.0-code, doubao-seed-2.0-pro, doubao-seed-2.0-lite, doubao-seed-code, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5 |
 | 自定义 | `custom-openai` | 任意 OpenAI 兼容模型 |
 
 ## 已测试且可用
@@ -28,7 +28,7 @@
 
 ## 待办事项
 
-- [ ] 测试火山引擎（豆包）
+- [ ] 测试火山引擎 Plan
 - [ ] 测试 Qwen Coding Plan
 - [ ] 测试 Kimi 开放平台
 - [ ] 支持硅基流动
@@ -42,7 +42,7 @@
 
 - **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
 - **思考模式**：支持推理能力的模型会展示可折叠的思考过程
-- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus、doubao-1.5-vision-pro）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 - **自定义模型 ID**：可通过设置或命令面板为任意提供方添加自定义模型 ID
 - **可配置思考力度**：低 / 中 / 高三档思考力度
