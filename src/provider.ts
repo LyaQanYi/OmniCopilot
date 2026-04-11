@@ -816,12 +816,18 @@ export class CustomOpenAIProvider
 		for (const msg of messages) {
 			const role = this.convertRole(msg.role);
 			let textContent = "";
+			let reasoningContent = "";
 			let toolCalls: OpenAIMessage["tool_calls"] | undefined;
 			let toolCallId: string | undefined;
 
 			for (const part of msg.content) {
 				if (part instanceof vscode.LanguageModelTextPart) {
 					textContent += part.value;
+				} else if (
+					ThinkingPartCtor &&
+					part instanceof ThinkingPartCtor
+				) {
+					reasoningContent += (part as any).value;
 				} else if (part instanceof vscode.LanguageModelToolCallPart) {
 					if (!toolCalls) toolCalls = [];
 					toolCalls.push({
@@ -848,13 +854,21 @@ export class CustomOpenAIProvider
 					tool_call_id: toolCallId,
 				});
 			} else if (toolCalls && toolCalls.length > 0) {
-				result.push({
+				const message: OpenAIMessage = {
 					role: "assistant",
 					content: textContent || "",
 					tool_calls: toolCalls,
-				});
+				};
+				if (reasoningContent) {
+					message.reasoning_content = reasoningContent;
+				}
+				result.push(message);
 			} else {
-				result.push({ role, content: textContent, name: msg.name });
+				const message: OpenAIMessage = { role, content: textContent, name: msg.name };
+				if (role === "assistant" && reasoningContent) {
+					message.reasoning_content = reasoningContent;
+				}
+				result.push(message);
 			}
 		}
 
