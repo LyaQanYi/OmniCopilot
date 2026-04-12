@@ -183,8 +183,8 @@ export class OpenAICompatibleClient {
 				}
 				break;
 
-			case "doubao":
-				// Doubao uses thinking object { type: "enabled" }
+			case "volcengine":
+				// Volcengine uses thinking object { type: "enabled" }
 				body.thinking = { type: "enabled" };
 				break;
 
