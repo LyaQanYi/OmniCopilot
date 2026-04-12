@@ -247,6 +247,137 @@ function isVisionEnabled(): boolean {
 	return config.get<boolean>("enableVision", true);
 }
 
+/**
+ * Vendors whose APIs accept the `reasoning_content` field on messages.
+ * Vendors not listed here (Volcengine, MiniMax, generic/custom) may reject
+ * requests that contain the field.
+ */
+function supportsReasoningContent(vendorId?: string): boolean {
+	switch (vendorId) {
+		case "deepseek":
+		case "qwen":
+		case "moonshot":
+		case "zhipu":
+			return true;
+		default:
+			return false;
+	}
+}
+
+function convertRole(
+	role: vscode.LanguageModelChatMessageRole,
+): "system" | "user" | "assistant" {
+	switch (role) {
+		case vscode.LanguageModelChatMessageRole.User:
+			return "user";
+		case vscode.LanguageModelChatMessageRole.Assistant:
+			return "assistant";
+		default:
+			return "user";
+	}
+}
+
+interface BuildMessagesOptions {
+	supportsVision: boolean;
+	vendorId?: string;
+}
+
+/**
+ * Shared message-serialization logic used by both MultiModelChatProvider and
+ * CustomOpenAIProvider. Converts VS Code chat messages into OpenAI-compatible
+ * message objects, handling vision parts, tool calls, and vendor-gated
+ * reasoning_content.
+ */
+function buildOpenAIMessages(
+	messages: readonly vscode.LanguageModelChatRequestMessage[],
+	opts: BuildMessagesOptions,
+): OpenAIMessage[] {
+	const includeReasoning = supportsReasoningContent(opts.vendorId);
+	const result: OpenAIMessage[] = [];
+
+	for (const msg of messages) {
+		const role = convertRole(msg.role);
+		let textContent = "";
+		let reasoningContent = "";
+		let toolCalls: OpenAIMessage["tool_calls"] | undefined;
+		let toolCallId: string | undefined;
+		const imageParts: OpenAIContentPart[] = [];
+
+		for (const part of msg.content) {
+			if (part instanceof vscode.LanguageModelTextPart) {
+				textContent += part.value;
+			} else if (
+				ThinkingPartCtor &&
+				part instanceof ThinkingPartCtor
+			) {
+				reasoningContent += (part as any).value;
+			} else if (part instanceof vscode.LanguageModelToolCallPart) {
+				if (!toolCalls) toolCalls = [];
+				toolCalls.push({
+					id: part.callId,
+					type: "function",
+					function: {
+						name: part.name,
+						arguments: JSON.stringify(part.input),
+					},
+				});
+			} else if (part instanceof vscode.LanguageModelToolResultPart) {
+				toolCallId = part.callId;
+				textContent =
+					typeof part.content === "string"
+						? part.content
+						: JSON.stringify(part.content);
+			} else if (
+				opts.supportsVision &&
+				role === "user" &&
+				part instanceof vscode.LanguageModelDataPart &&
+				part.mimeType?.startsWith("image/")
+			) {
+				const base64 = Buffer.from(part.data).toString("base64");
+				imageParts.push({
+					type: "image_url",
+					image_url: {
+						url: `data:${part.mimeType};base64,${base64}`,
+					},
+				});
+			}
+		}
+
+		if (toolCallId) {
+			result.push({
+				role: "tool",
+				content: textContent,
+				tool_call_id: toolCallId,
+			});
+		} else if (toolCalls && toolCalls.length > 0) {
+			const message: OpenAIMessage = {
+				role: "assistant",
+				content: textContent || "",
+				tool_calls: toolCalls,
+			};
+			if (includeReasoning && reasoningContent) {
+				message.reasoning_content = reasoningContent;
+			}
+			result.push(message);
+		} else if (imageParts.length > 0) {
+			const contentParts: OpenAIContentPart[] = [];
+			if (textContent) {
+				contentParts.push({ type: "text", text: textContent });
+			}
+			contentParts.push(...imageParts);
+			result.push({ role, content: contentParts, name: msg.name });
+		} else {
+			const message: OpenAIMessage = { role, content: textContent, name: msg.name };
+			if (includeReasoning && role === "assistant" && reasoningContent) {
+				message.reasoning_content = reasoningContent;
+			}
+			result.push(message);
+		}
+	}
+
+	return result;
+}
+
 // ─── Multi-Model Provider ────────────────────────────────────────────────────
 
 export class MultiModelChatProvider
@@ -505,105 +636,10 @@ export class MultiModelChatProvider
 		messages: readonly vscode.LanguageModelChatRequestMessage[],
 		supportsVision: boolean,
 	): OpenAIMessage[] {
-		const result: OpenAIMessage[] = [];
-
-		for (const msg of messages) {
-			const role = this.convertRole(msg.role);
-			let textContent = "";
-			let reasoningContent = "";
-			let toolCalls: OpenAIMessage["tool_calls"] | undefined;
-			let toolCallId: string | undefined;
-			const imageParts: OpenAIContentPart[] = [];
-
-			for (const part of msg.content) {
-				if (part instanceof vscode.LanguageModelTextPart) {
-					textContent += part.value;
-				} else if (
-					ThinkingPartCtor &&
-					part instanceof ThinkingPartCtor
-				) {
-					// Preserve reasoning content from ThinkingPart
-					reasoningContent += (part as any).value;
-				} else if (part instanceof vscode.LanguageModelToolCallPart) {
-					if (!toolCalls) toolCalls = [];
-					toolCalls.push({
-						id: part.callId,
-						type: "function",
-						function: {
-							name: part.name,
-							arguments: JSON.stringify(part.input),
-						},
-					});
-				} else if (part instanceof vscode.LanguageModelToolResultPart) {
-					toolCallId = part.callId;
-					textContent =
-						typeof part.content === "string"
-							? part.content
-							: JSON.stringify(part.content);
-				} else if (
-					supportsVision &&
-					role === "user" &&
-					part instanceof vscode.LanguageModelDataPart &&
-					part.mimeType?.startsWith("image/")
-				) {
-					// Vision: image data (only for actual images in user messages)
-					const base64 = Buffer.from(part.data).toString("base64");
-					imageParts.push({
-						type: "image_url",
-						image_url: {
-							url: `data:${part.mimeType};base64,${base64}`,
-						},
-					});
-				}
-			}
-
-			if (toolCallId) {
-				result.push({
-					role: "tool",
-					content: textContent,
-					tool_call_id: toolCallId,
-				});
-			} else if (toolCalls && toolCalls.length > 0) {
-				const message: OpenAIMessage = {
-					role: "assistant",
-					content: textContent || "",
-					tool_calls: toolCalls,
-				};
-				if (reasoningContent) {
-					message.reasoning_content = reasoningContent;
-				}
-				result.push(message);
-			} else if (imageParts.length > 0) {
-				// Multi-modal message with text + images
-				const contentParts: OpenAIContentPart[] = [];
-				if (textContent) {
-					contentParts.push({ type: "text", text: textContent });
-				}
-				contentParts.push(...imageParts);
-				result.push({ role, content: contentParts, name: msg.name });
-			} else {
-				const message: OpenAIMessage = { role, content: textContent, name: msg.name };
-				if (role === "assistant" && reasoningContent) {
-					message.reasoning_content = reasoningContent;
-				}
-				result.push(message);
-			}
-		}
-
-		return result;
-	}
-
-	private convertRole(
-		role: vscode.LanguageModelChatMessageRole,
-	): "system" | "user" | "assistant" {
-		switch (role) {
-			case vscode.LanguageModelChatMessageRole.User:
-				return "user";
-			case vscode.LanguageModelChatMessageRole.Assistant:
-				return "assistant";
-			default:
-				return "user";
-		}
+		return buildOpenAIMessages(messages, {
+			supportsVision,
+			vendorId: this.vendorConfig.vendorId,
+		});
 	}
 
 	private convertTools(
@@ -811,81 +847,7 @@ export class CustomOpenAIProvider
 	private convertMessages(
 		messages: readonly vscode.LanguageModelChatRequestMessage[],
 	): OpenAIMessage[] {
-		const result: OpenAIMessage[] = [];
-
-		for (const msg of messages) {
-			const role = this.convertRole(msg.role);
-			let textContent = "";
-			let reasoningContent = "";
-			let toolCalls: OpenAIMessage["tool_calls"] | undefined;
-			let toolCallId: string | undefined;
-
-			for (const part of msg.content) {
-				if (part instanceof vscode.LanguageModelTextPart) {
-					textContent += part.value;
-				} else if (
-					ThinkingPartCtor &&
-					part instanceof ThinkingPartCtor
-				) {
-					reasoningContent += (part as any).value;
-				} else if (part instanceof vscode.LanguageModelToolCallPart) {
-					if (!toolCalls) toolCalls = [];
-					toolCalls.push({
-						id: part.callId,
-						type: "function",
-						function: {
-							name: part.name,
-							arguments: JSON.stringify(part.input),
-						},
-					});
-				} else if (part instanceof vscode.LanguageModelToolResultPart) {
-					toolCallId = part.callId;
-					textContent =
-						typeof part.content === "string"
-							? part.content
-							: JSON.stringify(part.content);
-				}
-			}
-
-			if (toolCallId) {
-				result.push({
-					role: "tool",
-					content: textContent,
-					tool_call_id: toolCallId,
-				});
-			} else if (toolCalls && toolCalls.length > 0) {
-				const message: OpenAIMessage = {
-					role: "assistant",
-					content: textContent || "",
-					tool_calls: toolCalls,
-				};
-				if (reasoningContent) {
-					message.reasoning_content = reasoningContent;
-				}
-				result.push(message);
-			} else {
-				const message: OpenAIMessage = { role, content: textContent, name: msg.name };
-				if (role === "assistant" && reasoningContent) {
-					message.reasoning_content = reasoningContent;
-				}
-				result.push(message);
-			}
-		}
-
-		return result;
-	}
-
-	private convertRole(
-		role: vscode.LanguageModelChatMessageRole,
-	): "system" | "user" | "assistant" {
-		switch (role) {
-			case vscode.LanguageModelChatMessageRole.User:
-				return "user";
-			case vscode.LanguageModelChatMessageRole.Assistant:
-				return "assistant";
-			default:
-				return "user";
-		}
+		return buildOpenAIMessages(messages, { supportsVision: false });
 	}
 
 	private convertTools(

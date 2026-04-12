@@ -144,6 +144,40 @@ Contributions are welcome! Here's how you can help:
 - VS Code 1.108.0+
 - GitHub Copilot extension
 
+## Changelog
+
+### 0.1.3 — 2026-04-12
+
+- Add Volcengine Plan provider with 8 models (doubao-seed, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5)
+- Gate `reasoning_content` field by vendor capability — only send it for DeepSeek, Qwen, Moonshot/Kimi, and Zhipu; avoids request rejection on strict backends (Volcengine, MiniMax, custom)
+- Extract shared `buildOpenAIMessages` helper to deduplicate message-serialization logic between `MultiModelChatProvider` and `CustomOpenAIProvider`
+- Add `reasoning_content` handling in `CustomOpenAIProvider`
+
+### 0.1.2 — 2026-04-09
+
+- Add Bigmodel Plan (Zhipu) provider with GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air models
+- Enable thinking capability for Zhipu models
+- Normalize Zhipu model IDs
+
+### 0.1.1 — 2026-04-07
+
+- Enable thinking capability for MiniMax vendor
+- Enhance thinking support logic in both `MultiModelChatProvider` and `CustomOpenAIProvider`
+- Fix: flush remaining thinking buffer and pending tool calls after stream ends
+- Add MIT LICENSE file
+- Fix repository URL in package.json
+
+### 0.1.0 — 2026-04-06
+
+- Initial release
+- Multi-model provider architecture with DeepSeek, Moonshot (Kimi), Qwen, MiniMax support
+- Custom OpenAI-compatible provider for any endpoint
+- Thinking mode with `<think>` tag parsing and collapsible UI (via `LanguageModelThinkingPart`)
+- Vision support for image-capable models
+- Tool calling / function calling support
+- Custom model ID management via settings and command palette
+- Configurable thinking effort (low / medium / high)
+
 ## License
 
 MIT
