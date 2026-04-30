@@ -7,8 +7,9 @@ import type {
 	OpenAITool,
 	OpenAIContentPart,
 	ThinkingEffort,
+	ContextLength,
 } from "./types.js";
-import { toLanguageModelChatInformation } from "./types.js";
+import { toLanguageModelChatInformation, applyContextLength } from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -247,6 +248,13 @@ function isVisionEnabled(): boolean {
 	return config.get<boolean>("enableVision", true);
 }
 
+function getEffectiveMaxInputTokens(modelMaxInputTokens: number): number {
+	const config = vscode.workspace.getConfiguration("omniCopilot");
+	const contextLength = config.get<string>("contextLength", "default") as ContextLength;
+	const customContextLength = config.get<number>("customContextLength", 131072);
+	return applyContextLength(modelMaxInputTokens, contextLength, customContextLength);
+}
+
 /**
  * Vendors whose APIs accept the `reasoning_content` field on messages.
  * Vendors not listed here (Volcengine, MiniMax, generic/custom) may reject
@@ -401,7 +409,13 @@ export class MultiModelChatProvider
 
 		// Preset models
 		const presetIds = new Set(this.vendorConfig.models.map((m) => m.id));
-		const result = this.vendorConfig.models.map(toLanguageModelChatInformation);
+		const result = this.vendorConfig.models.map((m) => {
+			const info = toLanguageModelChatInformation(m);
+			return {
+				...info,
+				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens),
+			};
+		});
 
 		// Custom model IDs from settings
 		const customIds = vscode.workspace
@@ -412,11 +426,13 @@ export class MultiModelChatProvider
 			const trimmed = customId.trim();
 			if (!trimmed || presetIds.has(trimmed)) continue;
 
-			result.push(
-				toLanguageModelChatInformation(
-					this.createCustomModelInfo(trimmed),
-				),
+			const info = toLanguageModelChatInformation(
+				this.createCustomModelInfo(trimmed),
 			);
+			result.push({
+				...info,
+				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens),
+			});
 		}
 
 		return result;
@@ -683,6 +699,7 @@ export class CustomOpenAIProvider
 
 		const displayName = this.modelName || this.modelId;
 
+		const maxInputTokens = getEffectiveMaxInputTokens(131072);
 		return [
 			{
 				id: this.modelId,
@@ -691,7 +708,7 @@ export class CustomOpenAIProvider
 				version: "1",
 				tooltip: `Custom model at ${this.apiUrl}`,
 				detail: `Custom model at ${this.apiUrl}`,
-				maxInputTokens: 131072,
+				maxInputTokens,
 				maxOutputTokens: 4096,
 				capabilities: { imageInput: false, toolCalling: true },
 			},

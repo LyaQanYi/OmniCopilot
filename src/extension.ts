@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { OpenAICompatibleClient, ApiError, getKimiExtraHeaders } from "./api.js";
 import { MultiModelChatProvider, CustomOpenAIProvider } from "./provider.js";
 import { VENDOR_CONFIGS, getVendorConfig } from "./models.js";
+import { CONTEXT_LENGTH_LIMITS, type ContextLength } from "./types.js";
 
 // ─── Test Connection Command ─────────────────────────────────────────────────
 
@@ -75,6 +76,39 @@ const EFFORT_ICONS: Record<string, string> = {
 
 let thinkingEffortStatusBar: vscode.StatusBarItem;
 let enableThinkingStatusBar: vscode.StatusBarItem;
+let contextLengthStatusBar: vscode.StatusBarItem;
+
+const CONTEXT_LENGTH_OPTIONS: {
+	label: string;
+	description: string;
+	value: ContextLength;
+}[] = [
+	{ label: "$(history) Default", description: "使用模型默认上下文长度", value: "default" },
+	{ label: "$(debug-breakpoint-log) 4K", description: "4,096 tokens", value: "4k" },
+	{ label: "$(debug-breakpoint-log) 8K", description: "8,192 tokens", value: "8k" },
+	{ label: "$(debug-breakpoint-log) 16K", description: "16,384 tokens", value: "16k" },
+	{ label: "$(debug-breakpoint-log) 32K", description: "32,768 tokens", value: "32k" },
+	{ label: "$(debug-breakpoint-log) 64K", description: "65,536 tokens", value: "64k" },
+	{ label: "$(debug-breakpoint-log) 128K", description: "131,072 tokens", value: "128k" },
+	{ label: "$(debug-breakpoint-log) 256K", description: "262,144 tokens", value: "256k" },
+	{ label: "$(debug-breakpoint-log) 512K", description: "524,288 tokens", value: "512k" },
+	{ label: "$(debug-breakpoint-log) 1M", description: "1,048,576 tokens", value: "1m" },
+	{ label: "$(edit) Custom", description: "使用自定义上下文长度", value: "custom" },
+];
+
+const CONTEXT_LENGTH_ICONS: Record<string, string> = {
+	default: "$(history)",
+	"4k": "$(debug-breakpoint-log)",
+	"8k": "$(debug-breakpoint-log)",
+	"16k": "$(debug-breakpoint-log)",
+	"32k": "$(debug-breakpoint-log)",
+	"64k": "$(debug-breakpoint-log)",
+	"128k": "$(debug-breakpoint-log)",
+	"256k": "$(debug-breakpoint-log)",
+	"512k": "$(debug-breakpoint-log)",
+	"1m": "$(debug-breakpoint-log)",
+	custom: "$(edit)",
+};
 
 const ENABLE_THINKING_OPTIONS = [
 	{ label: "$(light-bulb) Auto", description: "根据模型默认设置", value: "auto" },
@@ -98,6 +132,7 @@ function updateStatusBar(): void {
 	const config = vscode.workspace.getConfiguration("omniCopilot");
 	const effort = config.get<string>("thinkingEffort", "medium");
 	const enableThinking = config.get<string>("enableThinking", "auto");
+	const contextLength = config.get<string>("contextLength", "default");
 
 	// Effort status bar
 	const effortIcon = EFFORT_ICONS[effort] || "$(symbol-event)";
@@ -109,6 +144,19 @@ function updateStatusBar(): void {
 	const thinkingLabel = ENABLE_THINKING_LABELS[enableThinking] || enableThinking;
 	enableThinkingStatusBar.text = `${thinkingIcon} Thinking: ${thinkingLabel}`;
 	enableThinkingStatusBar.tooltip = `Thinking Mode: ${enableThinking}\nClick to change`;
+
+	// Context length status bar
+	const ctxIcon = CONTEXT_LENGTH_ICONS[contextLength] || "$(history)";
+	let ctxDisplay = contextLength;
+	if (contextLength === "custom") {
+		const custom = config.get<number>("customContextLength", 131072);
+		ctxDisplay = `${custom.toLocaleString()} tokens`;
+	} else if (contextLength !== "default") {
+		const limit = CONTEXT_LENGTH_LIMITS[contextLength as Exclude<ContextLength, "default" | "custom">];
+		ctxDisplay = limit ? `${limit.toLocaleString()} tokens` : contextLength;
+	}
+	contextLengthStatusBar.text = `${ctxIcon} Context: ${ctxDisplay}`;
+	contextLengthStatusBar.tooltip = `Context Length: ${contextLength}\nClick to change`;
 }
 
 async function setThinkingEffort(): Promise<void> {
@@ -144,6 +192,44 @@ async function toggleThinking(): Promise<void> {
 	if (!picked) return;
 
 	await config.update("enableThinking", picked.value, vscode.ConfigurationTarget.Global);
+	updateStatusBar();
+}
+
+// ─── Set Context Length Command ──────────────────────────────────────────────
+
+async function setContextLength(): Promise<void> {
+	const config = vscode.workspace.getConfiguration("omniCopilot");
+	const current = config.get<string>("contextLength", "default");
+
+	const items = CONTEXT_LENGTH_OPTIONS.map((opt) => ({
+		...opt,
+		picked: opt.value === current,
+	}));
+
+	const picked = await vscode.window.showQuickPick(items, {
+		placeHolder: `Current: ${current} — Select context length limit`,
+	});
+	if (!picked) return;
+
+	if (picked.value === "custom") {
+		const currentCustom = config.get<number>("customContextLength", 131072);
+		const input = await vscode.window.showInputBox({
+			prompt: "Enter custom context length (tokens)",
+			placeHolder: "e.g. 131072",
+			value: String(currentCustom),
+			validateInput: (value) => {
+				const num = Number(value);
+				if (!Number.isInteger(num) || num < 1024 || num > 2097152) {
+					return "Must be an integer between 1024 and 2,097,152";
+				}
+				return null;
+			},
+		});
+		if (!input) return;
+		await config.update("customContextLength", Number(input), vscode.ConfigurationTarget.Global);
+	}
+
+	await config.update("contextLength", picked.value, vscode.ConfigurationTarget.Global);
 	updateStatusBar();
 }
 
@@ -283,10 +369,17 @@ export function activate(context: vscode.ExtensionContext): void {
 		),
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand(
+			"omniCopilot.setContextLength",
+			setContextLength,
+		),
+	);
+
 	// Status bar: enable thinking indicator (left)
 	enableThinkingStatusBar = vscode.window.createStatusBarItem(
 		vscode.StatusBarAlignment.Right,
-		51,
+		52,
 	);
 	enableThinkingStatusBar.command = "omniCopilot.toggleThinking";
 	context.subscriptions.push(enableThinkingStatusBar);
@@ -294,21 +387,32 @@ export function activate(context: vscode.ExtensionContext): void {
 	// Status bar: thinking effort indicator (right of thinking toggle)
 	thinkingEffortStatusBar = vscode.window.createStatusBarItem(
 		vscode.StatusBarAlignment.Right,
-		50,
+		51,
 	);
 	thinkingEffortStatusBar.command = "omniCopilot.setThinkingEffort";
 	context.subscriptions.push(thinkingEffortStatusBar);
 
+	// Status bar: context length indicator
+	contextLengthStatusBar = vscode.window.createStatusBarItem(
+		vscode.StatusBarAlignment.Right,
+		50,
+	);
+	contextLengthStatusBar.command = "omniCopilot.setContextLength";
+	context.subscriptions.push(contextLengthStatusBar);
+
 	updateStatusBar();
 	enableThinkingStatusBar.show();
 	thinkingEffortStatusBar.show();
+	contextLengthStatusBar.show();
 
 	// Update status bar on configuration change
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (
 				e.affectsConfiguration("omniCopilot.thinkingEffort") ||
-				e.affectsConfiguration("omniCopilot.enableThinking")
+				e.affectsConfiguration("omniCopilot.enableThinking") ||
+				e.affectsConfiguration("omniCopilot.contextLength") ||
+				e.affectsConfiguration("omniCopilot.customContextLength")
 			) {
 				updateStatusBar();
 			}

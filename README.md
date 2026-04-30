@@ -146,6 +146,10 @@ Contributions are welcome! Here's how you can help:
 
 ## Changelog
 
+### 2.0.0 — 2026-04-30
+
+- Add context adjustment
+
 ### 0.1.3 — 2026-04-12
 
 - Add Volcengine Plan provider with 8 models (doubao-seed, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5)

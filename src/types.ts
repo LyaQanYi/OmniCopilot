@@ -104,6 +104,31 @@ export interface ChatResponse {
 
 export type ThinkingEffort = "low" | "medium" | "high";
 
+export type ContextLength =
+	| "default"
+	| "4k"
+	| "8k"
+	| "16k"
+	| "32k"
+	| "64k"
+	| "128k"
+	| "256k"
+	| "512k"
+	| "1m"
+	| "custom";
+
+export const CONTEXT_LENGTH_LIMITS: Record<Exclude<ContextLength, "default" | "custom">, number> = {
+	"4k": 4096,
+	"8k": 8192,
+	"16k": 16384,
+	"32k": 32768,
+	"64k": 65536,
+	"128k": 131072,
+	"256k": 262144,
+	"512k": 524288,
+	"1m": 1048576,
+};
+
 export interface ChatOptions {
 	maxTokens?: number;
 	tools?: OpenAITool[];
@@ -127,4 +152,23 @@ export function toLanguageModelChatInformation(
 		maxOutputTokens: model.maxOutputTokens,
 		capabilities: model.capabilities,
 	};
+}
+
+/**
+ * Apply the user-configured context length limit to a model's maxInputTokens.
+ * Returns the smaller of the model's native limit and the user's chosen limit.
+ */
+export function applyContextLength(
+	modelMaxInputTokens: number,
+	contextLength: ContextLength,
+	customContextLength: number,
+): number {
+	if (contextLength === "default") {
+		return modelMaxInputTokens;
+	}
+	if (contextLength === "custom") {
+		return Math.min(modelMaxInputTokens, customContextLength);
+	}
+	const limit = CONTEXT_LENGTH_LIMITS[contextLength];
+	return limit !== undefined ? Math.min(modelMaxInputTokens, limit) : modelMaxInputTokens;
 }
