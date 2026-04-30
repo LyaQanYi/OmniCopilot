@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { OpenAICompatibleClient, ApiError, getKimiExtraHeaders } from "./api.js";
 import { MultiModelChatProvider, CustomOpenAIProvider } from "./provider.js";
 import { VENDOR_CONFIGS, getVendorConfig } from "./models.js";
-import { CONTEXT_LENGTH_LIMITS, type ContextLength } from "./types.js";
+import { CONTEXT_LENGTH_LIMITS, DEFAULT_CONTEXT_LENGTH, type ContextLength } from "./types.js";
 
 // ─── Test Connection Command ─────────────────────────────────────────────────
 
@@ -149,14 +149,14 @@ function updateStatusBar(): void {
 	const ctxIcon = CONTEXT_LENGTH_ICONS[contextLength] || "$(history)";
 	let ctxDisplay = contextLength;
 	if (contextLength === "custom") {
-		const custom = config.get<number>("customContextLength", 131072);
+		const custom = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
 		ctxDisplay = `${custom.toLocaleString()} tokens`;
 	} else if (contextLength !== "default") {
 		const limit = CONTEXT_LENGTH_LIMITS[contextLength as Exclude<ContextLength, "default" | "custom">];
 		ctxDisplay = limit ? `${limit.toLocaleString()} tokens` : contextLength;
 	}
-	contextLengthStatusBar.text = `${ctxIcon} Context: ${ctxDisplay}`;
-	contextLengthStatusBar.tooltip = `Context Length: ${contextLength}\nClick to change`;
+	contextLengthStatusBar.text = `${ctxIcon} Input: ${ctxDisplay}`;
+	contextLengthStatusBar.tooltip = `Max Input Context Length: ${ctxDisplay}\nClick to change`;
 }
 
 async function setThinkingEffort(): Promise<void> {
@@ -212,7 +212,7 @@ async function setContextLength(): Promise<void> {
 	if (!picked) return;
 
 	if (picked.value === "custom") {
-		const currentCustom = config.get<number>("customContextLength", 131072);
+		const currentCustom = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
 		const input = await vscode.window.showInputBox({
 			prompt: "Enter custom context length (tokens)",
 			placeHolder: "e.g. 131072",

@@ -104,6 +104,8 @@ export interface ChatResponse {
 
 export type ThinkingEffort = "low" | "medium" | "high";
 
+export const DEFAULT_CONTEXT_LENGTH = 131072;
+
 export type ContextLength =
 	| "default"
 	| "4k"

@@ -2,7 +2,7 @@
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan, Custom) in GitHub Copilot Chat as language model providers.",
-	"version": "2.0.0",
+	"version": "0.2.0",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -141,7 +141,7 @@
 			},
 			{
 				"command": "omniCopilot.setContextLength",
-				"title": "OmniCopilot: Set Context Length"
+				"title": "OmniCopilot: Set Max Input Context Length"
 			}
 		],
 		"configuration": {
@@ -206,14 +206,14 @@
 						"Limit to 1,048,576 tokens",
 						"Use a custom context length (set below)"
 					],
-					"description": "Maximum input context length sent to models"
+					"description": "Maximum input context length sent to models — output tokens are not affected"
 				},
 				"omniCopilot.customContextLength": {
 					"type": "number",
 					"default": 131072,
 					"minimum": 1024,
 					"maximum": 2097152,
-					"description": "Custom maximum input context length (used when Context Length is set to Custom)"
+					"description": "Custom maximum input context length (used when Input Context Length is set to Custom) — output tokens are not affected"
 				},
 				"omniCopilot.enableVision": {
 					"type": "boolean",
@@ -274,12 +274,13 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"package": "npx @vscode/vsce package",
+		"publish": "npx @vscode/vsce publish"
 	},
 	"devDependencies": {
 		"@types/node": "20.19.29",
 		"@types/vscode": "1.108.0",
-		"@vscode/vsce": "^3.9.1",
 		"typescript": "5.9.3"
 	}
 }
