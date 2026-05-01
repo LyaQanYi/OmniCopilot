@@ -7,8 +7,9 @@ import type {
 	OpenAITool,
 	OpenAIContentPart,
 	ThinkingEffort,
+	ContextLength,
 } from "./types.js";
-import { toLanguageModelChatInformation } from "./types.js";
+import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH } from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -247,6 +248,14 @@ function isVisionEnabled(): boolean {
 	return config.get<boolean>("enableVision", true);
 }
 
+function getEffectiveMaxInputTokens(
+	modelMaxInputTokens: number,
+	contextLength: ContextLength,
+	customContextLength: number,
+): number {
+	return applyContextLength(modelMaxInputTokens, contextLength, customContextLength);
+}
+
 /**
  * Vendors whose APIs accept the `reasoning_content` field on messages.
  * Vendors not listed here (Volcengine, MiniMax, generic/custom) may reject
@@ -399,9 +408,19 @@ export class MultiModelChatProvider
 
 		this.apiKey = key;
 
+		const config = vscode.workspace.getConfiguration("omniCopilot");
+		const contextLength = config.get<string>("contextLength", "default") as ContextLength;
+		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
+
 		// Preset models
 		const presetIds = new Set(this.vendorConfig.models.map((m) => m.id));
-		const result = this.vendorConfig.models.map(toLanguageModelChatInformation);
+		const result = this.vendorConfig.models.map((m) => {
+			const info = toLanguageModelChatInformation(m);
+			return {
+				...info,
+				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
+			};
+		});
 
 		// Custom model IDs from settings
 		const customIds = vscode.workspace
@@ -412,11 +431,13 @@ export class MultiModelChatProvider
 			const trimmed = customId.trim();
 			if (!trimmed || presetIds.has(trimmed)) continue;
 
-			result.push(
-				toLanguageModelChatInformation(
-					this.createCustomModelInfo(trimmed),
-				),
+			const info = toLanguageModelChatInformation(
+				this.createCustomModelInfo(trimmed),
 			);
+			result.push({
+				...info,
+				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
+			});
 		}
 
 		return result;
@@ -623,7 +644,7 @@ export class MultiModelChatProvider
 			family: this.vendorConfig.vendorId,
 			version: "custom",
 			tooltip: `${this.vendorConfig.displayName} — custom model`,
-			maxInputTokens: 131072,
+			maxInputTokens: DEFAULT_CONTEXT_LENGTH,
 			maxOutputTokens: 4096,
 			baseUrl: this.vendorConfig.defaultBaseUrl,
 			thinking: false,
@@ -683,6 +704,11 @@ export class CustomOpenAIProvider
 
 		const displayName = this.modelName || this.modelId;
 
+		const config = vscode.workspace.getConfiguration("omniCopilot");
+		const contextLength = config.get<string>("contextLength", "default") as ContextLength;
+		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
+
+		const maxInputTokens = getEffectiveMaxInputTokens(DEFAULT_CONTEXT_LENGTH, contextLength, customContextLength);
 		return [
 			{
 				id: this.modelId,
@@ -691,7 +717,7 @@ export class CustomOpenAIProvider
 				version: "1",
 				tooltip: `Custom model at ${this.apiUrl}`,
 				detail: `Custom model at ${this.apiUrl}`,
-				maxInputTokens: 131072,
+				maxInputTokens,
 				maxOutputTokens: 4096,
 				capabilities: { imageInput: false, toolCalling: true },
 			},

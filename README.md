@@ -146,6 +146,10 @@ Contributions are welcome! Here's how you can help:
 
 ## Changelog
 
+### 0.2.0 — 2026-04-30
+
+- Add user-configurable max input context length cap (presets 4K–1M + custom 1K-2M tokens), shown in status bar
+
 ### 0.1.3 — 2026-04-12
 
 - Add Volcengine Plan provider with 8 models (doubao-seed, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5)
