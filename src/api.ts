@@ -176,10 +176,21 @@ export class OpenAICompatibleClient {
 				// DeepSeek V4 only accepts reasoning_effort = "high" | "max".
 				// The picker schema for DeepSeek is None/High/Max; any legacy
 				// low/medium value (from a programmatic caller) is coerced to
-				// "high". When "None" is picked we omit reasoning_effort and
-				// rely on the provider to strip <think> tags from the output.
+				// "high" with a warning.
+				//
+				// When "None" is picked we MUST explicitly disable thinking:
+				// DeepSeek V4 defaults thinking ON, so merely omitting
+				// reasoning_effort still spends reasoning tokens (user pays
+				// for output we then strip client-side).
 				if (thinking) {
+					if (effort && effort !== "high" && effort !== "max") {
+						console.warn(
+							`[OmniCopilot] DeepSeek does not support reasoning_effort="${effort}"; coerced to "high".`,
+						);
+					}
 					body.reasoning_effort = effort === "max" ? "max" : "high";
+				} else {
+					body.thinking = { type: "disabled" };
 				}
 				break;
 

@@ -162,8 +162,15 @@ export const THINKING_TOGGLE_SCHEMA = {
 	},
 } as const;
 
-// VS Code stable types do not yet include `configurationSchema` — extend via
-// intersection (same approach as DeepSeekforCopilot). No proposed-API opt-in needed.
+// `configurationSchema` is declared on the `chatProvider` proposed API
+// (`vscode.proposed.chatProvider.d.ts`) and is therefore absent from the
+// stable `@types/vscode` definitions we compile against. We extend the
+// stable type via intersection so the field type-checks; VS Code 1.108+
+// already honours `configurationSchema` at runtime, which is why this
+// works without declaring `enabledApiProposals` in package.json today.
+// If a future VS Code release gates this behind the proposed-API opt-in,
+// add `"enabledApiProposals": ["chatProvider"]` alongside `engines` and
+// note the dependency in the README.
 export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 	readonly configurationSchema?:
 		| typeof THINKING_EFFORT_SCHEMA
