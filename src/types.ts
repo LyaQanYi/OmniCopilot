@@ -102,7 +102,86 @@ export interface ChatResponse {
 	};
 }
 
-export type ThinkingEffort = "low" | "medium" | "high";
+export type ThinkingEffort = "low" | "medium" | "high" | "max";
+
+// Picker schema values: superset of ThinkingEffort plus on/off semantics.
+//   - "none" → user opted out of thinking for this turn
+//   - "on"   → thinking enabled but the model has no fine-grained effort knob
+//   - low/medium/high/max → thinking enabled with that effort level
+export type RequestedEffort = "none" | "low" | "medium" | "high" | "max" | "on";
+
+// 4-level menu for models with thinkingEffortSupport=true (Qwen).
+export const THINKING_EFFORT_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "low", "medium", "high"],
+			enumItemLabels: ["None", "Low", "Medium", "High"],
+			enumDescriptions: [
+				"No reasoning",
+				"Faster responses",
+				"Balanced",
+				"Deeper reasoning",
+			],
+			default: "medium",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// DeepSeek-specific menu — V4 API exposes only "high" and "max" plus none.
+// Mirrors DeepSeekforCopilot's UX one-to-one.
+export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "high", "max"],
+			enumItemLabels: ["None", "High", "Max"],
+			enumDescriptions: ["No reasoning", "Balanced", "Max reasoning"],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// 2-level menu for models that support thinking but no effort knob
+// (GLM, Kimi, MiniMax, Volcengine reasoning models).
+export const THINKING_TOGGLE_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking",
+			enum: ["none", "on"],
+			enumItemLabels: ["None", "On"],
+			enumDescriptions: ["No reasoning", "Reasoning enabled"],
+			default: "on",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// `configurationSchema` is declared on the `chatProvider` proposed API
+// (`vscode.proposed.chatProvider.d.ts`) and is therefore absent from the
+// stable `@types/vscode` definitions we compile against. We extend the
+// stable type via intersection so the field type-checks; VS Code 1.108+
+// already honours `configurationSchema` at runtime, which is why this
+// works without declaring `enabledApiProposals` in package.json today.
+// If a future VS Code release gates this behind the proposed-API opt-in,
+// add `"enabledApiProposals": ["chatProvider"]` alongside `engines` and
+// note the dependency in the README.
+export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
+	readonly configurationSchema?:
+		| typeof THINKING_EFFORT_SCHEMA
+		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_TOGGLE_SCHEMA;
+};
+
+export type ModelConfigurationOptions =
+	vscode.ProvideLanguageModelChatResponseOptions & {
+		readonly modelConfiguration?: Record<string, unknown>;
+	};
 
 export const DEFAULT_CONTEXT_LENGTH = 131072;
 
@@ -142,8 +221,9 @@ export interface ChatOptions {
 
 export function toLanguageModelChatInformation(
 	model: ModelInfo,
-): vscode.LanguageModelChatInformation {
-	return {
+	vendorId?: string,
+): ModelPickerChatInformation {
+	const base: ModelPickerChatInformation = {
 		id: model.id,
 		name: model.name,
 		family: model.family,
@@ -154,6 +234,19 @@ export function toLanguageModelChatInformation(
 		maxOutputTokens: model.maxOutputTokens,
 		capabilities: model.capabilities,
 	};
+	if (!model.thinking) return base;
+	let schema:
+		| typeof THINKING_EFFORT_SCHEMA
+		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_TOGGLE_SCHEMA;
+	if (!model.thinkingEffortSupport) {
+		schema = THINKING_TOGGLE_SCHEMA;
+	} else if (vendorId === "deepseek") {
+		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
+	} else {
+		schema = THINKING_EFFORT_SCHEMA;
+	}
+	return { ...base, configurationSchema: schema };
 }
 
 /**

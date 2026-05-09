@@ -60,22 +60,8 @@ async function runConnectionTest(): Promise<void> {
 	}
 }
 
-// ─── Set Thinking Effort Command ─────────────────────────────────────────────
+// ─── Status Bar Items ────────────────────────────────────────────────────────
 
-const THINKING_EFFORT_OPTIONS = [
-	{ label: "$(zap) Low", description: "快速响应", value: "low" },
-	{ label: "$(symbol-event) Medium", description: "平衡模式", value: "medium" },
-	{ label: "$(flame) High", description: "深度推理", value: "high" },
-] as const;
-
-const EFFORT_ICONS: Record<string, string> = {
-	low: "$(zap)",
-	medium: "$(symbol-event)",
-	high: "$(flame)",
-};
-
-let thinkingEffortStatusBar: vscode.StatusBarItem;
-let enableThinkingStatusBar: vscode.StatusBarItem;
 let contextLengthStatusBar: vscode.StatusBarItem;
 
 const CONTEXT_LENGTH_OPTIONS: {
@@ -110,42 +96,10 @@ const CONTEXT_LENGTH_ICONS: Record<string, string> = {
 	custom: "$(edit)",
 };
 
-const ENABLE_THINKING_OPTIONS = [
-	{ label: "$(light-bulb) Auto", description: "根据模型默认设置", value: "auto" },
-	{ label: "$(check) Always", description: "强制开启思考模式", value: "always" },
-	{ label: "$(close) Never", description: "禁用思考模式", value: "never" },
-] as const;
-
-const ENABLE_THINKING_ICONS: Record<string, string> = {
-	auto: "$(light-bulb)",
-	always: "$(check)",
-	never: "$(close)",
-};
-
-const ENABLE_THINKING_LABELS: Record<string, string> = {
-	auto: "Auto",
-	always: "On",
-	never: "Off",
-};
-
 function updateStatusBar(): void {
 	const config = vscode.workspace.getConfiguration("omniCopilot");
-	const effort = config.get<string>("thinkingEffort", "medium");
-	const enableThinking = config.get<string>("enableThinking", "auto");
 	const contextLength = config.get<string>("contextLength", "default");
 
-	// Effort status bar
-	const effortIcon = EFFORT_ICONS[effort] || "$(symbol-event)";
-	thinkingEffortStatusBar.text = `${effortIcon} ${effort}`;
-	thinkingEffortStatusBar.tooltip = `Thinking Effort: ${effort}\nClick to change`;
-
-	// Enable thinking status bar
-	const thinkingIcon = ENABLE_THINKING_ICONS[enableThinking] || "$(light-bulb)";
-	const thinkingLabel = ENABLE_THINKING_LABELS[enableThinking] || enableThinking;
-	enableThinkingStatusBar.text = `${thinkingIcon} Thinking: ${thinkingLabel}`;
-	enableThinkingStatusBar.tooltip = `Thinking Mode: ${enableThinking}\nClick to change`;
-
-	// Context length status bar
 	const ctxIcon = CONTEXT_LENGTH_ICONS[contextLength] || "$(history)";
 	let ctxDisplay = contextLength;
 	if (contextLength === "custom") {
@@ -157,42 +111,6 @@ function updateStatusBar(): void {
 	}
 	contextLengthStatusBar.text = `${ctxIcon} Input: ${ctxDisplay}`;
 	contextLengthStatusBar.tooltip = `Max Input Context Length: ${ctxDisplay}\nClick to change`;
-}
-
-async function setThinkingEffort(): Promise<void> {
-	const config = vscode.workspace.getConfiguration("omniCopilot");
-	const current = config.get<string>("thinkingEffort", "medium");
-
-	const items = THINKING_EFFORT_OPTIONS.map((opt) => ({
-		...opt,
-		picked: opt.value === current,
-	}));
-
-	const picked = await vscode.window.showQuickPick(items, {
-		placeHolder: `Current: ${current} — Select thinking effort level`,
-	});
-	if (!picked) return;
-
-	await config.update("thinkingEffort", picked.value, vscode.ConfigurationTarget.Global);
-	updateStatusBar();
-}
-
-async function toggleThinking(): Promise<void> {
-	const config = vscode.workspace.getConfiguration("omniCopilot");
-	const current = config.get<string>("enableThinking", "auto");
-
-	const items = ENABLE_THINKING_OPTIONS.map((opt) => ({
-		...opt,
-		picked: opt.value === current,
-	}));
-
-	const picked = await vscode.window.showQuickPick(items, {
-		placeHolder: `Current: ${current} — Select thinking mode`,
-	});
-	if (!picked) return;
-
-	await config.update("enableThinking", picked.value, vscode.ConfigurationTarget.Global);
-	updateStatusBar();
 }
 
 // ─── Set Context Length Command ──────────────────────────────────────────────
@@ -357,40 +275,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"omniCopilot.setThinkingEffort",
-			setThinkingEffort,
-		),
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			"omniCopilot.toggleThinking",
-			toggleThinking,
-		),
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
 			"omniCopilot.setContextLength",
 			setContextLength,
 		),
 	);
-
-	// Status bar: enable thinking indicator (left)
-	enableThinkingStatusBar = vscode.window.createStatusBarItem(
-		vscode.StatusBarAlignment.Right,
-		52,
-	);
-	enableThinkingStatusBar.command = "omniCopilot.toggleThinking";
-	context.subscriptions.push(enableThinkingStatusBar);
-
-	// Status bar: thinking effort indicator (right of thinking toggle)
-	thinkingEffortStatusBar = vscode.window.createStatusBarItem(
-		vscode.StatusBarAlignment.Right,
-		51,
-	);
-	thinkingEffortStatusBar.command = "omniCopilot.setThinkingEffort";
-	context.subscriptions.push(thinkingEffortStatusBar);
 
 	// Status bar: context length indicator
 	contextLengthStatusBar = vscode.window.createStatusBarItem(
@@ -401,16 +289,12 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(contextLengthStatusBar);
 
 	updateStatusBar();
-	enableThinkingStatusBar.show();
-	thinkingEffortStatusBar.show();
 	contextLengthStatusBar.show();
 
 	// Update status bar on configuration change
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (
-				e.affectsConfiguration("omniCopilot.thinkingEffort") ||
-				e.affectsConfiguration("omniCopilot.enableThinking") ||
 				e.affectsConfiguration("omniCopilot.contextLength") ||
 				e.affectsConfiguration("omniCopilot.customContextLength")
 			) {

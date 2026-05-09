@@ -144,62 +144,101 @@ export class OpenAICompatibleClient {
 			body.tools = options.tools;
 		}
 
-		// Thinking / reasoning support — vendor-specific parameters
-		if (options?.vendorId === "moonshot") {
-			// Kimi always requires thinking object
-			body.thinking = { type: options?.thinking ? "enabled" : "disabled" };
-		} else if (options?.thinking) {
-			this.applyThinkingParams(body, options.vendorId, options.thinkingEffort);
-		}
+		// Thinking / reasoning support — vendor-specific parameters.
+		// Always called: applyThinkingParams handles both enable and disable cases.
+		this.applyThinkingParams(
+			body,
+			options?.vendorId,
+			options?.thinking ?? false,
+			options?.thinkingEffort,
+		);
 
 		return JSON.stringify(body);
 	}
 
+	/**
+	 * Map (thinking, effort) to vendor-specific request body fields.
+	 *
+	 * - `thinking=false` → user picked "None" (or model has no thinking support).
+	 *   Most vendors omit thinking fields entirely; deepseek/moonshot send an
+	 *   explicit disable signal where the API expects one.
+	 * - `thinking=true, effort=undefined` → "On" (vendor has no effort knob).
+	 * - `thinking=true, effort=low|medium|high` → fine-grained reasoning.
+	 */
 	private applyThinkingParams(
 		body: Record<string, unknown>,
-		vendorId?: string,
-		effort?: ThinkingEffort,
+		vendorId: string | undefined,
+		thinking: boolean,
+		effort: ThinkingEffort | undefined,
 	): void {
 		switch (vendorId) {
 			case "deepseek":
-				// DeepSeek Reasoner uses reasoning_effort parameter
-				if (effort) {
-					body.reasoning_effort = effort;
+				// DeepSeek V4 only accepts reasoning_effort = "high" | "max".
+				// The picker schema for DeepSeek is None/High/Max; any legacy
+				// low/medium value (from a programmatic caller) is coerced to
+				// "high" with a warning.
+				//
+				// When "None" is picked we MUST explicitly disable thinking:
+				// DeepSeek V4 defaults thinking ON, so merely omitting
+				// reasoning_effort still spends reasoning tokens (user pays
+				// for output we then strip client-side).
+				if (thinking) {
+					if (effort && effort !== "high" && effort !== "max") {
+						console.warn(
+							`[OmniCopilot] DeepSeek does not support reasoning_effort="${effort}"; coerced to "high".`,
+						);
+					}
+					body.reasoning_effort = effort === "max" ? "max" : "high";
+				} else {
+					body.thinking = { type: "disabled" };
 				}
 				break;
 
 			case "qwen":
-				// Qwen uses enable_thinking + thinking_budget (token counts).
-				// Values sourced from Alibaba DashScope docs; units are tokens.
-				// low=1024 (fast/cheap), medium=4096 (balanced), high=16384 (deep reasoning)
-				body.enable_thinking = true;
-				if (effort) {
-					const THINKING_BUDGET: Record<ThinkingEffort, number> = {
-						low: 1024,
-						medium: 4096,
-						high: 16384,
-					};
-					body.thinking_budget = THINKING_BUDGET[effort];
+				// Qwen uses enable_thinking + optional thinking_budget (tokens).
+				// Budget values from Alibaba DashScope docs.
+				if (thinking) {
+					body.enable_thinking = true;
+					if (effort) {
+						const THINKING_BUDGET: Record<ThinkingEffort, number> = {
+							low: 1024,
+							medium: 4096,
+							high: 16384,
+							max: 16384,
+						};
+						body.thinking_budget = THINKING_BUDGET[effort];
+					}
+				} else {
+					body.enable_thinking = false;
 				}
 				break;
 
+			case "moonshot":
+				// Kimi requires thinking object on every request, enabled or disabled.
+				body.thinking = { type: thinking ? "enabled" : "disabled" };
+				break;
+
 			case "volcengine":
-				// Volcengine uses thinking object { type: "enabled" }
-				body.thinking = { type: "enabled" };
+				// Volcengine accepts thinking object only when enabled.
+				if (thinking) {
+					body.thinking = { type: "enabled" };
+				}
 				break;
 
 			case "zhipu":
-				// Zhipu/GLM: no special thinking params needed
+				// Zhipu/GLM: no API knob — model decides internally.
 				break;
 
 			case "minimax":
-				// MiniMax M2 is an interleaved thinking model — always outputs <think> tags
-				// in content, no API parameter needed to enable thinking
+				// MiniMax M2 is interleaved thinking; <think> tags appear in content
+				// regardless. No API parameter to toggle.
 				break;
 
 			default:
-				// Generic: use thinking object (compatible with many providers)
-				body.thinking = { type: "enabled" };
+				// Generic OpenAI-compatible: only send thinking when enabled.
+				if (thinking) {
+					body.thinking = { type: "enabled" };
+				}
 				break;
 		}
 	}
