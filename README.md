@@ -8,7 +8,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 
 | Provider | Vendor ID | Models |
 |----------|-----------|--------|
-| DeepSeek | `deepseek` | deepseek-chat, deepseek-reasoner |
+| DeepSeek | `deepseek` | deepseek-v4-flash, deepseek-v4-pro |
 | Bigmodel Plan (GLM) | `zhipu` | GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air |
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | Qwen | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
@@ -35,17 +35,20 @@ The following platforms have been tested and confirmed working:
 - [ ] Support MiniMax International
 - [ ] Support GLM International
 - [ ] Support SiliconFlow International
-- [ ] Verify thinking effort levels (low/medium/high) actually take effect across providers
+- [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
 - [ ] To be continued…
 
 ## Features
 
 - **Multiple Providers**: Access models from major LLM platforms plus any OpenAI-compatible endpoint
-- **Thinking Support**: Models with reasoning capabilities show collapsible thinking sections
+- **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
+  - **DeepSeek V4** menu: None / High / Max (matches the V4 API's reasoning_effort domain)
+  - 4-level menu (None / Low / Medium / High) for Qwen reasoning models
+  - 2-level menu (None / On) for models that only expose a thinking on/off knob (GLM, Kimi, MiniMax, Volcengine reasoning models)
+- **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Vision Support**: Vision-capable models (kimi-for-coding, qwen3.6-plus) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 - **Custom Model IDs**: Add custom model IDs to any provider via Settings or command palette
-- **Configurable Thinking Effort**: Low / Medium / High thinking effort levels
 
 ## Usage
 
@@ -63,10 +66,12 @@ You can add custom model IDs to any provider:
 
 ## Configuration
 
+Thinking effort is now selected **per model, per turn** via the Copilot model picker's hover menu — there is no global thinking-effort setting.
+
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `omniCopilot.enableThinking` | Thinking mode (auto/always/never) | `auto` |
-| `omniCopilot.thinkingEffort` | Thinking effort level (low/medium/high) | `medium` |
+| `omniCopilot.contextLength` | Max input context length (4K–1M presets, or `custom`) | `default` |
+| `omniCopilot.customContextLength` | Custom max input context (used when `contextLength` is `custom`) | `131072` |
 | `omniCopilot.enableVision` | Enable vision for supported models | `true` |
 | `omniCopilot.<vendor>.customModelIds` | Custom model IDs for each vendor | `[]` |
 
@@ -145,6 +150,21 @@ Contributions are welcome! Here's how you can help:
 - GitHub Copilot extension
 
 ## Changelog
+
+### 0.3.0 — 2026-05-08
+
+- **Per-model Thinking Effort picker** in Copilot model selector — hover a thinking-capable model and choose effort for the next turn, no global setting needed
+  - **DeepSeek V4** menu: None / High / Max (matches the V4 API's `reasoning_effort` domain)
+  - 4-level menu (None / Low / Medium / High) for Qwen reasoning models
+  - 2-level menu (None / On) for GLM, Kimi, MiniMax, and Volcengine reasoning models
+- **DeepSeek model list updated** from `deepseek-chat` / `deepseek-reasoner` to `deepseek-v4-flash` / `deepseek-v4-pro` (1M input, 384K output, both reasoning-capable)
+- **Removed** global `omniCopilot.enableThinking` and `omniCopilot.thinkingEffort` settings, the matching status-bar items, and `OmniCopilot: Toggle Thinking Mode` / `Set Thinking Effort` commands — picker covers all cases now
+- Vendor-specific reasoning mapping reworked to handle the full None / On / Low / Medium / High / Max space:
+  - DeepSeek: `reasoning_effort: high|max` when enabled, omitted when None
+  - Qwen: `enable_thinking` + `thinking_budget` (1024 / 4096 / 16384 tokens; max → 16384)
+  - Moonshot: explicit `thinking: { type: "enabled"|"disabled" }`
+  - Volcengine: `thinking: { type: "enabled" }` only when enabled
+  - Zhipu / MiniMax: no API knob, picker only controls output stripping
 
 ### 0.2.0 — 2026-04-30
 

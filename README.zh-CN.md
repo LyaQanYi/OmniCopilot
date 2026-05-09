@@ -8,7 +8,7 @@
 
 | 提供方 | Vendor ID | 模型 |
 |--------|-----------|------|
-| DeepSeek | `deepseek` | deepseek-chat, deepseek-reasoner |
+| DeepSeek | `deepseek` | deepseek-v4-flash, deepseek-v4-pro |
 | Bigmodel Plan (GLM) | `zhipu` | GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air |
 | Moonshot (Kimi) | `moonshot` | kimi-for-coding |
 | 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
@@ -35,17 +35,20 @@
 - [ ] 支持 MiniMax 国际版
 - [ ] 支持 GLM 国际版
 - [ ] 支持硅基流动国际版
-- [ ] 验证思考力度（低 / 中 / 高）配置在各提供方上是否真实生效
+- [ ] 验证思考力度（DeepSeek None/High/Max；其他 None/Low/Medium/High 或 None/On）在各提供方上是否真实生效
 - [ ] 未完待续……
 
 ## 功能
 
 - **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
-- **思考模式**：支持推理能力的模型会展示可折叠的思考过程
+- **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
+  - **DeepSeek V4** 专属菜单：None / High / Max（对齐 V4 API 的 reasoning_effort 取值）
+  - 4 档菜单（None / Low / Medium / High）：通义千问推理款
+  - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（GLM、Kimi、MiniMax、火山引擎推理款）
+- **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
 - **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 - **自定义模型 ID**：可通过设置或命令面板为任意提供方添加自定义模型 ID
-- **可配置思考力度**：低 / 中 / 高三档思考力度
 
 ## 使用方法
 
@@ -63,10 +66,12 @@
 
 ## 配置项
 
+思考力度现已改为**每模型、每轮**通过 Copilot 模型选择器 hover 出的菜单当场选择，不再有全局思考力度设置。
+
 | 设置 | 说明 | 默认值 |
 |------|------|--------|
-| `omniCopilot.enableThinking` | 思考模式（auto/always/never） | `auto` |
-| `omniCopilot.thinkingEffort` | 思考力度（low/medium/high） | `medium` |
+| `omniCopilot.contextLength` | 最大输入上下文长度（4K–1M 预设，或 `custom`） | `default` |
+| `omniCopilot.customContextLength` | 自定义最大输入上下文（仅当 `contextLength` 为 `custom` 时生效） | `131072` |
 | `omniCopilot.enableVision` | 启用视觉/图片输入 | `true` |
 | `omniCopilot.<vendor>.customModelIds` | 各提供方的自定义模型 ID | `[]` |
 
@@ -145,6 +150,21 @@ src/
 - GitHub Copilot 扩展
 
 ## 更新日志
+
+### 0.3.0 — 2026-05-08
+
+- **Copilot 模型选择器二级菜单**：hover 任一支持思考的模型，可就地为本轮对话选思考等级，无需全局设置
+  - **DeepSeek V4** 专属菜单：None / High / Max（对齐 V4 API 的 `reasoning_effort` 取值）
+  - 4 档菜单（None / Low / Medium / High）：通义千问推理款
+  - 2 档菜单（None / On）：GLM、Kimi、MiniMax、火山引擎推理款
+- **DeepSeek 模型表更新**：`deepseek-chat` / `deepseek-reasoner` → `deepseek-v4-flash` / `deepseek-v4-pro`（1M 输入、384K 输出，均支持推理）
+- **彻底移除**全局 `omniCopilot.enableThinking` 与 `omniCopilot.thinkingEffort` 设置、对应状态栏项、`OmniCopilot: Toggle Thinking Mode` / `Set Thinking Effort` 命令——picker 已覆盖所有用法
+- vendor 推理参数映射重做，覆盖 None / On / Low / Medium / High / Max 全集：
+  - DeepSeek：启用时发 `reasoning_effort: high|max`，None 时不发
+  - 通义千问：`enable_thinking` + `thinking_budget`（1024 / 4096 / 16384 tokens；max → 16384）
+  - Moonshot：显式 `thinking: { type: "enabled"|"disabled" }`
+  - 火山引擎：仅启用时发 `thinking: { type: "enabled" }`
+  - 智谱 / MiniMax：无 API 旋钮，picker 仅控制是否剥离输出中的思考标签
 
 ### 0.2.0 — 2026-04-30
 

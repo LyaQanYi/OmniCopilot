@@ -2,7 +2,7 @@
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan, Custom) in GitHub Copilot Chat as language model providers.",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -132,14 +132,6 @@
 				"title": "OmniCopilot: Add Custom Model ID"
 			},
 			{
-				"command": "omniCopilot.setThinkingEffort",
-				"title": "OmniCopilot: Set Thinking Effort"
-			},
-			{
-				"command": "omniCopilot.toggleThinking",
-				"title": "OmniCopilot: Toggle Thinking Mode"
-			},
-			{
 				"command": "omniCopilot.setContextLength",
 				"title": "OmniCopilot: Set Max Input Context Length"
 			}
@@ -147,36 +139,6 @@
 		"configuration": {
 			"title": "OmniCopilot",
 			"properties": {
-				"omniCopilot.enableThinking": {
-					"type": "string",
-					"default": "auto",
-					"enum": [
-						"auto",
-						"always",
-						"never"
-					],
-					"enumDescriptions": [
-						"Auto — use each model's default thinking setting",
-						"Always — force thinking on for all models that support it",
-						"Never — disable thinking for all models"
-					],
-					"description": "Control whether thinking/reasoning mode is enabled"
-				},
-				"omniCopilot.thinkingEffort": {
-					"type": "string",
-					"default": "medium",
-					"enum": [
-						"low",
-						"medium",
-						"high"
-					],
-					"enumDescriptions": [
-						"Low thinking effort — faster responses",
-						"Medium thinking effort — balanced",
-						"High thinking effort — deeper reasoning"
-					],
-					"description": "Default thinking effort level for models that support reasoning"
-				},
 				"omniCopilot.contextLength": {
 					"type": "string",
 					"default": "default",

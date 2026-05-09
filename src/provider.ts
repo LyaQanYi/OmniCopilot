@@ -8,6 +8,7 @@ import type {
 	OpenAIContentPart,
 	ThinkingEffort,
 	ContextLength,
+	ModelConfigurationOptions,
 } from "./types.js";
 import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH } from "./types.js";
 
@@ -221,26 +222,37 @@ function emitToolCalls(
 	builders.clear();
 }
 
-function resolveThinking(modelDefault: boolean): boolean {
-	const config = vscode.workspace.getConfiguration("omniCopilot");
-	const setting = config.get<string>("enableThinking", "auto");
-	switch (setting) {
-		case "always":
-			return true;
-		case "never":
-			return false;
-		default:
-			return modelDefault;
-	}
-}
+/**
+ * Resolve the (thinking, effort) pair for a single chat request.
+ *
+ * Priority order:
+ *   1. The picker's `modelConfiguration.reasoningEffort` (set per-turn via the
+ *      Copilot model picker's secondary menu — see THINKING_EFFORT_SCHEMA /
+ *      THINKING_TOGGLE_SCHEMA).
+ *   2. Legacy `modelOptions.thinkingBudget` (kept for callers that bypass the
+ *      picker, e.g. older programmatic clients).
+ *   3. Model default — `thinking: true` with effort=`medium` for effort-capable
+ *      models, otherwise `thinking: true` with no effort knob.
+ */
+function resolveRequestedEffort(
+	options: ModelConfigurationOptions,
+	modelDef: ModelInfo | undefined,
+): { thinking: boolean; effort: ThinkingEffort | undefined } {
+	const raw =
+		(options.modelConfiguration?.reasoningEffort as unknown) ??
+		(options.modelOptions?.thinkingBudget as unknown);
 
-function getThinkingEffort(): ThinkingEffort {
-	const config = vscode.workspace.getConfiguration("omniCopilot");
-	const effort = config.get<string>("thinkingEffort", "medium");
-	if (effort === "low" || effort === "medium" || effort === "high") {
-		return effort;
+	if (raw === "none") return { thinking: false, effort: undefined };
+	if (raw === "on") return { thinking: true, effort: undefined };
+	if (raw === "low" || raw === "medium" || raw === "high" || raw === "max") {
+		return { thinking: true, effort: raw };
 	}
-	return "medium";
+
+	if (!(modelDef?.thinking ?? false)) return { thinking: false, effort: undefined };
+	return {
+		thinking: true,
+		effort: modelDef?.thinkingEffortSupport ? "medium" : undefined,
+	};
 }
 
 function isVisionEnabled(): boolean {
@@ -415,7 +427,7 @@ export class MultiModelChatProvider
 		// Preset models
 		const presetIds = new Set(this.vendorConfig.models.map((m) => m.id));
 		const result = this.vendorConfig.models.map((m) => {
-			const info = toLanguageModelChatInformation(m);
+			const info = toLanguageModelChatInformation(m, this.vendorConfig.vendorId);
 			return {
 				...info,
 				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
@@ -433,6 +445,7 @@ export class MultiModelChatProvider
 
 			const info = toLanguageModelChatInformation(
 				this.createCustomModelInfo(trimmed),
+				this.vendorConfig.vendorId,
 			);
 			result.push({
 				...info,
@@ -459,26 +472,25 @@ export class MultiModelChatProvider
 		const client = new OpenAICompatibleClient(this.apiKey);
 		const modelDef = this.findModelDef(model.id);
 		const baseUrl = modelDef?.baseUrl ?? this.vendorConfig.defaultBaseUrl;
-		// Only allow thinking when both vendor and model support it
+
+		// Resolve thinking + effort: per-turn picker value first, then global default.
+		// Vendor-incapable models force thinking=false regardless of picker choice.
+		const { thinking: requestedThinking, effort: requestedEffort } =
+			resolveRequestedEffort(options as ModelConfigurationOptions, modelDef);
 		const modelSupportsThinking =
 			this.vendorConfig.thinkingCapable && (modelDef?.thinking ?? false);
-		const thinking = modelSupportsThinking
-			? resolveThinking(true)
-			: false;
+		const thinking = modelSupportsThinking ? requestedThinking : false;
+		const thinkingEffort =
+			thinking && (modelDef?.thinkingEffortSupport ?? false)
+				? requestedEffort
+				: undefined;
+
 		const supportsVision =
 			isVisionEnabled() && (modelDef?.capabilities.imageInput ?? false);
 
 		let apiMessages = this.convertMessages(messages, supportsVision);
 		const apiTools = this.convertTools(options.tools);
 		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
-
-		// Read thinkingBudget from modelOptions (VS Code may send this in future)
-		const modelThinkingBudget = options.modelOptions?.thinkingBudget as string | undefined;
-		const thinkingEffort =
-			thinking && (modelDef?.thinkingEffortSupport ?? false)
-				? (modelThinkingBudget as ThinkingEffort | undefined) ||
-					getThinkingEffort()
-				: undefined;
 
 		// Vendor-specific extra headers (Kimi requires special headers)
 		const extraHeaders =
@@ -742,11 +754,10 @@ export class CustomOpenAIProvider
 		const apiTools = this.convertTools(options.tools);
 		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
 
-		// Custom provider doesn't send thinking params to API but should
-		// respect the global setting when stripping <think> tags from output.
-		// Default to showing thinking (true) so "auto" preserves existing
-		// behaviour; only "never" will strip.
-		const showThinking = resolveThinking(true);
+		// Custom provider doesn't send thinking params to API. <think> tags in
+		// the output stream are passed through (rendered as ThinkingPart when
+		// the proposed API is available, otherwise as text).
+		const showThinking = true;
 
 		try {
 			const stream = client.streamChat(
