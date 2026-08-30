@@ -34,28 +34,44 @@ async function runConnectionTest(): Promise<void> {
 	if (!key) return;
 
 	const vendor = getVendorConfig(picked.vendorId);
-	const firstModel = vendor?.models[0];
-	if (!firstModel) {
+	if (!vendor || vendor.models.length === 0) {
 		vscode.window.showErrorMessage("No models available for this vendor.");
 		return;
 	}
+
+	// Let the user pick the probe model — the first preset may not be
+	// available on every subscription tier (e.g. Kimi Code's k3 requires
+	// Allegretto+).
+	const modelItems = vendor.models.map((m, i) => ({
+		label: m.id,
+		description: m.name,
+		picked: i === 0,
+	}));
+	const modelPick = await vscode.window.showQuickPick(modelItems, {
+		placeHolder: "Select the model to probe with",
+	});
+	if (!modelPick) return;
+	const probeModel = vendor.models.find((m) => m.id === modelPick.label);
+	if (!probeModel) return;
 
 	const client = new OpenAICompatibleClient(key.trim());
 	const extraHeaders =
 		picked.vendorId === "moonshot" ? getKimiExtraHeaders() : undefined;
 	try {
 		await client.chat(
-			firstModel.id,
+			probeModel.id,
 			[{ role: "user", content: "Ping" }],
-			firstModel.baseUrl,
+			probeModel.baseUrl,
 			{
 				// Vendor context is required for correct serialization (Kimi
 				// demands a thinking object, DeepSeek/MiniMax accept their
-				// vendor knobs) and 2048 tokens leave room for models that
-				// cannot disable thinking.
+				// vendor knobs); thinking stays on because always-thinking
+				// models reject an explicit disable, and 2048 tokens leave
+				// room for the reasoning pass.
 				maxTokens: 2048,
 				extraHeaders,
 				vendorId: picked.vendorId,
+				thinking: true,
 			},
 		);
 		vscode.window.showInformationMessage(
