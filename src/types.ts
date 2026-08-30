@@ -11,6 +11,8 @@ export interface ModelInfo {
 	baseUrl: string;
 	thinking: boolean;
 	thinkingEffortSupport: boolean;
+	/** Thinking permanently on: no picker menu, "None" is not available. */
+	thinkingLocked?: boolean;
 	capabilities: {
 		imageInput: boolean;
 		toolCalling: boolean;
@@ -21,7 +23,6 @@ export interface VendorConfig {
 	vendorId: string;
 	displayName: string;
 	defaultBaseUrl: string;
-	settingsKey: string;
 	models: ModelInfo[];
 	/** Whether this vendor's API supports controllable thinking mode */
 	thinkingCapable: boolean;
@@ -130,16 +131,44 @@ export const THINKING_EFFORT_SCHEMA = {
 	},
 } as const;
 
-// DeepSeek-specific menu — V4 API exposes only "high" and "max" plus none.
-// Mirrors DeepSeekforCopilot's UX one-to-one.
+// Three-level effort menu (no "None") for models whose thinking is always
+// on and cannot be disabled server-side: Kimi K3 (k3 / k3-256k / kimi-k3)
+// and GLM-5.3 / GLM-5.3-Flash. Effort maps to top-level reasoning_effort =
+// "low" | "high" | "max" (Code endpoint default: high).
+export const ALWAYS_THINKING_EFFORT_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["low", "high", "max"],
+			enumItemLabels: ["Low", "High", "Max"],
+			enumDescriptions: [
+				"Faster responses",
+				"Balanced",
+				"Deepest reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// DeepSeek V4 menu — the one effort-capable family where "None" genuinely
+// disables thinking (an explicit thinking:{type:"disabled"} is sent), so a
+// four-level menu including None is honest here.
 export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
 	properties: {
 		reasoningEffort: {
 			type: "string",
 			title: "Thinking Effort",
-			enum: ["none", "high", "max"],
-			enumItemLabels: ["None", "High", "Max"],
-			enumDescriptions: ["No reasoning", "Balanced", "Max reasoning"],
+			enum: ["none", "low", "high", "max"],
+			enumItemLabels: ["None", "Low", "High", "Max"],
+			enumDescriptions: [
+				"Disables thinking (sent explicitly to the API)",
+				"Lighter reasoning",
+				"Enhanced reasoning (API default)",
+				"Deepest reasoning",
+			],
 			default: "high",
 			group: "navigation",
 		},
@@ -147,7 +176,7 @@ export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
 } as const;
 
 // 2-level menu for models that support thinking but no effort knob
-// (GLM, Kimi, MiniMax, Volcengine reasoning models).
+// (pre-5.3 GLM, Kimi, MiniMax, Volcengine reasoning models).
 export const THINKING_TOGGLE_SCHEMA = {
 	properties: {
 		reasoningEffort: {
@@ -175,6 +204,7 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 	readonly configurationSchema?:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 };
 
@@ -235,12 +265,22 @@ export function toLanguageModelChatInformation(
 		capabilities: model.capabilities,
 	};
 	if (!model.thinking) return base;
+	if (model.thinkingLocked) return base;
 	let schema:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 	if (!model.thinkingEffortSupport) {
 		schema = THINKING_TOGGLE_SCHEMA;
+	} else if (
+		model.id === "k3" ||
+		model.id === "k3-256k" ||
+		model.id === "kimi-k3" ||
+		model.id === "glm-5.3" ||
+		model.id === "glm-5.3-flash"
+	) {
+		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
 	} else if (vendorId === "deepseek") {
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else {

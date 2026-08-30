@@ -138,10 +138,24 @@ export class OpenAICompatibleClient {
 		};
 
 		if (options?.maxTokens !== undefined) {
-			body.max_tokens = options.maxTokens;
+			// MiniMax deprecates max_tokens in favor of max_completion_tokens
+			// (per the MiniMax API reference; the China-facing guides still
+			// only mention max_tokens, but the platform tolerates unknown
+			// fields).
+			if (options.vendorId === "minimax") {
+				body.max_completion_tokens = options.maxTokens;
+			} else {
+				body.max_tokens = options.maxTokens;
+			}
 		}
 		if (options?.tools !== undefined) {
 			body.tools = options.tools;
+		}
+
+		// Zhipu only streams tool-call deltas when tool_stream is enabled
+		// alongside stream:true (see the GLM-5.3 migration guide).
+		if (options?.vendorId === "glm-coding-plan-cn" && stream && options.tools?.length) {
+			body.tool_stream = true;
 		}
 
 		// Thinking / reasoning support — vendor-specific parameters.
@@ -149,6 +163,7 @@ export class OpenAICompatibleClient {
 		this.applyThinkingParams(
 			body,
 			options?.vendorId,
+			model,
 			options?.thinking ?? false,
 			options?.thinkingEffort,
 		);
@@ -168,71 +183,143 @@ export class OpenAICompatibleClient {
 	private applyThinkingParams(
 		body: Record<string, unknown>,
 		vendorId: string | undefined,
+		model: string,
 		thinking: boolean,
 		effort: ThinkingEffort | undefined,
 	): void {
 		switch (vendorId) {
 			case "deepseek":
-				// DeepSeek V4 only accepts reasoning_effort = "high" | "max".
-				// The picker schema for DeepSeek is None/High/Max; any legacy
-				// low/medium value (from a programmatic caller) is coerced to
-				// "high" with a warning.
-				//
-				// When "None" is picked we MUST explicitly disable thinking:
-				// DeepSeek V4 defaults thinking ON, so merely omitting
-				// reasoning_effort still spends reasoning tokens (user pays
-				// for output we then strip client-side).
+				// V4 defaults thinking ON with effort=high, so picking None
+				// MUST send an explicit disable — merely omitting
+				// reasoning_effort still spends (and bills) reasoning tokens
+				// for output we then strip client-side.
+				// Effort domain: low|medium|high|xhigh|max where medium/xhigh
+				// alias "high"; legacy "medium" maps there too.
+				// deepseek-v4-flash-vision-exp shares the flash thinking mode
+				// exactly (same reasoning_effort domain and disable format).
 				if (thinking) {
-					if (effort && effort !== "high" && effort !== "max") {
-						console.warn(
-							`[OmniCopilot] DeepSeek does not support reasoning_effort="${effort}"; coerced to "high".`,
-						);
-					}
-					body.reasoning_effort = effort === "max" ? "max" : "high";
+					body.reasoning_effort =
+						effort === "max" ? "max" : effort === "low" ? "low" : "high";
 				} else {
 					body.thinking = { type: "disabled" };
 				}
 				break;
 
-			case "qwen":
-				// Qwen uses enable_thinking + optional thinking_budget (tokens).
-				// Budget values from Alibaba DashScope docs.
-				if (thinking) {
-					body.enable_thinking = true;
-					if (effort) {
-						const THINKING_BUDGET: Record<ThinkingEffort, number> = {
-							low: 1024,
-							medium: 4096,
-							high: 16384,
-							max: 16384,
-						};
-						body.thinking_budget = THINKING_BUDGET[effort];
+				case "qwen":
+					// Qwen uses enable_thinking + optional thinking_budget
+					// (tokens, range 1-32768). 3.5/3.6/3.7/3.8 series default
+					// to thinking ON, qwen3-max defaults OFF; history
+					// reasoning_content is ignored unless preserve_thinking is
+					// set (not sent — a quality/cost tradeoff).
+					//
+					// DashScope-hosted GLM/DeepSeek models take the
+					// vendor-native reasoning_effort knob instead of
+					// thinking_budget: GLM-5.2 accepts low|medium|high|max;
+					// DeepSeek V4 accepts low|high|max where low is
+					// unsupported on the non-snapshot v4-pro and medium
+					// aliases to high (default high).
+					if (
+						thinking &&
+						effort &&
+						(model === "glm-5.2" ||
+							model === "deepseek-v4-pro" ||
+							model === "deepseek-v4-pro-0813" ||
+							model === "deepseek-v4-flash-0731")
+					) {
+						if (model === "glm-5.2") {
+							body.reasoning_effort = effort;
+						} else if (
+							effort === "max" ||
+							(effort === "low" && model !== "deepseek-v4-pro")
+						) {
+							body.reasoning_effort = effort;
+						} else {
+							body.reasoning_effort = "high";
+						}
+						break;
 					}
-				} else {
-					body.enable_thinking = false;
-				}
-				break;
+					if (thinking) {
+						body.enable_thinking = true;
+						if (effort) {
+							// DashScope thinking_budget range: 1-32768
+							// (console default 4000); "max" uses the full
+							// budget.
+							const THINKING_BUDGET: Record<ThinkingEffort, number> = {
+								low: 1024,
+								medium: 4096,
+								high: 16384,
+								max: 32768,
+							};
+							body.thinking_budget = THINKING_BUDGET[effort];
+						}
+					} else {
+						body.enable_thinking = false;
+					}
+					break;
 
 			case "moonshot":
 				// Kimi requires thinking object on every request, enabled or disabled.
 				body.thinking = { type: thinking ? "enabled" : "disabled" };
-				break;
-
-			case "volcengine":
-				// Volcengine accepts thinking object only when enabled.
-				if (thinking) {
-					body.thinking = { type: "enabled" };
+				// k3 / k3-256k take top-level reasoning_effort (low | high | max,
+				// endpoint default high); "medium" (legacy callers) coerces to
+				// "high" per the endpoint's own mapping. Other Code Plan models
+				// do not support effort.
+				if ((model === "k3" || model === "k3-256k") && thinking && effort) {
+					body.reasoning_effort = effort === "medium" ? "high" : effort;
 				}
 				break;
 
-			case "zhipu":
-				// Zhipu/GLM: no API knob — model decides internally.
+			case "moonshot-open":
+				// Kimi Open Platform (api.moonshot.cn/v1) — per-model thinking
+				// domains (see the platform's "thinking models" doc):
+				// - kimi-k3: always thinks; top-level reasoning_effort =
+				//   low|high|max; the thinking object must NOT be sent.
+				//   "medium" (legacy callers) coerces to "high" so both K3
+				//   endpoints behave identically.
+				// - kimi-k2.7-code(-highspeed): always thinks; thinking.type
+				//   accepts only "enabled" (sending "disabled" errors), so
+				//   nothing is sent — "None" just strips output client-side.
+				// - kimi-k2.6: thinking on by default; send an explicit
+				//   disable when the user picks None. No reasoning_effort.
+				if (model === "kimi-k3") {
+					if (thinking && effort) {
+						body.reasoning_effort = effort === "medium" ? "high" : effort;
+					}
+				} else if (model === "kimi-k2.6" && !thinking) {
+					body.thinking = { type: "disabled" };
+				}
 				break;
 
-			case "minimax":
-				// MiniMax M2 is interleaved thinking; <think> tags appear in content
-				// regardless. No API parameter to toggle.
+				case "volcengine":
+					// Volcengine takes thinking: {type: "enabled" | "disabled"};
+					// Doubao Seed 2.0/2.1 default thinking ON, so "None" must
+					// send an explicit disable.
+					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					break;
+
+			case "glm-coding-plan-cn":
+				// GLM-5.3 / 5.3-Flash always think — sending
+				// thinking.type:"disabled" errors, so nothing is sent to turn
+				// thinking off ("None" just strips output client-side).
+				// reasoning_effort is low|high|max (API default max).
+				// clear_thinking (preserved thinking) is enabled by default on
+				// the Coding endpoint, so no thinking object is needed at all.
+				if (thinking && effort && effort !== "medium") {
+					body.reasoning_effort = effort;
+				}
 				break;
+
+				case "minimax":
+					// MiniMax takes thinking: {type: "adaptive" | "disabled"}.
+					// M3 can genuinely disable thinking; M2.x models accept
+					// "disabled" but keep thinking on regardless, so they are
+					// marked thinkingLocked upstream and the param is only
+					// sent for M3. Thinking output arrives as interleaved
+					// <think> tags inside content.
+					if (model === "MiniMax-M3") {
+						body.thinking = { type: thinking ? "adaptive" : "disabled" };
+					}
+					break;
 
 			default:
 				// Generic OpenAI-compatible: only send thinking when enabled.

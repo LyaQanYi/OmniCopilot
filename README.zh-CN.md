@@ -8,13 +8,14 @@
 
 | 提供方 | Vendor ID | 模型 |
 |--------|-----------|------|
-| DeepSeek | `deepseek` | deepseek-v4-flash, deepseek-v4-pro |
-| Bigmodel Plan (GLM) | `zhipu` | GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air |
-| Moonshot (Kimi) | `moonshot` | kimi-for-coding |
-| 通义千问 | `qwen` | qwen3.6-plus, qwen3-max, qwen3.5-flash, qwen3-coder-plus |
-| MiniMax | `minimax` | MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| 火山引擎编程计划 | `volcengine` | doubao-seed-2.0-code, doubao-seed-2.0-pro, doubao-seed-2.0-lite, doubao-seed-code, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5 |
-| 自定义 | `custom-openai` | 任意 OpenAI 兼容模型 |
+| DeepSeek | `deepseek` | deepseek-v4-flash, deepseek-v4-pro, deepseek-v4-flash-vision-exp |
+| GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.3, GLM-5.3-Flash |
+| Kimi Code Plan | `moonshot` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
+| Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
+| Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
+| MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
+| 火山引擎编程计划 Coding Plan | `volcengine` | doubao-seed-2.1-turbo, doubao-seed-evolving, doubao-seed-2.0-lite, kimi-k2.7-code, minimax-m3, deepseek-v4-flash, deepseek-v4-pro, glm-5.3, glm-5.3-flash |
+| 火山引擎智能体计划 Agent Plan | `volcengine-agent-plan` | Coding Plan 全部模型，另加 doubao-seed-2.0-mini 与 kimi-k3 |
 
 ## 已测试且可用
 
@@ -22,14 +23,20 @@
 
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
 - **Kimi Code**（Kimi 编程模型）
-- **MiniMax Token Plan 国内版** (`platform.minimaxi.com`)
-- **通义千问 / 阿里百炼平台** (`dashscope.aliyuncs.com`)
-- **智谱编程计划 Bigmodel Plan** (`open.bigmodel.cn` Coding API)
+- **MiniMax Token Plan CN** (`platform.minimaxi.com`)
+- **Qwen Token Plan**（千问AI平台，DashScope 兼容端点）
+- **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API）
+
+> [!NOTE]
+> **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用通常可以成功，但消耗可能按 API 按量计费而非套餐积分。如果你订阅了 Coding Plan，请留意账单。
+
+> [!WARNING]
+> **Qwen Token Plan 使用条款**：Token Plan 的 API Key 仅限在交互式编程/智能体工具（Claude Code、Cursor、Qwen Code、Qoder、OpenClaw 等）中使用——官方文档明确禁止通用 API 调用，并注明违规可能导致订阅暂停或 API Key 被封禁。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
 
 ## 待办事项
 
-- [ ] 测试火山引擎 Plan
-- [ ] 测试 Qwen Coding Plan
+- [ ] 测试火山引擎 Coding Plan / Agent Plan
+- [ ] 测试 Qwen Token Plan
 - [ ] 测试 Kimi 开放平台
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
@@ -42,13 +49,15 @@
 
 - **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
-  - **DeepSeek V4** 专属菜单：None / High / Max（对齐 V4 API 的 reasoning_effort 取值）
+  - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
+  - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort
+  - **GLM-5.3 / GLM-5.3-Flash** 菜单：Low / High / Max——无 None 档，思考始终开启（Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到这两个模型）
   - 4 档菜单（None / Low / Medium / High）：通义千问推理款
-  - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（GLM、Kimi、MiniMax、火山引擎推理款）
+  - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、火山引擎推理款）——MiniMax-M3 的 None 是真关闭思考
+  - 思考锁定的模型不提供菜单：K2.7 Code（Code Plan 的 kimi-for-coding(-highspeed)、开放平台的 kimi-k2.7-code(-highspeed)）与 MiniMax M2.x——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
-- **视觉支持**：支持视觉的模型（kimi-for-coding、qwen3.6-plus）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（deepseek-v4-flash-vision-exp、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
-- **自定义模型 ID**：可通过设置或命令面板为任意提供方添加自定义模型 ID
 
 ## 使用方法
 
@@ -56,13 +65,6 @@
 2. 打开 Copilot Chat → 管理模型 → 添加模型
 3. 选择提供方并输入 API 密钥
 4. 开始与所选模型对话
-
-## 自定义模型 ID
-
-可以为任意提供方添加自定义模型 ID：
-
-- **命令面板**：执行 `OmniCopilot: Add Custom Model ID`
-- **设置**：编辑 settings.json 中的 `omniCopilot.<vendor>.customModelIds` 数组
 
 ## 配置项
 
@@ -73,7 +75,6 @@
 | `omniCopilot.contextLength` | 最大输入上下文长度（4K–1M 预设，或 `custom`） | `default` |
 | `omniCopilot.customContextLength` | 自定义最大输入上下文（仅当 `contextLength` 为 `custom` 时生效） | `131072` |
 | `omniCopilot.enableVision` | 启用视觉/图片输入 | `true` |
-| `omniCopilot.<vendor>.customModelIds` | 各提供方的自定义模型 ID | `[]` |
 
 ## 开发
 
@@ -150,6 +151,19 @@ src/
 - GitHub Copilot 扩展
 
 ## 更新日志
+
+### 0.4.0 — 2026-08-30
+
+预发布版本：全部提供方已逐项对照官方文档核验。**GLM 的 API Key 需要重新填写**（vendor ID 已变更）。
+
+- **更名**：Bigmodel Plan → **GLM Coding Plan CN**（vendor ID 变更为 `glm-coding-plan-cn`）、Qwen → **Qwen Token Plan**、MiniMax → **MiniMax Token Plan CN**
+- **Kimi 拆分**为 Kimi Code Plan（`moonshot`）与 Moonshot 开放平台（`moonshot-open`）：k3、k3-256k、kimi-for-coding(-highspeed)、kimi-k3、kimi-k2.7-code(-highspeed)、kimi-k2.6
+- **火山引擎拆分**为火山引擎 Coding Plan CN（`volcengine`）与 Agent Plan CN（`volcengine-agent-plan`）：Doubao Seed 2.1 Turbo / Seed Evolving / 2.0 Lite（Agent Plan 另有 2.0 Mini 与 Kimi K3），托管 kimi-k2.7-code、minimax-m3、deepseek-v4-flash/pro 与 glm-5.3(-flash)；doubao-seed-2.0-pro、ark-code-latest 及过时的第三方 ID 已移除
+- **新增模型**：deepseek-v4-flash-vision-exp、qwen3.7-max、qwen3.6-flash、glm-5.3 / glm-5.3-flash；各平台模型列表按实际在售清理（GLM Coding 端点仅保留 5.3 / 5.3-Flash）
+- **思考语义重构**：新增 `thinkingLocked`（不渲染菜单）用于 K2.7 Code 与 MiniMax M2.x 等思考无法关闭的模型；Kimi K3 与 GLM-5.3(-Flash) 使用三档 Low/High/Max 菜单；DeepSeek 增加 Low 档（None 真关闭）；MiniMax-M3 与火山引擎的 None 现在会显式发送关闭参数
+- **思考参数逐项对齐官方文档**：DeepSeek `reasoning_effort`（low/high/max）、Qwen `thinking_budget`（上限 32768）、千问托管的 GLM/DeepSeek 走 `reasoning_effort`、智谱流式工具调用 `tool_stream`、MiniMax `max_completion_tokens`
+- **可靠性**：DeepSeek、GLM、Kimi 开放平台的工具调用循环会自动补齐 reasoning_content；视觉支持列表刷新（deepseek-v4-flash-vision-exp、glm-5.3-flash、MiniMax-M3 及五个千问模型）
+- **移除自定义模型支持**：`custom-openai` 提供方、各提供方的 `customModelIds` 设置与 Add Custom Model ID 命令已移除——VS Code 内置的自定义模型功能已覆盖该场景
 
 ### 0.3.0 — 2026-05-08
 

@@ -278,7 +278,8 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "deepseek":
 		case "qwen":
 		case "moonshot":
-		case "zhipu":
+		case "moonshot-open":
+		case "glm-coding-plan-cn":
 			return true;
 		default:
 			return false;
@@ -304,10 +305,9 @@ interface BuildMessagesOptions {
 }
 
 /**
- * Shared message-serialization logic used by both MultiModelChatProvider and
- * CustomOpenAIProvider. Converts VS Code chat messages into OpenAI-compatible
- * message objects, handling vision parts, tool calls, and vendor-gated
- * reasoning_content.
+ * Shared message-serialization logic used by MultiModelChatProvider. Converts
+ * VS Code chat messages into OpenAI-compatible message objects, handling
+ * vision parts, tool calls, and vendor-gated reasoning_content.
  */
 function buildOpenAIMessages(
 	messages: readonly vscode.LanguageModelChatRequestMessage[],
@@ -425,7 +425,6 @@ export class MultiModelChatProvider
 		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
 
 		// Preset models
-		const presetIds = new Set(this.vendorConfig.models.map((m) => m.id));
 		const result = this.vendorConfig.models.map((m) => {
 			const info = toLanguageModelChatInformation(m, this.vendorConfig.vendorId);
 			return {
@@ -433,25 +432,6 @@ export class MultiModelChatProvider
 				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
 			};
 		});
-
-		// Custom model IDs from settings
-		const customIds = vscode.workspace
-			.getConfiguration()
-			.get<string[]>(this.vendorConfig.settingsKey, []);
-
-		for (const customId of customIds) {
-			const trimmed = customId.trim();
-			if (!trimmed || presetIds.has(trimmed)) continue;
-
-			const info = toLanguageModelChatInformation(
-				this.createCustomModelInfo(trimmed),
-				this.vendorConfig.vendorId,
-			);
-			result.push({
-				...info,
-				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
-			});
-		}
 
 		return result;
 	}
@@ -479,9 +459,17 @@ export class MultiModelChatProvider
 			resolveRequestedEffort(options as ModelConfigurationOptions, modelDef);
 		const modelSupportsThinking =
 			this.vendorConfig.thinkingCapable && (modelDef?.thinking ?? false);
-		const thinking = modelSupportsThinking ? requestedThinking : false;
+		// Thinking-locked models (K2.7 Code family) think permanently on
+		// both Kimi endpoints; the picker cannot turn them off.
+		const thinking = modelDef?.thinkingLocked
+			? true
+			: modelSupportsThinking
+				? requestedThinking
+				: false;
 		const thinkingEffort =
-			thinking && (modelDef?.thinkingEffortSupport ?? false)
+			!modelDef?.thinkingLocked &&
+			thinking &&
+			(modelDef?.thinkingEffortSupport ?? false)
 				? requestedEffort
 				: undefined;
 
@@ -506,6 +494,24 @@ export class MultiModelChatProvider
 				}
 				return msg;
 			});
+		}
+
+		// Some providers reject multi-step tool loops where assistant
+		// messages lack reasoning_content — DeepSeek always; Zhipu for its
+		// always-thinking 5.3 models (interleaved thinking requires
+		// preserving reasoning_content alongside tool results); Kimi Open
+		// Platform whenever thinking is on (K3 and K2.7 always think). The
+		// host may drop thinking parts from history, so backfill "".
+		const needsReasoningBackfill =
+			this.vendorConfig.vendorId === "deepseek" ||
+			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
+			(this.vendorConfig.vendorId === "moonshot-open" && thinking);
+		if (needsReasoningBackfill && apiTools && apiTools.length > 0) {
+			apiMessages = apiMessages.map((msg) =>
+				msg.role === "assistant" && msg.reasoning_content === undefined
+					? { ...msg, reasoning_content: "" }
+					: msg,
+			);
 		}
 
 		try {
@@ -649,22 +655,6 @@ export class MultiModelChatProvider
 		return this.vendorConfig.models.find((m) => m.id === modelId);
 	}
 
-	private createCustomModelInfo(modelId: string): ModelInfo {
-		return {
-			id: modelId,
-			name: modelId,
-			family: this.vendorConfig.vendorId,
-			version: "custom",
-			tooltip: `${this.vendorConfig.displayName} — custom model`,
-			maxInputTokens: DEFAULT_CONTEXT_LENGTH,
-			maxOutputTokens: 4096,
-			baseUrl: this.vendorConfig.defaultBaseUrl,
-			thinking: false,
-			thinkingEffortSupport: false,
-			capabilities: { imageInput: false, toolCalling: true },
-		};
-	}
-
 	private convertMessages(
 		messages: readonly vscode.LanguageModelChatRequestMessage[],
 		supportsVision: boolean,
@@ -673,218 +663,6 @@ export class MultiModelChatProvider
 			supportsVision,
 			vendorId: this.vendorConfig.vendorId,
 		});
-	}
-
-	private convertTools(
-		tools?: readonly vscode.LanguageModelChatTool[],
-	): OpenAITool[] | undefined {
-		if (!tools || tools.length === 0) return undefined;
-		return tools.map((tool) => ({
-			type: "function" as const,
-			function: {
-				name: tool.name,
-				description: tool.description,
-				parameters: sanitizeToolParameters(tool.inputSchema),
-			},
-		}));
-	}
-}
-
-// ─── Custom OpenAI Compatible Provider ───────────────────────────────────────
-
-export class CustomOpenAIProvider
-	implements vscode.LanguageModelChatProvider
-{
-	private apiKey: string | undefined;
-	private apiUrl: string | undefined;
-	private modelId: string | undefined;
-	private modelName: string | undefined;
-
-	provideLanguageModelChatInformation(
-		options: vscode.PrepareLanguageModelChatModelOptions,
-		_token: vscode.CancellationToken,
-	): vscode.ProviderResult<vscode.LanguageModelChatInformation[]> {
-		const key = getApiKey(options);
-		if (!key) return [];
-
-		this.apiKey = key;
-		this.apiUrl = getConfigString(options, "apiUrl");
-		this.modelId = getConfigString(options, "modelId");
-		this.modelName = getConfigString(options, "modelName");
-
-		if (!this.apiUrl || !this.modelId) return [];
-
-		const displayName = this.modelName || this.modelId;
-
-		const config = vscode.workspace.getConfiguration("omniCopilot");
-		const contextLength = config.get<string>("contextLength", "default") as ContextLength;
-		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
-
-		const maxInputTokens = getEffectiveMaxInputTokens(DEFAULT_CONTEXT_LENGTH, contextLength, customContextLength);
-		return [
-			{
-				id: this.modelId,
-				name: displayName,
-				family: "custom",
-				version: "1",
-				tooltip: `Custom model at ${this.apiUrl}`,
-				detail: `Custom model at ${this.apiUrl}`,
-				maxInputTokens,
-				maxOutputTokens: 4096,
-				capabilities: { imageInput: false, toolCalling: true },
-			},
-		];
-	}
-
-	async provideLanguageModelChatResponse(
-		model: vscode.LanguageModelChatInformation,
-		messages: readonly vscode.LanguageModelChatRequestMessage[],
-		options: vscode.ProvideLanguageModelChatResponseOptions,
-		progress: vscode.Progress<vscode.LanguageModelResponsePart>,
-		token: vscode.CancellationToken,
-	): Promise<void> {
-		if (!this.apiKey || !this.apiUrl) {
-			throw new Error(
-				"API key and URL not configured. Configure them via the model picker.",
-			);
-		}
-
-		const client = new OpenAICompatibleClient(this.apiKey);
-		const apiMessages = this.convertMessages(messages);
-		const apiTools = this.convertTools(options.tools);
-		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
-
-		// Custom provider doesn't send thinking params to API. <think> tags in
-		// the output stream are passed through (rendered as ThinkingPart when
-		// the proposed API is available, otherwise as text).
-		const showThinking = true;
-
-		try {
-			const stream = client.streamChat(
-				model.id,
-				apiMessages,
-				this.apiUrl,
-				{ maxTokens, tools: apiTools },
-				token,
-			);
-
-			const toolCallBuilders = new Map<number, ToolCallBuilder>();
-			let thinkingState: ThinkingState = {
-				buffer: "",
-				insideThinking: false,
-			};
-			let inReasoningStream = false;
-
-			for await (const chunk of stream) {
-				if (token.isCancellationRequested) break;
-
-				for (const choice of chunk.choices) {
-					const delta = choice.delta;
-
-					const textContent = delta.content || "";
-					const reasoningContent = delta.reasoning_content || "";
-
-					let combinedContent = "";
-					if (reasoningContent) {
-						if (!inReasoningStream) {
-							combinedContent += "<think>";
-							inReasoningStream = true;
-						}
-						combinedContent += reasoningContent;
-					}
-					if (textContent) {
-						if (inReasoningStream) {
-							combinedContent += "</think>";
-							inReasoningStream = false;
-						}
-						combinedContent += textContent;
-					}
-					if (!reasoningContent && !textContent && inReasoningStream && choice.finish_reason) {
-						combinedContent = "</think>";
-						inReasoningStream = false;
-					}
-
-					if (combinedContent) {
-						const result = processThinkingContent(
-							combinedContent,
-							thinkingState,
-							!showThinking,
-						);
-						thinkingState = result.state;
-						for (const part of result.parts) {
-							reportThinkingPart(progress, part);
-						}
-					}
-
-					if (delta.tool_calls) {
-						for (const toolCall of delta.tool_calls) {
-							const builder = getToolCallBuilder(
-								toolCallBuilders,
-								toolCall.index,
-							);
-							if (toolCall.id) builder.id = toolCall.id;
-							if (toolCall.function?.name)
-								builder.name = toolCall.function.name;
-							if (toolCall.function?.arguments)
-								builder.arguments +=
-									toolCall.function.arguments;
-						}
-					}
-
-					if (choice.finish_reason === "tool_calls") {
-						emitToolCalls(progress, toolCallBuilders);
-					}
-				}
-			}
-
-			// Flush any thinking buffer remaining after the stream ends
-			if (thinkingState.buffer) {
-				let flushContent = thinkingState.buffer;
-				if (inReasoningStream) {
-					flushContent += THINK_CLOSE;
-				}
-				const flushResult = processThinkingContent(flushContent, { buffer: "", insideThinking: thinkingState.insideThinking }, !showThinking);
-				for (const part of flushResult.parts) {
-					reportThinkingPart(progress, part);
-				}
-			}
-		// Flush any pending tool calls not yet emitted
-			if (toolCallBuilders.size > 0) {
-				emitToolCalls(progress, toolCallBuilders);
-			}
-		} catch (error) {
-			if (!(error instanceof ApiError)) throw error;
-			throw mapApiError(error, "Custom");
-		}
-	}
-
-	provideTokenCount(
-		_model: vscode.LanguageModelChatInformation,
-		text: string | vscode.LanguageModelChatRequestMessage,
-		_token: vscode.CancellationToken,
-	): Thenable<number> {
-		if (typeof text === "string") {
-			return Promise.resolve(Math.ceil(text.length / 4));
-		}
-		let totalChars = 0;
-		for (const part of text.content) {
-			if (part instanceof vscode.LanguageModelTextPart) {
-				totalChars += part.value.length;
-			} else if (part instanceof vscode.LanguageModelToolCallPart) {
-				totalChars += part.name.length + JSON.stringify(part.input).length;
-			} else if (part instanceof vscode.LanguageModelToolResultPart) {
-				totalChars += JSON.stringify(part.content).length;
-			} else {
-				totalChars += JSON.stringify(part).length;
-			}
-		}
-		return Promise.resolve(Math.ceil(totalChars / 4));
-	}
-
-	private convertMessages(
-		messages: readonly vscode.LanguageModelChatRequestMessage[],
-	): OpenAIMessage[] {
-		return buildOpenAIMessages(messages, { supportsVision: false });
 	}
 
 	private convertTools(

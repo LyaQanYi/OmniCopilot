@@ -1,8 +1,8 @@
 {
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
-	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan, Custom) in GitHub Copilot Chat as language model providers.",
-	"version": "0.3.0",
+	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan) in GitHub Copilot Chat as language model providers.",
+	"version": "0.4.0",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -32,8 +32,8 @@
 				}
 			},
 			{
-				"vendor": "zhipu",
-				"displayName": "Bigmodel Plan",
+				"vendor": "glm-coding-plan-cn",
+				"displayName": "GLM Coding Plan CN",
 				"configuration": {
 					"properties": {
 						"apiKey": {
@@ -46,12 +46,25 @@
 			},
 			{
 				"vendor": "moonshot",
-				"displayName": "Moonshot (Kimi)",
+				"displayName": "Kimi Code Plan",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key from platform.moonshot.cn",
+							"description": "API key from Kimi Code (kimi.com/code)",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "moonshot-open",
+				"displayName": "Moonshot (Open Platform)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from platform.kimi.com",
 							"secret": true
 						}
 					}
@@ -59,12 +72,12 @@
 			},
 			{
 				"vendor": "qwen",
-				"displayName": "Qwen",
+				"displayName": "Qwen Token Plan",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key from dashscope.aliyuncs.com",
+							"description": "API key from Qwen Token Plan (platform.qianwenai.com)",
 							"secret": true
 						}
 					}
@@ -72,12 +85,12 @@
 			},
 			{
 				"vendor": "minimax",
-				"displayName": "MiniMax",
+				"displayName": "MiniMax Token Plan CN",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key from platform.minimaxi.com",
+							"description": "API key from platform.minimaxi.com (subscription and pay-as-you-go keys are not interchangeable)",
 							"secret": true
 						}
 					}
@@ -85,38 +98,26 @@
 			},
 			{
 				"vendor": "volcengine",
-				"displayName": "Volcengine Plan",
+				"displayName": "Volcengine Coding Plan CN",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key from console.volcengine.com",
+							"description": "API key from console.volcengine.com (Ark Coding Plan)",
 							"secret": true
 						}
 					}
 				}
 			},
 			{
-				"vendor": "custom-openai",
-				"displayName": "Custom (OpenAI Compatible)",
+				"vendor": "volcengine-agent-plan",
+				"displayName": "Volcengine Agent Plan CN",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key for the custom endpoint",
+							"description": "API key from console.volcengine.com (Ark Agent Plan)",
 							"secret": true
-						},
-						"apiUrl": {
-							"type": "string",
-							"description": "Base URL of the OpenAI-compatible API (e.g. https://api.example.com/v1)"
-						},
-						"modelId": {
-							"type": "string",
-							"description": "Model ID to use (e.g. gpt-4o)"
-						},
-						"modelName": {
-							"type": "string",
-							"description": "Display name for the model"
 						}
 					}
 				}
@@ -126,10 +127,6 @@
 			{
 				"command": "omniCopilot.testConnection",
 				"title": "OmniCopilot: Test Connection"
-			},
-			{
-				"command": "omniCopilot.addCustomModelId",
-				"title": "OmniCopilot: Add Custom Model ID"
 			},
 			{
 				"command": "omniCopilot.setContextLength",
@@ -181,54 +178,6 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Enable vision/image input for models that support it"
-				},
-				"omniCopilot.deepseek.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for DeepSeek (added to preset list)"
-				},
-				"omniCopilot.zhipu.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for Zhipu/GLM (added to preset list)"
-				},
-				"omniCopilot.moonshot.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for Moonshot/Kimi (added to preset list)"
-				},
-				"omniCopilot.qwen.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for Qwen (added to preset list)"
-				},
-				"omniCopilot.minimax.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for MiniMax (added to preset list)"
-				},
-				"omniCopilot.volcengine.customModelIds": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [],
-					"description": "Custom model IDs for Volcengine (added to preset list)"
 				}
 			}
 		}
