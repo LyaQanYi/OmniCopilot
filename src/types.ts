@@ -310,10 +310,13 @@ export function toLanguageModelChatInformation(
 		schema = THINKING_TOGGLE_SCHEMA;
 	} else if (ALWAYS_THINKING_MODEL_IDS.has(model.id)) {
 		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
+	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
+		// The non-snapshot DeepSeek V4 Pro rejects "low" on DashScope —
+		// see THINKING_EFFORT_NO_LOW_SCHEMA.
+		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
 	} else if (
 		vendorId === "qwen" &&
-		(model.id === "deepseek-v4-pro" ||
-			model.id === "deepseek-v4-pro-0813" ||
+		(model.id === "deepseek-v4-pro-0813" ||
 			model.id === "deepseek-v4-flash-0731" ||
 			model.id === "glm-5.2")
 	) {
