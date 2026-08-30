@@ -141,8 +141,14 @@ export class OpenAICompatibleClient {
 			// MiniMax deprecates max_tokens in favor of max_completion_tokens
 			// (per the MiniMax API reference; the China-facing guides still
 			// only mention max_tokens, but the platform tolerates unknown
-			// fields).
-			if (options.vendorId === "minimax") {
+			// fields). K3 documents max_completion_tokens as its
+			// output-limit field on both Kimi endpoints.
+			if (
+				options.vendorId === "minimax" ||
+				model === "k3" ||
+				model === "k3-256k" ||
+				model === "kimi-k3"
+			) {
 				body.max_completion_tokens = options.maxTokens;
 			} else {
 				body.max_tokens = options.maxTokens;

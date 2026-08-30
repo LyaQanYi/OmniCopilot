@@ -173,6 +173,19 @@ export const ALWAYS_THINKING_EFFORT_SCHEMA = {
 	},
 } as const;
 
+// Models whose thinking is always on server-side and whose picker exposes
+// the three-level effort menu. Single source of truth: the picker branch and
+// the provider's always-on enforcement both read this set, so a legacy
+// "none" from programmatic callers can never serialize a disabling thinking
+// object for them.
+export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
+	"k3",
+	"k3-256k",
+	"kimi-k3",
+	"glm-5.3",
+	"glm-5.3-flash",
+]);
+
 // DeepSeek V4 menu — the one effort-capable family where "None" genuinely
 // disables thinking (an explicit thinking:{type:"disabled"} is sent), so a
 // four-level menu including None is honest here.
@@ -295,13 +308,7 @@ export function toLanguageModelChatInformation(
 		| typeof THINKING_TOGGLE_SCHEMA;
 	if (!model.thinkingEffortSupport) {
 		schema = THINKING_TOGGLE_SCHEMA;
-	} else if (
-		model.id === "k3" ||
-		model.id === "k3-256k" ||
-		model.id === "kimi-k3" ||
-		model.id === "glm-5.3" ||
-		model.id === "glm-5.3-flash"
-	) {
+	} else if (ALWAYS_THINKING_MODEL_IDS.has(model.id)) {
 		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
 	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
 		schema = THINKING_EFFORT_NO_LOW_SCHEMA;

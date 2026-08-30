@@ -25,10 +25,10 @@ The following platforms have been tested and confirmed working:
 - **Kimi Code** (Kimi coding model)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **Qwen / DashScope** (`dashscope.aliyuncs.com` pay-as-you-go verified; Token Plan tier pending)
-- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API)
+- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
 
 > [!NOTE]
-> **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — calls generally succeed, but usage may be billed at pay-as-you-go API rates instead of your plan's credits. If you're on a Coding Plan, keep an eye on your billing.
+> **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — calls generally succeed, but usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status.
 <!---->
 
 > [!WARNING]

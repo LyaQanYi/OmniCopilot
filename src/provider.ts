@@ -10,7 +10,7 @@ import type {
 	ContextLength,
 	ModelConfigurationOptions,
 } from "./types.js";
-import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH } from "./types.js";
+import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH, ALWAYS_THINKING_MODEL_IDS } from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -459,13 +459,15 @@ export class MultiModelChatProvider
 			resolveRequestedEffort(options as ModelConfigurationOptions, modelDef);
 		const modelSupportsThinking =
 			this.vendorConfig.thinkingCapable && (modelDef?.thinking ?? false);
-		// Thinking-locked models (K2.7 Code family) think permanently on
-		// both Kimi endpoints; the picker cannot turn them off.
-		const thinking = modelDef?.thinkingLocked
-			? true
-			: modelSupportsThinking
-				? requestedThinking
-				: false;
+		// Thinking-locked models (K2.7 Code family, MiniMax M2.x) and
+		// always-on models (K3, GLM-5.3 family) think permanently on their
+		// endpoints; the picker cannot turn them off.
+		const thinking =
+			modelDef?.thinkingLocked || ALWAYS_THINKING_MODEL_IDS.has(modelDef?.id ?? "")
+				? true
+				: modelSupportsThinking
+					? requestedThinking
+					: false;
 		const thinkingEffort =
 			!modelDef?.thinkingLocked &&
 			thinking &&
@@ -505,7 +507,10 @@ export class MultiModelChatProvider
 		const needsReasoningBackfill =
 			this.vendorConfig.vendorId === "deepseek" ||
 			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
-			(this.vendorConfig.vendorId === "moonshot-open" && thinking);
+			(this.vendorConfig.vendorId === "moonshot-open" && thinking) ||
+			(this.vendorConfig.vendorId === "qwen" &&
+				thinking &&
+				(model.id ?? "").startsWith("deepseek-v4"));
 		if (needsReasoningBackfill && apiTools && apiTools.length > 0) {
 			apiMessages = apiMessages.map((msg) =>
 				msg.role === "assistant" && msg.reasoning_content === undefined
