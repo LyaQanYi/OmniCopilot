@@ -72,6 +72,10 @@ async function runConnectionTest(): Promise<void> {
 				extraHeaders,
 				vendorId: picked.vendorId,
 				thinking: true,
+				// Match the picker's fallback default so vendor branches that
+				// require an effort value (Qwen-hosted GLM/DeepSeek) serialize
+				// the same request as a normal chat would.
+				thinkingEffort: "medium",
 			},
 		);
 		vscode.window.showInformationMessage(

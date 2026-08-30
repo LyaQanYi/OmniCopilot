@@ -310,8 +310,17 @@ export function toLanguageModelChatInformation(
 		schema = THINKING_TOGGLE_SCHEMA;
 	} else if (ALWAYS_THINKING_MODEL_IDS.has(model.id)) {
 		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
-	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
-		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
+	} else if (
+		vendorId === "qwen" &&
+		(model.id === "deepseek-v4-pro" ||
+			model.id === "deepseek-v4-pro-0813" ||
+			model.id === "deepseek-v4-flash-0731" ||
+			model.id === "glm-5.2")
+	) {
+		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
+		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
+		// cannot express.
+		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else if (vendorId === "deepseek") {
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else {

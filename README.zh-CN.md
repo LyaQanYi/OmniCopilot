@@ -24,15 +24,14 @@
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
 - **Kimi Code**（Kimi 编程模型）
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **通义千问 / DashScope**（`dashscope.aliyuncs.com` 按量已验证；Token Plan 档位待测）
 - **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API——vendor ID 变更后待复测）
 
 > [!NOTE]
-> **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用通常可以成功，但消耗可能按 API 按量计费而非套餐积分；且智谱《使用须知》将非指定工具中的调用视为违规，存在限流或账号受限的风险。请留意账单与账号状态。
+> **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用不保证成功，消耗可能按 API 按量计费而非套餐积分；且智谱《使用须知》将非指定工具中的调用视为违规，存在限流或账号受限的风险。请留意账单与账号状态。
 <!---->
 
 > [!WARNING]
-> **Qwen Token Plan 使用条款**：Token Plan 的 API Key 仅限在交互式编程/智能体工具（Claude Code、Cursor、Qwen Code、Qoder、OpenClaw 等）中使用——官方文档明确禁止通用 API 调用，并注明违规可能导致订阅暂停或 API Key 被封禁。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
+> **Qwen Token Plan 条款与端点**：本扩展指向 Token Plan 专用端点（`token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`），需使用 platform.qianwenai.com 签发的订阅 Key（`sk-sp-` 开头）——Token Plan 与按量计费的 Key/端点完全隔离、不可混用（按量 Key 为 `sk-ws-` 开头，属 `dashscope.aliyuncs.com/compatible-mode/v1`）。Key 亦仅限在交互式编程/智能体工具（Claude Code、Cursor、Qwen Code、Qoder、OpenClaw 等）中使用——官方文档明确禁止通用 API 调用，违规可能导致订阅暂停或 API Key 被封禁。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
 
 ## 待办事项
 

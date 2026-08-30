@@ -209,7 +209,7 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 
 // ─── Qwen Token Plan ─────────────────────────────────────────────────────────
 
-const QWEN_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+const QWEN_TOKEN_PLAN_BASE_URL = "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1";
 
 const QWEN_MODELS: ModelInfo[] = [
 	{
@@ -220,7 +220,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "Qwen3.8 Max — 2.4T MoE flagship, 1M context, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
@@ -233,7 +233,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "Qwen3.8 Flash — fast multimodal model, native 1M context, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
@@ -246,7 +246,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "Qwen3.7 Max — text flagship, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
@@ -259,7 +259,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "Qwen3.7 Plus — balanced performance/cost, 1M context, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
@@ -272,7 +272,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "Qwen3.6 Flash — lightweight native-vision model, 1M context, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 65536,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
@@ -289,7 +289,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "GLM-5.2 — via Qwen Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
@@ -304,7 +304,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		// DashScope-hosted DeepSeek V4 shares a 393,216-token pool between
 		// max_tokens and thinking_budget.
 		maxOutputTokens: 393216,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
@@ -317,7 +317,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "DeepSeek V4 Pro 0813 — via Qwen Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 393216,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
@@ -330,7 +330,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		tooltip: "DeepSeek V4 Flash 0731 — via Qwen Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 393216,
-		baseUrl: QWEN_BASE_URL,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
@@ -718,7 +718,7 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 	{
 		vendorId: "qwen",
 		displayName: "Qwen Token Plan",
-		defaultBaseUrl: QWEN_BASE_URL,
+		defaultBaseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		models: QWEN_MODELS,
 		thinkingCapable: true,
 	},

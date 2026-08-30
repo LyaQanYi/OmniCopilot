@@ -24,15 +24,14 @@ The following platforms have been tested and confirmed working:
 - **DeepSeek Open Platform** (`platform.deepseek.com`)
 - **Kimi Code** (Kimi coding model)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **Qwen / DashScope** (`dashscope.aliyuncs.com` pay-as-you-go verified; Token Plan tier pending)
 - **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
 
 > [!NOTE]
-> **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — calls generally succeed, but usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status.
+> **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — success is not guaranteed, usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status.
 <!---->
 
 > [!WARNING]
-> **Qwen Token Plan terms**: the Token Plan key is restricted to interactive coding/agent tools (Claude Code, Cursor, Qwen Code, Qoder, OpenClaw, etc.) — the docs explicitly forbid generic API usage and state that violations may suspend the subscription or ban the API key. VS Code Copilot Chat is not on the official tool list, so use at your own discretion and watch your account status.
+> **Qwen Token Plan terms and endpoint**: the extension points at the Token Plan endpoint (`token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`) and expects the subscription key (`sk-sp-…`) from platform.qianwenai.com — Token Plan and pay-as-you-go credentials/endpoints are fully isolated and must not be mixed (pay-as-you-go keys (`sk-ws-…`) belong to `dashscope.aliyuncs.com/compatible-mode/v1`). The key is also restricted to interactive coding/agent tools (Claude Code, Cursor, Qwen Code, Qoder, OpenClaw, etc.) — the docs explicitly forbid generic API usage and state that violations may suspend the subscription or ban the API key. VS Code Copilot Chat is not on the official tool list, so use at your own discretion and watch your account status.
 
 ## TODO
 
