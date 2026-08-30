@@ -717,7 +717,7 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 	},
 	{
 		vendorId: "qwen",
-		displayName: "Qwen",
+		displayName: "Qwen Token Plan",
 		defaultBaseUrl: QWEN_BASE_URL,
 		models: QWEN_MODELS,
 		thinkingCapable: true,

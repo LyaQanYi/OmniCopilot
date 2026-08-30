@@ -291,6 +291,7 @@ export class OpenAICompatibleClient {
 				break;
 
 				case "volcengine":
+				case "volcengine-agent-plan":
 					// Volcengine takes thinking: {type: "enabled" | "disabled"};
 					// Doubao Seed 2.0/2.1 default thinking ON, so "None" must
 					// send an explicit disable.
@@ -304,8 +305,11 @@ export class OpenAICompatibleClient {
 				// reasoning_effort is low|high|max (API default max).
 				// clear_thinking (preserved thinking) is enabled by default on
 				// the Coding endpoint, so no thinking object is needed at all.
-				if (thinking && effort && effort !== "medium") {
-					body.reasoning_effort = effort;
+				// "medium" (the picker's fallback default) maps to "high" so
+				// the request honors the menu's declared default instead of
+				// silently falling back to the API default "max".
+				if (thinking && effort) {
+					body.reasoning_effort = effort === "medium" ? "high" : effort;
 				}
 				break;
 

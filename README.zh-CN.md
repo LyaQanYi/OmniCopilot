@@ -24,11 +24,12 @@
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
 - **Kimi Code**（Kimi 编程模型）
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **Qwen Token Plan**（千问AI平台，DashScope 兼容端点）
+- **通义千问 / DashScope**（`dashscope.aliyuncs.com` 按量已验证；Token Plan 档位待测）
 - **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API）
 
 > [!NOTE]
 > **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用通常可以成功，但消耗可能按 API 按量计费而非套餐积分。如果你订阅了 Coding Plan，请留意账单。
+<!---->
 
 > [!WARNING]
 > **Qwen Token Plan 使用条款**：Token Plan 的 API Key 仅限在交互式编程/智能体工具（Claude Code、Cursor、Qwen Code、Qoder、OpenClaw 等）中使用——官方文档明确禁止通用 API 调用，并注明违规可能导致订阅暂停或 API Key 被封禁。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
@@ -47,7 +48,7 @@
 
 ## 功能
 
-- **多平台支持**：接入多个主流大模型平台，以及任意 OpenAI 兼容端点
+- **多平台支持**：接入多个主流大模型平台
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
   - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort
