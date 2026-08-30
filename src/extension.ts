@@ -48,7 +48,15 @@ async function runConnectionTest(): Promise<void> {
 			firstModel.id,
 			[{ role: "user", content: "Ping" }],
 			firstModel.baseUrl,
-			{ maxTokens: 1, extraHeaders },
+			{
+				// Vendor context is required for correct serialization (Kimi
+				// demands a thinking object, DeepSeek/MiniMax accept their
+				// vendor knobs) and 2048 tokens leave room for models that
+				// cannot disable thinking.
+				maxTokens: 2048,
+				extraHeaders,
+				vendorId: picked.vendorId,
+			},
 		);
 		vscode.window.showInformationMessage(
 			`${picked.label} connection test succeeded.`,

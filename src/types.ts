@@ -131,6 +131,26 @@ export const THINKING_EFFORT_SCHEMA = {
 	},
 } as const;
 
+// Qwen-hosted DeepSeek V4 Pro (non-snapshot) menu — the API rejects "low"
+// on this variant, so the honest domain is None / High / Max.
+export const THINKING_EFFORT_NO_LOW_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "high", "max"],
+			enumItemLabels: ["None", "High", "Max"],
+			enumDescriptions: [
+				"Disables thinking",
+				"Enhanced reasoning (API default)",
+				"Deepest reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
 // Three-level effort menu (no "None") for models whose thinking is always
 // on and cannot be disabled server-side: Kimi K3 (k3 / k3-256k / kimi-k3)
 // and GLM-5.3 / GLM-5.3-Flash. Effort maps to top-level reasoning_effort =
@@ -204,6 +224,7 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 	readonly configurationSchema?:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
 		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 };
@@ -269,6 +290,7 @@ export function toLanguageModelChatInformation(
 	let schema:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
 		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 	if (!model.thinkingEffortSupport) {
@@ -281,6 +303,8 @@ export function toLanguageModelChatInformation(
 		model.id === "glm-5.3-flash"
 	) {
 		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
+	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
+		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
 	} else if (vendorId === "deepseek") {
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else {
