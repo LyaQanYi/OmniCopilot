@@ -142,12 +142,13 @@ export class OpenAICompatibleClient {
 			// (per the MiniMax API reference; the China-facing guides still
 			// only mention max_tokens, but the platform tolerates unknown
 			// fields). K3 documents max_completion_tokens as its
-			// output-limit field on the Kimi endpoints; Volcengine-hosted
-			// kimi-k3 stays on the Ark max_tokens convention.
+			// output-limit field on the Kimi endpoints (Code Plan k3/k3-256k
+			// and Open Platform kimi-k3); Volcengine-hosted kimi-k3 stays on
+			// the Ark max_tokens convention.
 			if (
 				options.vendorId === "minimax" ||
 				((options.vendorId === "moonshot" || options.vendorId === "moonshot-open") &&
-					(model === "k3" || model === "k3-256k"))
+					(model === "k3" || model === "k3-256k" || model === "kimi-k3"))
 			) {
 				body.max_completion_tokens = options.maxTokens;
 			} else {
