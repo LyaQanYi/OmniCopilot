@@ -234,7 +234,10 @@ export class OpenAICompatibleClient {
 							model === "deepseek-v4-flash-0731")
 					) {
 						if (model === "glm-5.2") {
-							body.reasoning_effort = effort;
+							// medium → high: this model's picker schema has no
+							// Medium option and declares High as its default.
+							body.reasoning_effort =
+								effort === "medium" ? "high" : effort;
 						} else if (
 							effort === "max" ||
 							(effort === "low" && model !== "deepseek-v4-pro")
