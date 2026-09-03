@@ -6,11 +6,12 @@ import type {
 	OpenAIMessage,
 	OpenAITool,
 	OpenAIContentPart,
+	OpenAIUsage,
 	ThinkingEffort,
 	ContextLength,
 	ModelConfigurationOptions,
 } from "./types.js";
-import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH } from "./types.js";
+import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH, ALWAYS_THINKING_MODEL_IDS } from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -32,6 +33,11 @@ interface ToolCallBuilder {
 
 const THINK_OPEN = "<think>";
 const THINK_CLOSE = "</think>";
+
+// mimeType agreed with Copilot Chat's ExtensionContributedChatEndpoint: a
+// LanguageModelDataPart carrying this JSON payload is parsed as the turn's
+// real token usage and lights up the context-window gauge (instead of 0).
+const USAGE_MIME_TYPE = "usage";
 
 /**
  * Sanitize a tool's inputSchema for strict APIs (DeepSeek, etc.).
@@ -161,6 +167,35 @@ function processThinkingContent(
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
+/**
+ * Rough token estimate: ~1 token per CJK character (Chinese/Japanese/Korean
+ * average 1-2 tokens per character across the vendors' tokenizers) and ~4
+ * characters per token for everything else. A plain length/4 heuristic
+ * undercounts CJK text 4-6x, which makes context budgeting unreliable for
+ * Chinese-heavy conversations.
+ */
+function estimateTokens(text: string): number {
+	let cjk = 0;
+	let other = 0;
+	for (let i = 0; i < text.length; i++) {
+		const code = text.charCodeAt(i);
+		if (
+			(code >= 0x3000 && code <= 0x30ff) || // CJK punctuation, kana
+			(code >= 0x3400 && code <= 0x4dbf) || // CJK ext A
+			(code >= 0x4e00 && code <= 0x9fff) || // CJK unified
+			(code >= 0xac00 && code <= 0xd7af) || // Hangul syllables
+			(code >= 0xf900 && code <= 0xfaff) || // CJK compat ideographs
+			(code >= 0xff00 && code <= 0xffef) || // fullwidth forms
+			(code >= 0xd800 && code <= 0xdfff) // surrogate (ext B+) halves
+		) {
+			cjk++;
+		} else {
+			other++;
+		}
+	}
+	return Math.ceil(cjk + other / 4);
+}
+
 function getObjectProperty(source: unknown, key: string): unknown {
 	if (!source || typeof source !== "object") return undefined;
 	return (source as Record<string, unknown>)[key];
@@ -278,7 +313,8 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "deepseek":
 		case "qwen":
 		case "moonshot":
-		case "zhipu":
+		case "moonshot-open":
+		case "glm-coding-plan-cn":
 			return true;
 		default:
 			return false;
@@ -304,10 +340,9 @@ interface BuildMessagesOptions {
 }
 
 /**
- * Shared message-serialization logic used by both MultiModelChatProvider and
- * CustomOpenAIProvider. Converts VS Code chat messages into OpenAI-compatible
- * message objects, handling vision parts, tool calls, and vendor-gated
- * reasoning_content.
+ * Shared message-serialization logic used by MultiModelChatProvider. Converts
+ * VS Code chat messages into OpenAI-compatible message objects, handling
+ * vision parts, tool calls, and vendor-gated reasoning_content.
  */
 function buildOpenAIMessages(
 	messages: readonly vscode.LanguageModelChatRequestMessage[],
@@ -425,7 +460,6 @@ export class MultiModelChatProvider
 		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
 
 		// Preset models
-		const presetIds = new Set(this.vendorConfig.models.map((m) => m.id));
 		const result = this.vendorConfig.models.map((m) => {
 			const info = toLanguageModelChatInformation(m, this.vendorConfig.vendorId);
 			return {
@@ -433,25 +467,6 @@ export class MultiModelChatProvider
 				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
 			};
 		});
-
-		// Custom model IDs from settings
-		const customIds = vscode.workspace
-			.getConfiguration()
-			.get<string[]>(this.vendorConfig.settingsKey, []);
-
-		for (const customId of customIds) {
-			const trimmed = customId.trim();
-			if (!trimmed || presetIds.has(trimmed)) continue;
-
-			const info = toLanguageModelChatInformation(
-				this.createCustomModelInfo(trimmed),
-				this.vendorConfig.vendorId,
-			);
-			result.push({
-				...info,
-				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
-			});
-		}
 
 		return result;
 	}
@@ -479,9 +494,19 @@ export class MultiModelChatProvider
 			resolveRequestedEffort(options as ModelConfigurationOptions, modelDef);
 		const modelSupportsThinking =
 			this.vendorConfig.thinkingCapable && (modelDef?.thinking ?? false);
-		const thinking = modelSupportsThinking ? requestedThinking : false;
+		// Thinking-locked models (K2.7 Code family, MiniMax M2.x) and
+		// always-on models (K3, GLM-5.3 family) think permanently on their
+		// endpoints; the picker cannot turn them off.
+		const thinking =
+			modelDef?.thinkingLocked || ALWAYS_THINKING_MODEL_IDS.has(modelDef?.id ?? "")
+				? true
+				: modelSupportsThinking
+					? requestedThinking
+					: false;
 		const thinkingEffort =
-			thinking && (modelDef?.thinkingEffortSupport ?? false)
+			!modelDef?.thinkingLocked &&
+			thinking &&
+			(modelDef?.thinkingEffortSupport ?? false)
 				? requestedEffort
 				: undefined;
 
@@ -508,6 +533,27 @@ export class MultiModelChatProvider
 			});
 		}
 
+		// Some providers reject multi-step tool loops where assistant
+		// messages lack reasoning_content — DeepSeek always; Zhipu for its
+		// always-thinking 5.3 models (interleaved thinking requires
+		// preserving reasoning_content alongside tool results); Kimi Open
+		// Platform whenever thinking is on (K3 and K2.7 always think). The
+		// host may drop thinking parts from history, so backfill "".
+		const needsReasoningBackfill =
+			this.vendorConfig.vendorId === "deepseek" ||
+			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
+			(this.vendorConfig.vendorId === "moonshot-open" && thinking) ||
+			(this.vendorConfig.vendorId === "qwen" &&
+				thinking &&
+				(model.id ?? "").startsWith("deepseek-v4"));
+		if (needsReasoningBackfill && apiTools && apiTools.length > 0) {
+			apiMessages = apiMessages.map((msg) =>
+				msg.role === "assistant" && msg.reasoning_content === undefined
+					? { ...msg, reasoning_content: "" }
+					: msg,
+			);
+		}
+
 		try {
 			const stream = client.streamChat(
 				model.id,
@@ -525,54 +571,66 @@ export class MultiModelChatProvider
 			);
 
 			const toolCallBuilders = new Map<number, ToolCallBuilder>();
+			// Inline tag parsing is only for vendors that embed thinking in
+			// `content` as literal <think> tags (MiniMax). reasoning_content
+			// vendors (DeepSeek, GLM, Kimi, Qwen, Volcengine, …) must NOT be
+			// scanned: their answer may legitimately quote the tags (e.g. when
+			// reviewing this very codebase), and a literal tag would flip the
+			// parser and misroute answer text into thinking parts.
+			const inlineThinkTags = this.vendorConfig.inlineThinkTags === true;
 			let thinkingState: ThinkingState = {
 				buffer: "",
 				insideThinking: false,
 			};
-			let inReasoningStream = false;
+			// Last non-null usage from the stream (final chunk when
+			// stream_options.include_usage was accepted by the endpoint).
+			let reportedUsage: OpenAIUsage | undefined;
 
 			for await (const chunk of stream) {
 				if (token.isCancellationRequested) break;
 
+				if (chunk.usage) {
+					reportedUsage = chunk.usage;
+				}
+
 				for (const choice of chunk.choices) {
 					const delta = choice.delta;
 
-					// Some providers (DeepSeek, Kimi) use reasoning_content for think output
+					// reasoning_content deltas are thinking by definition — report
+					// them directly so a quoted tag in the answer can never be
+					// mistaken for a delimiter.
 					const textContent = delta.content || "";
 					const reasoningContent = delta.reasoning_content || "";
 
-					// Build combined content with proper <think> boundary tags
-					let combinedContent = "";
 					if (reasoningContent) {
-						if (!inReasoningStream) {
-							combinedContent += "<think>";
-							inReasoningStream = true;
+						if (thinking) {
+							reportThinkingPart(progress, {
+								type: "thinking",
+								value: reasoningContent,
+							});
 						}
-						combinedContent += reasoningContent;
-					}
-					if (textContent) {
-						if (inReasoningStream) {
-							combinedContent += "</think>";
-							inReasoningStream = false;
-						}
-						combinedContent += textContent;
-					}
-					// Close reasoning at end of stream
-					if (!reasoningContent && !textContent && inReasoningStream && choice.finish_reason) {
-						combinedContent = "</think>";
-						inReasoningStream = false;
+						// thinking=false (user picked "None"): drop reasoning output
 					}
 
-					if (combinedContent) {
-						// Parse thinking tags into structured parts
-						const result = processThinkingContent(
-							combinedContent,
-							thinkingState,
-							!thinking,
-						);
-						thinkingState = result.state;
-						for (const part of result.parts) {
-							reportThinkingPart(progress, part);
+					if (textContent) {
+						if (inlineThinkTags) {
+							// MiniMax interleaves thinking inside content via
+							// <think> tags — parse with the cross-chunk partial-tag
+							// state machine.
+							const result = processThinkingContent(
+								textContent,
+								thinkingState,
+								!thinking,
+							);
+							thinkingState = result.state;
+							for (const part of result.parts) {
+								reportThinkingPart(progress, part);
+							}
+						} else {
+							// Plain answer text — emitted verbatim, never scanned.
+							progress.report(
+								new vscode.LanguageModelTextPart(textContent),
+							);
 						}
 					}
 
@@ -597,10 +655,14 @@ export class MultiModelChatProvider
 				}
 			}
 
-			// Flush any thinking buffer remaining after the stream ends
-			if (thinkingState.buffer) {
+			// Flush any thinking buffer remaining after the stream ends. Only the
+			// inline-tag path can hold back a partial tag in its buffer; the
+			// reasoning_content path reports every delta directly.
+			if (inlineThinkTags && thinkingState.buffer) {
 				let flushContent = thinkingState.buffer;
-				if (inReasoningStream) {
+				// Close an unclosed inline <think> so the tail is classified as
+				// thinking rather than leaking into text.
+				if (thinkingState.insideThinking) {
 					flushContent += THINK_CLOSE;
 				}
 				const flushResult = processThinkingContent(
@@ -616,6 +678,18 @@ export class MultiModelChatProvider
 			if (toolCallBuilders.size > 0) {
 				emitToolCalls(progress, toolCallBuilders);
 			}
+
+			// Report real token usage to Copilot Chat's context gauge. The
+			// endpoint ignores parts it does not understand, so consumers that
+			// don't know the "usage" mime are unaffected.
+			if (reportedUsage) {
+				progress.report(
+					new vscode.LanguageModelDataPart(
+						new TextEncoder().encode(JSON.stringify(reportedUsage)),
+						USAGE_MIME_TYPE,
+					),
+				);
+			}
 		} catch (error) {
 			if (!(error instanceof ApiError)) throw error;
 			throw mapApiError(error, this.vendorConfig.displayName);
@@ -628,41 +702,29 @@ export class MultiModelChatProvider
 		_token: vscode.CancellationToken,
 	): Thenable<number> {
 		if (typeof text === "string") {
-			return Promise.resolve(Math.ceil(text.length / 4));
+			return Promise.resolve(estimateTokens(text));
 		}
-		let totalChars = 0;
-		for (const part of text.content) {
-			if (part instanceof vscode.LanguageModelTextPart) {
-				totalChars += part.value.length;
+		let totalTokens = 0;
+		const content = typeof text.content === "string" ? [text.content] : text.content;
+		for (const part of content) {
+			if (typeof part === "string") {
+				totalTokens += estimateTokens(part);
+			} else if (part instanceof vscode.LanguageModelTextPart) {
+				totalTokens += estimateTokens(part.value);
 			} else if (part instanceof vscode.LanguageModelToolCallPart) {
-				totalChars += part.name.length + JSON.stringify(part.input).length;
+				totalTokens += estimateTokens(part.name) +
+					estimateTokens(JSON.stringify(part.input));
 			} else if (part instanceof vscode.LanguageModelToolResultPart) {
-				totalChars += JSON.stringify(part.content).length;
+				totalTokens += estimateTokens(JSON.stringify(part.content));
 			} else {
-				totalChars += JSON.stringify(part).length;
+				totalTokens += estimateTokens(JSON.stringify(part));
 			}
 		}
-		return Promise.resolve(Math.ceil(totalChars / 4));
+		return Promise.resolve(totalTokens);
 	}
 
 	private findModelDef(modelId: string): ModelInfo | undefined {
 		return this.vendorConfig.models.find((m) => m.id === modelId);
-	}
-
-	private createCustomModelInfo(modelId: string): ModelInfo {
-		return {
-			id: modelId,
-			name: modelId,
-			family: this.vendorConfig.vendorId,
-			version: "custom",
-			tooltip: `${this.vendorConfig.displayName} — custom model`,
-			maxInputTokens: DEFAULT_CONTEXT_LENGTH,
-			maxOutputTokens: 4096,
-			baseUrl: this.vendorConfig.defaultBaseUrl,
-			thinking: false,
-			thinkingEffortSupport: false,
-			capabilities: { imageInput: false, toolCalling: true },
-		};
 	}
 
 	private convertMessages(
@@ -673,218 +735,6 @@ export class MultiModelChatProvider
 			supportsVision,
 			vendorId: this.vendorConfig.vendorId,
 		});
-	}
-
-	private convertTools(
-		tools?: readonly vscode.LanguageModelChatTool[],
-	): OpenAITool[] | undefined {
-		if (!tools || tools.length === 0) return undefined;
-		return tools.map((tool) => ({
-			type: "function" as const,
-			function: {
-				name: tool.name,
-				description: tool.description,
-				parameters: sanitizeToolParameters(tool.inputSchema),
-			},
-		}));
-	}
-}
-
-// ─── Custom OpenAI Compatible Provider ───────────────────────────────────────
-
-export class CustomOpenAIProvider
-	implements vscode.LanguageModelChatProvider
-{
-	private apiKey: string | undefined;
-	private apiUrl: string | undefined;
-	private modelId: string | undefined;
-	private modelName: string | undefined;
-
-	provideLanguageModelChatInformation(
-		options: vscode.PrepareLanguageModelChatModelOptions,
-		_token: vscode.CancellationToken,
-	): vscode.ProviderResult<vscode.LanguageModelChatInformation[]> {
-		const key = getApiKey(options);
-		if (!key) return [];
-
-		this.apiKey = key;
-		this.apiUrl = getConfigString(options, "apiUrl");
-		this.modelId = getConfigString(options, "modelId");
-		this.modelName = getConfigString(options, "modelName");
-
-		if (!this.apiUrl || !this.modelId) return [];
-
-		const displayName = this.modelName || this.modelId;
-
-		const config = vscode.workspace.getConfiguration("omniCopilot");
-		const contextLength = config.get<string>("contextLength", "default") as ContextLength;
-		const customContextLength = config.get<number>("customContextLength", DEFAULT_CONTEXT_LENGTH);
-
-		const maxInputTokens = getEffectiveMaxInputTokens(DEFAULT_CONTEXT_LENGTH, contextLength, customContextLength);
-		return [
-			{
-				id: this.modelId,
-				name: displayName,
-				family: "custom",
-				version: "1",
-				tooltip: `Custom model at ${this.apiUrl}`,
-				detail: `Custom model at ${this.apiUrl}`,
-				maxInputTokens,
-				maxOutputTokens: 4096,
-				capabilities: { imageInput: false, toolCalling: true },
-			},
-		];
-	}
-
-	async provideLanguageModelChatResponse(
-		model: vscode.LanguageModelChatInformation,
-		messages: readonly vscode.LanguageModelChatRequestMessage[],
-		options: vscode.ProvideLanguageModelChatResponseOptions,
-		progress: vscode.Progress<vscode.LanguageModelResponsePart>,
-		token: vscode.CancellationToken,
-	): Promise<void> {
-		if (!this.apiKey || !this.apiUrl) {
-			throw new Error(
-				"API key and URL not configured. Configure them via the model picker.",
-			);
-		}
-
-		const client = new OpenAICompatibleClient(this.apiKey);
-		const apiMessages = this.convertMessages(messages);
-		const apiTools = this.convertTools(options.tools);
-		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
-
-		// Custom provider doesn't send thinking params to API. <think> tags in
-		// the output stream are passed through (rendered as ThinkingPart when
-		// the proposed API is available, otherwise as text).
-		const showThinking = true;
-
-		try {
-			const stream = client.streamChat(
-				model.id,
-				apiMessages,
-				this.apiUrl,
-				{ maxTokens, tools: apiTools },
-				token,
-			);
-
-			const toolCallBuilders = new Map<number, ToolCallBuilder>();
-			let thinkingState: ThinkingState = {
-				buffer: "",
-				insideThinking: false,
-			};
-			let inReasoningStream = false;
-
-			for await (const chunk of stream) {
-				if (token.isCancellationRequested) break;
-
-				for (const choice of chunk.choices) {
-					const delta = choice.delta;
-
-					const textContent = delta.content || "";
-					const reasoningContent = delta.reasoning_content || "";
-
-					let combinedContent = "";
-					if (reasoningContent) {
-						if (!inReasoningStream) {
-							combinedContent += "<think>";
-							inReasoningStream = true;
-						}
-						combinedContent += reasoningContent;
-					}
-					if (textContent) {
-						if (inReasoningStream) {
-							combinedContent += "</think>";
-							inReasoningStream = false;
-						}
-						combinedContent += textContent;
-					}
-					if (!reasoningContent && !textContent && inReasoningStream && choice.finish_reason) {
-						combinedContent = "</think>";
-						inReasoningStream = false;
-					}
-
-					if (combinedContent) {
-						const result = processThinkingContent(
-							combinedContent,
-							thinkingState,
-							!showThinking,
-						);
-						thinkingState = result.state;
-						for (const part of result.parts) {
-							reportThinkingPart(progress, part);
-						}
-					}
-
-					if (delta.tool_calls) {
-						for (const toolCall of delta.tool_calls) {
-							const builder = getToolCallBuilder(
-								toolCallBuilders,
-								toolCall.index,
-							);
-							if (toolCall.id) builder.id = toolCall.id;
-							if (toolCall.function?.name)
-								builder.name = toolCall.function.name;
-							if (toolCall.function?.arguments)
-								builder.arguments +=
-									toolCall.function.arguments;
-						}
-					}
-
-					if (choice.finish_reason === "tool_calls") {
-						emitToolCalls(progress, toolCallBuilders);
-					}
-				}
-			}
-
-			// Flush any thinking buffer remaining after the stream ends
-			if (thinkingState.buffer) {
-				let flushContent = thinkingState.buffer;
-				if (inReasoningStream) {
-					flushContent += THINK_CLOSE;
-				}
-				const flushResult = processThinkingContent(flushContent, { buffer: "", insideThinking: thinkingState.insideThinking }, !showThinking);
-				for (const part of flushResult.parts) {
-					reportThinkingPart(progress, part);
-				}
-			}
-		// Flush any pending tool calls not yet emitted
-			if (toolCallBuilders.size > 0) {
-				emitToolCalls(progress, toolCallBuilders);
-			}
-		} catch (error) {
-			if (!(error instanceof ApiError)) throw error;
-			throw mapApiError(error, "Custom");
-		}
-	}
-
-	provideTokenCount(
-		_model: vscode.LanguageModelChatInformation,
-		text: string | vscode.LanguageModelChatRequestMessage,
-		_token: vscode.CancellationToken,
-	): Thenable<number> {
-		if (typeof text === "string") {
-			return Promise.resolve(Math.ceil(text.length / 4));
-		}
-		let totalChars = 0;
-		for (const part of text.content) {
-			if (part instanceof vscode.LanguageModelTextPart) {
-				totalChars += part.value.length;
-			} else if (part instanceof vscode.LanguageModelToolCallPart) {
-				totalChars += part.name.length + JSON.stringify(part.input).length;
-			} else if (part instanceof vscode.LanguageModelToolResultPart) {
-				totalChars += JSON.stringify(part.content).length;
-			} else {
-				totalChars += JSON.stringify(part).length;
-			}
-		}
-		return Promise.resolve(Math.ceil(totalChars / 4));
-	}
-
-	private convertMessages(
-		messages: readonly vscode.LanguageModelChatRequestMessage[],
-	): OpenAIMessage[] {
-		return buildOpenAIMessages(messages, { supportsVision: false });
 	}
 
 	private convertTools(

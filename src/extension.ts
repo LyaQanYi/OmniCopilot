@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { OpenAICompatibleClient, ApiError, getKimiExtraHeaders } from "./api.js";
-import { MultiModelChatProvider, CustomOpenAIProvider } from "./provider.js";
+import { MultiModelChatProvider } from "./provider.js";
 import { VENDOR_CONFIGS, getVendorConfig } from "./models.js";
 import { CONTEXT_LENGTH_LIMITS, DEFAULT_CONTEXT_LENGTH, type ContextLength } from "./types.js";
 
@@ -34,21 +34,49 @@ async function runConnectionTest(): Promise<void> {
 	if (!key) return;
 
 	const vendor = getVendorConfig(picked.vendorId);
-	const firstModel = vendor?.models[0];
-	if (!firstModel) {
+	if (!vendor || vendor.models.length === 0) {
 		vscode.window.showErrorMessage("No models available for this vendor.");
 		return;
 	}
+
+	// Let the user pick the probe model — the first preset may not be
+	// available on every subscription tier (e.g. Kimi Code's k3 requires
+	// Allegretto+).
+	const modelItems = vendor.models.map((m, i) => ({
+		label: m.id,
+		description: m.name,
+		picked: i === 0,
+	}));
+	const modelPick = await vscode.window.showQuickPick(modelItems, {
+		placeHolder: "Select the model to probe with",
+	});
+	if (!modelPick) return;
+	const probeModel = vendor.models.find((m) => m.id === modelPick.label);
+	if (!probeModel) return;
 
 	const client = new OpenAICompatibleClient(key.trim());
 	const extraHeaders =
 		picked.vendorId === "moonshot" ? getKimiExtraHeaders() : undefined;
 	try {
 		await client.chat(
-			firstModel.id,
+			probeModel.id,
 			[{ role: "user", content: "Ping" }],
-			firstModel.baseUrl,
-			{ maxTokens: 1, extraHeaders },
+			probeModel.baseUrl,
+			{
+				// Vendor context is required for correct serialization (Kimi
+				// demands a thinking object, DeepSeek/MiniMax accept their
+				// vendor knobs); thinking stays on because always-thinking
+				// models reject an explicit disable, and 2048 tokens leave
+				// room for the reasoning pass.
+				maxTokens: 2048,
+				extraHeaders,
+				vendorId: picked.vendorId,
+				thinking: true,
+				// Match the picker's fallback default so vendor branches that
+				// require an effort value (Qwen-hosted GLM/DeepSeek) serialize
+				// the same request as a normal chat would.
+				thinkingEffort: "medium",
+			},
 		);
 		vscode.window.showInformationMessage(
 			`${picked.label} connection test succeeded.`,
@@ -151,90 +179,6 @@ async function setContextLength(): Promise<void> {
 	updateStatusBar();
 }
 
-// ─── Add Custom Model ID Command ─────────────────────────────────────────────
-
-async function addCustomModelId(): Promise<void> {
-	// Step 1: Pick vendor
-	const vendorItems = VENDOR_CONFIGS.map((v) => ({
-		label: v.displayName,
-		description: `${v.models.length} preset models`,
-		vendorId: v.vendorId,
-		settingsKey: v.settingsKey,
-		models: v.models,
-	}));
-
-	const vendorPick = await vscode.window.showQuickPick(vendorItems, {
-		placeHolder: "Select a provider to add a custom model ID",
-	});
-	if (!vendorPick) return;
-
-	// Step 2: Show preset models + custom input option
-	const modelItems: vscode.QuickPickItem[] = vendorPick.models.map((m) => ({
-		label: m.id,
-		description: m.name,
-		detail: m.tooltip,
-	}));
-
-	modelItems.push({
-		label: "$(edit) Custom Input...",
-		description: "Enter a custom model ID",
-		alwaysShow: true,
-	});
-
-	const modelPick = await vscode.window.showQuickPick(modelItems, {
-		placeHolder: "Select a preset model or choose custom input",
-	});
-	if (!modelPick) return;
-
-	let modelId: string;
-
-	if (modelPick.label === "$(edit) Custom Input...") {
-		// Step 3: Input box for custom model ID
-		const input = await vscode.window.showInputBox({
-			prompt: `Enter a custom model ID for ${vendorPick.label}`,
-			placeHolder: "e.g. my-custom-model-v2",
-			validateInput: (value) => {
-				if (!value.trim()) return "Model ID cannot be empty";
-				return null;
-			},
-		});
-		if (!input) return;
-		modelId = input.trim();
-	} else {
-		modelId = modelPick.label;
-	}
-
-	// Step 4: Write to settings
-	const config = vscode.workspace.getConfiguration();
-	const existing = config.get<string[]>(vendorPick.settingsKey, []);
-
-	if (existing.includes(modelId)) {
-		vscode.window.showInformationMessage(
-			`Model ID "${modelId}" already exists for ${vendorPick.label}.`,
-		);
-		return;
-	}
-
-	// Check if it's a preset model
-	const isPreset = vendorPick.models.some((m) => m.id === modelId);
-	if (isPreset) {
-		vscode.window.showInformationMessage(
-			`"${modelId}" is already a preset model for ${vendorPick.label}.`,
-		);
-		return;
-	}
-
-	await config.update(
-		vendorPick.settingsKey,
-		[...existing, modelId],
-		vscode.ConfigurationTarget.Global,
-	);
-
-	vscode.window.showInformationMessage(
-		`Added custom model ID "${modelId}" to ${vendorPick.label}.`,
-	);
-}
-
 // ─── Extension Activation ────────────────────────────────────────────────────
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -249,27 +193,11 @@ export function activate(context: vscode.ExtensionContext): void {
 		);
 	}
 
-	// Register custom OpenAI compatible provider
-	const customProvider = new CustomOpenAIProvider();
-	context.subscriptions.push(
-		vscode.lm.registerLanguageModelChatProvider(
-			"custom-openai",
-			customProvider,
-		),
-	);
-
 	// Register commands
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			"omniCopilot.testConnection",
 			runConnectionTest,
-		),
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			"omniCopilot.addCustomModelId",
-			addCustomModelId,
 		),
 	);
 

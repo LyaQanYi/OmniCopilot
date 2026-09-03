@@ -11,6 +11,8 @@ export interface ModelInfo {
 	baseUrl: string;
 	thinking: boolean;
 	thinkingEffortSupport: boolean;
+	/** Thinking permanently on: no picker menu, "None" is not available. */
+	thinkingLocked?: boolean;
 	capabilities: {
 		imageInput: boolean;
 		toolCalling: boolean;
@@ -21,10 +23,16 @@ export interface VendorConfig {
 	vendorId: string;
 	displayName: string;
 	defaultBaseUrl: string;
-	settingsKey: string;
 	models: ModelInfo[];
 	/** Whether this vendor's API supports controllable thinking mode */
 	thinkingCapable: boolean;
+	/**
+	 * Thinking arrives interleaved inside `content` as literal <think>…</think>
+	 * tags (MiniMax's native API). When false (default), thinking comes via
+	 * `reasoning_content` deltas and `content` is emitted verbatim — answer
+	 * text quoting the tags must never be mistaken for delimiters.
+	 */
+	inlineThinkTags?: boolean;
 }
 
 export interface OpenAIMessage {
@@ -58,10 +66,22 @@ export interface OpenAITool {
 	};
 }
 
+/** OpenAI-compatible usage payload (final streaming chunk / chat response). */
+export interface OpenAIUsage {
+	prompt_tokens: number;
+	completion_tokens: number;
+	total_tokens: number;
+	prompt_tokens_details?: {
+		cached_tokens?: number;
+	};
+}
+
 export interface StreamChunk {
 	id: string;
 	created: number;
 	model: string;
+	/** Present on the final chunk when stream_options.include_usage was sent. */
+	usage?: OpenAIUsage | null;
 	choices: Array<{
 		index: number;
 		delta: {
@@ -130,16 +150,77 @@ export const THINKING_EFFORT_SCHEMA = {
 	},
 } as const;
 
-// DeepSeek-specific menu — V4 API exposes only "high" and "max" plus none.
-// Mirrors DeepSeekforCopilot's UX one-to-one.
-export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
+// Qwen-hosted DeepSeek V4 Pro (non-snapshot) menu — the API rejects "low"
+// on this variant, so the honest domain is None / High / Max.
+export const THINKING_EFFORT_NO_LOW_SCHEMA = {
 	properties: {
 		reasoningEffort: {
 			type: "string",
 			title: "Thinking Effort",
 			enum: ["none", "high", "max"],
 			enumItemLabels: ["None", "High", "Max"],
-			enumDescriptions: ["No reasoning", "Balanced", "Max reasoning"],
+			enumDescriptions: [
+				"Disables thinking",
+				"Enhanced reasoning (API default)",
+				"Deepest reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// Three-level effort menu (no "None") for models whose thinking is always
+// on and cannot be disabled server-side: Kimi K3 (k3 / k3-256k / kimi-k3)
+// and GLM-5.3 / GLM-5.3-Flash. Effort maps to top-level reasoning_effort =
+// "low" | "high" | "max" (Code endpoint default: high).
+export const ALWAYS_THINKING_EFFORT_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["low", "high", "max"],
+			enumItemLabels: ["Low", "High", "Max"],
+			enumDescriptions: [
+				"Faster responses",
+				"Balanced",
+				"Deepest reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
+// Models whose thinking is always on server-side and whose picker exposes
+// the three-level effort menu. Single source of truth: the picker branch and
+// the provider's always-on enforcement both read this set, so a legacy
+// "none" from programmatic callers can never serialize a disabling thinking
+// object for them.
+export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
+	"k3",
+	"k3-256k",
+	"kimi-k3",
+	"glm-5.3",
+	"glm-5.3-flash",
+]);
+
+// DeepSeek V4 menu — the one effort-capable family where "None" genuinely
+// disables thinking (an explicit thinking:{type:"disabled"} is sent), so a
+// four-level menu including None is honest here.
+export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "low", "high", "max"],
+			enumItemLabels: ["None", "Low", "High", "Max"],
+			enumDescriptions: [
+				"Disables thinking (sent explicitly to the API)",
+				"Lighter reasoning",
+				"Enhanced reasoning (API default)",
+				"Deepest reasoning",
+			],
 			default: "high",
 			group: "navigation",
 		},
@@ -147,7 +228,7 @@ export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
 } as const;
 
 // 2-level menu for models that support thinking but no effort knob
-// (GLM, Kimi, MiniMax, Volcengine reasoning models).
+// (pre-5.3 GLM, Kimi, MiniMax, Volcengine reasoning models).
 export const THINKING_TOGGLE_SCHEMA = {
 	properties: {
 		reasoningEffort: {
@@ -175,6 +256,8 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 	readonly configurationSchema?:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
+		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 };
 
@@ -235,12 +318,31 @@ export function toLanguageModelChatInformation(
 		capabilities: model.capabilities,
 	};
 	if (!model.thinking) return base;
+	if (model.thinkingLocked) return base;
 	let schema:
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
+		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
+		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_TOGGLE_SCHEMA;
 	if (!model.thinkingEffortSupport) {
 		schema = THINKING_TOGGLE_SCHEMA;
+	} else if (ALWAYS_THINKING_MODEL_IDS.has(model.id)) {
+		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
+	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
+		// The non-snapshot DeepSeek V4 Pro rejects "low" on DashScope —
+		// see THINKING_EFFORT_NO_LOW_SCHEMA.
+		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
+	} else if (
+		vendorId === "qwen" &&
+		(model.id === "deepseek-v4-pro-0813" ||
+			model.id === "deepseek-v4-flash-0731" ||
+			model.id === "glm-5.2")
+	) {
+		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
+		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
+		// cannot express.
+		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else if (vendorId === "deepseek") {
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else {
