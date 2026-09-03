@@ -130,12 +130,20 @@ export class OpenAICompatibleClient {
 		messages: OpenAIMessage[],
 		stream: boolean,
 		options?: ChatOptions,
+		includeUsage = true,
 	): string {
 		const body: Record<string, unknown> = {
 			model,
 			messages,
 			stream,
 		};
+
+		if (stream && includeUsage) {
+			// Ask for a final usage chunk so the chat UI's context gauge can
+			// show real token counts (all 8 vendors document support; a 400/422
+			// from an endpoint that rejects it triggers one retry without it).
+			body.stream_options = { include_usage: true };
+		}
 
 		if (options?.maxTokens !== undefined) {
 			// MiniMax deprecates max_tokens in favor of max_completion_tokens
@@ -358,15 +366,27 @@ export class OpenAICompatibleClient {
 		stream: boolean,
 		options?: ChatOptions,
 		signal?: AbortSignal,
+		includeUsage = true,
 	): Promise<Response> {
 		const url = `${baseUrl}${CHAT_ENDPOINT}`;
 		const headers = { ...this.getHeaders(), ...options?.extraHeaders };
-		const response = await fetch(url, {
+		let response = await fetch(url, {
 			method: "POST",
 			headers,
-			body: this.buildRequestBody(model, messages, stream, options),
+			body: this.buildRequestBody(model, messages, stream, options, includeUsage),
 			signal,
 		});
+
+		// Some endpoints may reject stream_options with 400/422 — retry once
+		// without it (usage reporting is best-effort, never worth failing on).
+		if (!response.ok && includeUsage && stream && (response.status === 400 || response.status === 422)) {
+			response = await fetch(url, {
+				method: "POST",
+				headers,
+				body: this.buildRequestBody(model, messages, stream, options, false),
+				signal,
+			});
+		}
 
 		if (response.ok) {
 			return response;

@@ -728,6 +728,9 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 		defaultBaseUrl: MINIMAX_BASE_URL,
 		models: MINIMAX_MODELS,
 		thinkingCapable: true,
+		// MiniMax streams thinking inline in content via <think> tags (see
+		// applyThinkingParams in api.ts) — the only vendor that needs tag parsing.
+		inlineThinkTags: true,
 	},
 	{
 		vendorId: "volcengine",

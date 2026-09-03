@@ -56,6 +56,7 @@ The following platforms have been tested and confirmed working:
   - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, Volcengine reasoning models) — MiniMax-M3's None genuinely disables thinking
   - Thinking-locked models expose no menu at all: K2.7 Code (Code Plan `kimi-for-coding`(-highspeed), Open Platform `kimi-k2.7-code`(-highspeed)) and MiniMax M2.x — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
+- **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
 - **Vision Support**: Vision-capable models (deepseek-v4-flash-vision-exp, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
@@ -151,6 +152,12 @@ Contributions are welcome! Here's how you can help:
 - GitHub Copilot extension
 
 ## Changelog
+
+### 0.4.1 — 2026-09-03
+
+- **Fix: answer text leaking into the thinking block** — when a model's answer quoted literal `<think>` / `</think>` strings (e.g. while reviewing this very codebase), the tag parser mistook them for delimiters and rerouted answer segments into the collapsible thinking section. Thinking now flows through two dedicated paths: `reasoning_content` deltas map straight to `LanguageModelThinkingPart`, `content` deltas stream verbatim as text; literal-tag parsing only runs for vendors that inline thinking inside `content` (MiniMax native API, opt-in via `inlineThinkTags`)
+- **Context gauge no longer stuck at 0**: streams `stream_options: { include_usage: true }` (with an automatic retry without the flag on 400/422) and reports the real usage to Copilot Chat via a `LanguageModelDataPart` (`usage` mime), lighting up the token indicator for extension-contributed models
+- **CJK-aware token estimation** in `provideTokenCount`: Chinese/Japanese/Korean text counts ≈ 1 token per character instead of `length / 4`, fixing 4-6x undercounts in Chinese-heavy conversations
 
 ### 0.4.0 — 2026-08-30
 

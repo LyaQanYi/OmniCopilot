@@ -26,6 +26,13 @@ export interface VendorConfig {
 	models: ModelInfo[];
 	/** Whether this vendor's API supports controllable thinking mode */
 	thinkingCapable: boolean;
+	/**
+	 * Thinking arrives interleaved inside `content` as literal <think>…</think>
+	 * tags (MiniMax's native API). When false (default), thinking comes via
+	 * `reasoning_content` deltas and `content` is emitted verbatim — answer
+	 * text quoting the tags must never be mistaken for delimiters.
+	 */
+	inlineThinkTags?: boolean;
 }
 
 export interface OpenAIMessage {
@@ -59,10 +66,22 @@ export interface OpenAITool {
 	};
 }
 
+/** OpenAI-compatible usage payload (final streaming chunk / chat response). */
+export interface OpenAIUsage {
+	prompt_tokens: number;
+	completion_tokens: number;
+	total_tokens: number;
+	prompt_tokens_details?: {
+		cached_tokens?: number;
+	};
+}
+
 export interface StreamChunk {
 	id: string;
 	created: number;
 	model: string;
+	/** Present on the final chunk when stream_options.include_usage was sent. */
+	usage?: OpenAIUsage | null;
 	choices: Array<{
 		index: number;
 		delta: {

@@ -56,6 +56,7 @@
   - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、火山引擎推理款）——MiniMax-M3 的 None 是真关闭思考
   - 思考锁定的模型不提供菜单：K2.7 Code（Code Plan 的 kimi-for-coding(-highspeed)、开放平台的 kimi-k2.7-code(-highspeed)）与 MiniMax M2.x——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
+- **上下文用量显示**：请求携带 `stream_options: { include_usage: true }` 并把真实 token 用量回报给 Copilot Chat，上下文指示条显示实际用量而不是 0；首轮拿到真实用量前以 CJK 感知估算兜底（中文 ≈ 1 token/字）
 - **视觉支持**：支持视觉的模型（deepseek-v4-flash-vision-exp、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 
@@ -151,6 +152,12 @@ src/
 - GitHub Copilot 扩展
 
 ## 更新日志
+
+### 0.4.1 — 2026-09-03
+
+- **修复：正文被渲染进思考块**——当模型回答中引用了 `<think>` / `</think>` 字面量（比如审查本项目的标签解析代码）时，标签解析器会把字面量误当定界符，把正文片段错路由进可折叠的思考区。思考流现在走两条独立通道：`reasoning_content` 增量直接映射为 `LanguageModelThinkingPart`，`content` 增量逐字作为正文输出；字面量标签解析仅对在 `content` 里内联思考的提供方（MiniMax 原生 API，经 `inlineThinkTags` 显式开启）生效
+- **上下文指示条不再恒为 0**：请求携带 `stream_options: { include_usage: true }`（400/422 时自动去参重试），并通过 `LanguageModelDataPart`（`usage` mime）把真实用量回报给 Copilot Chat，点亮扩展贡献模型的 token 指示条
+- **`provideTokenCount` 改为 CJK 感知估算**：中日韩文本按 ≈ 1 token/字计，替代原先的 `长度 / 4`，修正中文对话 4-6 倍的低估
 
 ### 0.4.0 — 2026-08-30
 
