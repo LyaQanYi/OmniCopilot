@@ -58,7 +58,7 @@ The following platforms have been tested and confirmed working:
   - Thinking-locked models expose no menu at all: K2.7 Code (Code Plan `kimi-for-coding`(-highspeed), Open Platform `kimi-k2.7-code`(-highspeed)) and MiniMax M2.x — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
-- **Vision Support**: Vision-capable models (deepseek-v4-flash-vision-exp, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash) can read images attached in Copilot Chat
+- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
 ## Usage
