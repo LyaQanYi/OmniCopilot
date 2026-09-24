@@ -25,7 +25,7 @@ const DEEPSEEK_MODELS: ModelInfo[] = [
 		family: "deepseek",
 		version: "v4-pro",
 		tooltip:
-			"DeepSeek V4 Pro — legacy model; per DeepSeek's 2026-09-10 announcement, requests are routed to V4.1 Flash and billed at Flash rates until V4.1 Pro launches",
+			"DeepSeek V4 Pro — DeepSeek-V4-Pro-0813; service retained beyond 2026-09-14 with unchanged pricing, per DeepSeek's update log",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 384000,
 		baseUrl: DEEPSEEK_BASE_URL,
