@@ -8,8 +8,9 @@
 
 | 提供方 | Vendor ID | 模型 |
 |--------|-----------|------|
-| DeepSeek | `deepseek` | deepseek-v4-flash, deepseek-v4-pro, deepseek-v4-flash-vision-exp |
+| DeepSeek | `deepseek` | deepseek-flash, deepseek-v4-pro |
 | GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.3, GLM-5.3-Flash |
+| GLM Coding Plan | `glm-coding-plan` | GLM-5.3, GLM-5.3-Flash |
 | Kimi Code Plan | `moonshot` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
@@ -26,7 +27,7 @@
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API——vendor ID 变更后待复测）
 
-> [!NOTE]
+> [!NOTE]国际版 **GLM Coding Plan**（Z.AI，`api.z.ai/api/coding/paas/v4`）同样仅限官方指定工具使用；Team Plan 成员必须使用团队计划专属 Key（与其他 Z.AI API Key 不通用）。
 > **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用不保证成功，消耗可能按 API 按量计费而非套餐积分；且智谱《使用须知》将非指定工具中的调用视为违规，存在限流或账号受限的风险。请留意账单与账号状态。
 <!---->
 
@@ -40,7 +41,7 @@
 - [ ] 测试 Kimi 开放平台
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
-- [ ] 支持 GLM 国际版
+- [ ] 测试 GLM Coding Plan（Z.AI 国际版）
 - [ ] 支持硅基流动国际版
 - [ ] 验证思考力度（DeepSeek None/High/Max；其他 None/Low/Medium/High 或 None/On）在各提供方上是否真实生效
 - [ ] 未完待续……

@@ -2,47 +2,36 @@ import type { ModelInfo, VendorConfig } from "./types.js";
 
 // ─── DeepSeek ────────────────────────────────────────────────────────────────
 
-const DEEPSEEK_BASE_URL = "https://api.deepseek.com/v1";
+// Official BASE URL (OpenAI format) per https://api-docs.deepseek.com/zh-cn/quick_start/pricing
+const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 
 const DEEPSEEK_MODELS: ModelInfo[] = [
 	{
-		id: "deepseek-v4-flash",
-		name: "DeepSeek V4 Flash",
+		id: "deepseek-flash",
+		name: "DeepSeek Flash",
 		family: "deepseek",
-		version: "v4-flash",
-		tooltip: "DeepSeek V4 Flash — fast, general-purpose reasoning model",
-		maxInputTokens: 1000000,
-		maxOutputTokens: 384000,
-		baseUrl: DEEPSEEK_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
-		id: "deepseek-v4-pro",
-		name: "DeepSeek V4 Pro",
-		family: "deepseek",
-		version: "v4-pro",
-		tooltip: "DeepSeek V4 Pro — most capable reasoning model",
-		maxInputTokens: 1000000,
-		maxOutputTokens: 384000,
-		baseUrl: DEEPSEEK_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
-		id: "deepseek-v4-flash-vision-exp",
-		name: "DeepSeek V4 Flash Vision (Exp)",
-		family: "deepseek",
-		version: "v4-flash-vision-exp",
-		tooltip: "DeepSeek V4 Flash Vision (Exp) — experimental multimodal model, vision support",
+		version: "flash",
+		tooltip: "DeepSeek Flash — DeepSeek-V4.1-Flash, fast general-purpose model, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 384000,
 		baseUrl: DEEPSEEK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4-pro",
+		name: "DeepSeek V4 Pro",
+		family: "deepseek",
+		version: "v4-pro",
+		tooltip:
+			"DeepSeek V4 Pro — most capable reasoning model; being phased out, after 2026-09-14 requests route to V4.1 Flash",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: DEEPSEEK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];
 
@@ -73,6 +62,43 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
 		baseUrl: ZHIPU_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── GLM Coding Plan (Z.AI, international) ──────────────────────────────────
+
+// OpenAI Chat Completions endpoint of the GLM Coding Plan per
+// https://docs.z.ai/devpack/quickstart (Anthropic: /api/anthropic,
+// OpenAI Responses: /api/v1 — this extension speaks Chat Completions).
+const ZAI_CODING_BASE_URL = "https://api.z.ai/api/coding/paas/v4";
+
+// Same model lineup as the CN plan; only the endpoint differs.
+const ZAI_MODELS: ModelInfo[] = [
+	{
+		id: "glm-5.3",
+		name: "GLM-5.3",
+		family: "glm",
+		version: "5.3",
+		tooltip: "GLM-5.3 — flagship, thinking always on, 1M context",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-flash",
+		name: "GLM-5.3 Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip: "GLM-5.3 Flash — fast multimodal flagship, thinking always on, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
@@ -699,6 +725,13 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 		displayName: "GLM Coding Plan CN",
 		defaultBaseUrl: ZHIPU_BASE_URL,
 		models: ZHIPU_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "glm-coding-plan",
+		displayName: "GLM Coding Plan",
+		defaultBaseUrl: ZAI_CODING_BASE_URL,
+		models: ZAI_MODELS,
 		thinkingCapable: true,
 	},
 	{
