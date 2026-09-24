@@ -314,6 +314,7 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "qwen":
 		case "moonshot":
 		case "moonshot-open":
+		case "glm-coding-plan":
 		case "glm-coding-plan-cn":
 			return true;
 		default:
@@ -541,6 +542,7 @@ export class MultiModelChatProvider
 		// host may drop thinking parts from history, so backfill "".
 		const needsReasoningBackfill =
 			this.vendorConfig.vendorId === "deepseek" ||
+			this.vendorConfig.vendorId === "glm-coding-plan" ||
 			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
 			(this.vendorConfig.vendorId === "moonshot-open" && thinking) ||
 			(this.vendorConfig.vendorId === "qwen" &&

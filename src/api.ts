@@ -167,9 +167,14 @@ export class OpenAICompatibleClient {
 			body.tools = options.tools;
 		}
 
-		// Zhipu only streams tool-call deltas when tool_stream is enabled
-		// alongside stream:true (see the GLM-5.3 migration guide).
-		if (options?.vendorId === "glm-coding-plan-cn" && stream && options.tools?.length) {
+		// Zhipu/Z.AI only stream tool-call deltas when tool_stream is
+		// enabled alongside stream:true (see the GLM-5.3 migration guide).
+		if (
+			(options?.vendorId === "glm-coding-plan-cn" ||
+				options?.vendorId === "glm-coding-plan") &&
+			stream &&
+			options.tools?.length
+		) {
 			body.tool_stream = true;
 		}
 
@@ -209,9 +214,9 @@ export class OpenAICompatibleClient {
 				// reasoning_effort still spends (and bills) reasoning tokens
 				// for output we then strip client-side.
 				// Effort domain: low|medium|high|xhigh|max where medium/xhigh
-				// alias "high"; legacy "medium" maps there too.
-				// deepseek-v4-flash-vision-exp shares the flash thinking mode
-				// exactly (same reasoning_effort domain and disable format).
+				// alias "high"; legacy "medium" maps there too. Retired
+				// names (deepseek-v4-flash, deepseek-v4-flash-vision-exp)
+				// are served by deepseek-flash and share this behavior.
 				if (thinking) {
 					body.reasoning_effort =
 						effort === "max" ? "max" : effort === "low" ? "low" : "high";
@@ -316,20 +321,22 @@ export class OpenAICompatibleClient {
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
 					break;
 
-			case "glm-coding-plan-cn":
-				// GLM-5.3 / 5.3-Flash always think — sending
-				// thinking.type:"disabled" errors, so nothing is sent to turn
-				// thinking off ("None" just strips output client-side).
-				// reasoning_effort is low|high|max (API default max).
-				// clear_thinking (preserved thinking) is enabled by default on
-				// the Coding endpoint, so no thinking object is needed at all.
-				// "medium" (the picker's fallback default) maps to "high" so
-				// the request honors the menu's declared default instead of
-				// silently falling back to the API default "max".
-				if (thinking && effort) {
-					body.reasoning_effort = effort === "medium" ? "high" : effort;
-				}
-				break;
+				case "glm-coding-plan":
+				case "glm-coding-plan-cn":
+					// GLM-5.3 / 5.3-Flash always think — sending
+					// thinking.type:"disabled" errors, so nothing is sent to turn
+					// thinking off ("None" just strips output client-side).
+					// reasoning_effort is low|high|max (API default max).
+					// clear_thinking (preserved thinking) is enabled by default on
+					// the Coding endpoint, so no thinking object is needed at all.
+					// "medium" (the picker's fallback default) maps to "high" so
+					// the request honors the menu's declared default instead of
+					// silently falling back to the API default "max".
+					// The Z.AI international Coding endpoint behaves identically.
+					if (thinking && effort) {
+						body.reasoning_effort = effort === "medium" ? "high" : effort;
+					}
+					break;
 
 				case "minimax":
 					// MiniMax takes thinking: {type: "adaptive" | "disabled"}.

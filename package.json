@@ -2,7 +2,7 @@
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
 	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan) in GitHub Copilot Chat as language model providers.",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -39,6 +39,19 @@
 						"apiKey": {
 							"type": "string",
 							"description": "API key from open.bigmodel.cn",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "glm-coding-plan",
+				"displayName": "GLM Coding Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from Z.AI GLM Coding Plan (z.ai/manage-apikey, individual plan key; team plan members must use the team plan key)",
 							"secret": true
 						}
 					}
