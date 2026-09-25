@@ -157,7 +157,7 @@ Contributions are welcome! Here's how you can help:
 ### 0.4.3 — 2026-09-25
 
 - **Volcengine lineups realigned** with the 2026-09-23/24 plan overviews: added `doubao-seed-2.1-pro`, `doubao-seed-2.1-lite`, `kimi-k2.8-preview` (1M context / 1M output), `deepseek-v4.1-flash` (native vision), plus `doubao-seed-2.0-mini` and `kimi-k3` now also on Coding Plan; removed the deprecated `doubao-seed-2.1-turbo` and `doubao-seed-2.0-lite` (offline 2026-10-09); length limits corrected per the official tables (evolving 256K output, MiniMax-M3 128K, K3 128K)
-- **Volcengine reasoning_effort levels** per the deep-thinking doc (2026-09-22): Doubao Seed 2.1 series / evolving / 2.0-mini get None/Low/Medium/High; Volcengine-hosted DeepSeek gets None/Low/High/Max (v4-flash/v4-pro map Max→high per the official compatibility table); `glm-5.3-flash` moves from locked to an always-on Low/High/Max menu (its thinking cannot be disabled, default max)
+- **Volcengine reasoning_effort levels** per the deep-thinking doc (2026-09-22): Doubao Seed 2.1 series / evolving / 2.0-mini get None/Low/Medium/High; Volcengine-hosted DeepSeek gets None/Low/High/Max (v4-flash/v4-pro map Max→high per the official compatibility table); `glm-5.3-flash` moves from locked to an always-on Low/High/Max menu (its thinking cannot be disabled; menu default High, API default max)
 
 ### 0.4.2 — 2026-09-24
 

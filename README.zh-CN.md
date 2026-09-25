@@ -157,7 +157,7 @@ src/
 ### 0.4.3 — 2026-09-25
 
 - **火山引擎模型列表对齐官方 09-23/24 套餐概览**：新增 `doubao-seed-2.1-pro`、`doubao-seed-2.1-lite`、`kimi-k2.8-preview`（1M 上下文 / 1M 输出）、`deepseek-v4.1-flash`（原生视觉），并补齐 Coding Plan 的 `doubao-seed-2.0-mini` 与 `kimi-k3`；移除即将下线的 `doubao-seed-2.1-turbo`、`doubao-seed-2.0-lite`（10-09 下线）；按官方长度表修正参数（evolving 输出 256K、MiniMax-M3 128K、K3 128K）
-- **火山引擎接入 reasoning_effort 思考等级**（深度思考文档 2026-09-22）：Doubao Seed 2.1 系列 / evolving / 2.0-mini 开放 None/Low/Medium/High；火山托管 DeepSeek 开放 None/Low/High/Max（v4-flash/v4-pro 按官方兼容表 Max→high）；`glm-5.3-flash` 由锁定改为恒开 Low/High/Max 三档菜单（思考不可关闭，默认 max）
+- **火山引擎接入 reasoning_effort 思考等级**（深度思考文档 2026-09-22）：Doubao Seed 2.1 系列 / evolving / 2.0-mini 开放 None/Low/Medium/High；火山托管 DeepSeek 开放 None/Low/High/Max（v4-flash/v4-pro 按官方兼容表 Max→high）；`glm-5.3-flash` 由锁定改为恒开 Low/High/Max 三档菜单（思考不可关闭；菜单默认 High，API 默认 max）
 
 ### 0.4.2 — 2026-09-24
 
