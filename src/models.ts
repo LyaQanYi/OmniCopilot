@@ -479,20 +479,6 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "doubao-seed-2.1-turbo",
-		name: "Doubao Seed 2.1 Turbo",
-		family: "volcengine",
-		version: "seed-2.1-turbo",
-		tooltip:
-			"Doubao Seed 2.1 Turbo — being deprecated 2026-10-09, migrate to doubao-seed-2.1-pro; vision support, 256K context, 64K output",
-		maxInputTokens: 262144,
-		maxOutputTokens: 65536,
-		baseUrl: VOLCENGINE_CODING_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		capabilities: { imageInput: true, toolCalling: true },
-	},
-	{
 		id: "doubao-seed-evolving",
 		name: "Doubao Seed Evolving",
 		family: "volcengine",
@@ -505,20 +491,6 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		thinking: true,
 		thinkingEffortSupport: false,
 		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
-		id: "doubao-seed-2.0-lite",
-		name: "Doubao Seed 2.0 Lite",
-		family: "volcengine",
-		version: "seed-2.0-lite",
-		tooltip:
-			"Doubao Seed 2.0 Lite — being deprecated, migrate to doubao-seed-2.1-lite; vision support, 256K context",
-		maxInputTokens: 262144,
-		maxOutputTokens: 131072,
-		baseUrl: VOLCENGINE_CODING_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "minimax-m3",
@@ -664,20 +636,6 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
-		id: "doubao-seed-2.0-lite",
-		name: "Doubao Seed 2.0 Lite",
-		family: "volcengine",
-		version: "seed-2.0-lite",
-		tooltip:
-			"Doubao Seed 2.0 Lite — being deprecated, migrate to doubao-seed-2.1-lite; vision support, 256K context",
-		maxInputTokens: 262144,
-		maxOutputTokens: 131072,
-		baseUrl: VOLCENGINE_AGENT_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		capabilities: { imageInput: true, toolCalling: true },
-	},
-	{
 		id: "doubao-seed-2.1-lite",
 		name: "Doubao Seed 2.1 Lite",
 		family: "volcengine",
@@ -716,20 +674,6 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		thinking: true,
 		thinkingEffortSupport: false,
 		thinkingLocked: true,
-		capabilities: { imageInput: true, toolCalling: true },
-	},
-	{
-		id: "doubao-seed-2.1-turbo",
-		name: "Doubao Seed 2.1 Turbo",
-		family: "volcengine",
-		version: "seed-2.1-turbo",
-		tooltip:
-			"Doubao Seed 2.1 Turbo — being deprecated 2026-10-09, migrate to doubao-seed-2.1-pro; vision support, 256K context, 256K output",
-		maxInputTokens: 262144,
-		maxOutputTokens: 262144,
-		baseUrl: VOLCENGINE_AGENT_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
