@@ -448,7 +448,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -462,7 +462,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -475,7 +475,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -489,7 +489,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -573,8 +573,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
-		thinkingLocked: true,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -587,7 +586,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -600,7 +599,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -614,7 +613,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];
@@ -632,7 +631,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -646,7 +645,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -659,7 +658,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -672,8 +671,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
-		thinkingLocked: true,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -687,7 +685,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -701,7 +699,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 262144,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -770,7 +768,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -799,7 +797,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		maxOutputTokens: 384000,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];

@@ -343,6 +343,17 @@ export function toLanguageModelChatInformation(
 		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
 		// cannot express.
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
+	} else if (
+		(vendorId === "volcengine" || vendorId === "volcengine-agent-plan") &&
+		(model.id === "deepseek-v4-flash" ||
+			model.id === "deepseek-v4-pro" ||
+			model.id === "deepseek-v4.1-flash")
+	) {
+		// Volcengine-hosted DeepSeek per the deep-thinking doc: v4.1-flash
+		// takes low/high/max natively; v4-flash/v4-pro map medium→low and
+		// max→high (see applyThinkingParams in api.ts), so the honest menu
+		// is the DeepSeek None/Low/High/Max domain without Medium.
+		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else if (vendorId === "deepseek") {
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else {

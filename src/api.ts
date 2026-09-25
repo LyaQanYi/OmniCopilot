@@ -315,10 +315,39 @@ export class OpenAICompatibleClient {
 
 				case "volcengine":
 				case "volcengine-agent-plan":
-					// Volcengine takes thinking: {type: "enabled" | "disabled"};
-					// Doubao Seed 2.0/2.1 default thinking ON, so "None" must
-					// send an explicit disable.
+					// Volcengine deep-thinking doc (2026-09-22). thinking.type
+					// "enabled" is the default for every plan model except
+					// glm-5.3-flash, which accepts "enabled" only — its
+					// always-on behavior is enforced upstream via
+					// ALWAYS_THINKING_MODEL_IDS, so a disable can never be
+					// serialized for it; its reasoning_effort domain is
+					// low|high|max (API default max) and maps 1:1 from the
+					// always-on menu.
+					// reasoning_effort mapping for the rest (official table):
+					// - doubao-seed-2.1-pro/lite/evolving (default high) and
+					//   doubao-seed-2.0-mini (default medium): low/medium/high
+					//   pass through natively (menu Max not offered).
+					// - deepseek-v4.1-flash (default high): low/high/max pass
+					//   through natively.
+					// - deepseek-v4-flash/v4-pro (default high): medium→low and
+					//   max→high server-side, so Medium is not offered and the
+					//   menu's Max maps to high here.
+					if (model === "glm-5.3-flash") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort;
+						}
+						break;
+					}
+					// Doubao Seed / DeepSeek default thinking ON, so "None"
+					// must send an explicit disable.
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					if (thinking && effort) {
+						body.reasoning_effort =
+							(model === "deepseek-v4-flash" || model === "deepseek-v4-pro") &&
+							effort === "max"
+								? "high"
+								: effort;
+					}
 					break;
 
 				case "glm-coding-plan":
