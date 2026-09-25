@@ -15,8 +15,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-turbo, doubao-seed-evolving, doubao-seed-2.0-lite, kimi-k2.7-code, minimax-m3, deepseek-v4-flash, deepseek-v4-pro, glm-5.3, glm-5.3-flash |
-| Volcengine Agent Plan CN | `volcengine-agent-plan` | the Coding Plan set plus doubao-seed-2.0-mini and kimi-k3 |
+| Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
+| Volcengine Agent Plan CN | `volcengine-agent-plan` | the same 13-model set (kimi-k3 requires Medium+ plans) |
 
 ## Tested & Working
 
@@ -58,7 +58,7 @@ The following platforms have been tested and confirmed working:
   - Thinking-locked models expose no menu at all: K2.7 Code (Code Plan `kimi-for-coding`(-highspeed), Open Platform `kimi-k2.7-code`(-highspeed)) and MiniMax M2.x — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
-- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash) can read images attached in Copilot Chat
+- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash, and Volcengine-hosted doubao-seed-2.1-pro/lite, doubao-seed-2.0-mini, doubao-seed-evolving, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, minimax-m3, glm-5.3-flash, deepseek-v4.1-flash) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
 ## Usage
@@ -153,6 +153,17 @@ Contributions are welcome! Here's how you can help:
 - GitHub Copilot extension
 
 ## Changelog
+
+### 0.4.3 — 2026-09-25
+
+- **Volcengine lineups realigned** with the 2026-09-23/24 plan overviews: added `doubao-seed-2.1-pro`, `doubao-seed-2.1-lite`, `kimi-k2.8-preview` (1M context / 1M output), `deepseek-v4.1-flash` (native vision), plus `doubao-seed-2.0-mini` and `kimi-k3` now also on Coding Plan; removed the deprecated `doubao-seed-2.1-turbo` and `doubao-seed-2.0-lite` (offline 2026-10-09); length limits corrected per the official tables (evolving 256K output, MiniMax-M3 128K, K3 128K)
+- **Volcengine reasoning_effort levels** per the deep-thinking doc (2026-09-22): Doubao Seed 2.1 series / evolving / 2.0-mini get None/Low/Medium/High; Volcengine-hosted DeepSeek gets None/Low/High/Max (v4-flash/v4-pro map Max→high per the official compatibility table); `glm-5.3-flash` moves from locked to an always-on Low/High/Max menu (its thinking cannot be disabled; menu default High, API default max)
+
+### 0.4.2 — 2026-09-24
+
+- **DeepSeek aligned with the V4.1 lineup**: `deepseek-v4-flash` → `deepseek-flash` (DeepSeek-V4.1-Flash, now with image input), retired `deepseek-v4-flash-vision-exp`; BASE URL updated to `https://api.deepseek.com`; `deepseek-v4-pro` tooltip reflects the service-retained-with-unchanged-pricing status per the update log
+- **New provider: GLM Coding Plan (Z.AI international)** — `glm-coding-plan` at `https://api.z.ai/api/coding/paas/v4`, same GLM-5.3 / 5.3-Flash lineup and thinking behavior as the CN plan
+- **tsconfig**: explicit `"types": ["node"]` — TS 6.0 (bundled with current VS Code) no longer auto-includes `node_modules/@types`, which surfaced 10 false "Cannot find name" diagnostics in the editor
 
 ### 0.4.1 — 2026-09-03
 

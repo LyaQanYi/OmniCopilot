@@ -315,10 +315,56 @@ export class OpenAICompatibleClient {
 
 				case "volcengine":
 				case "volcengine-agent-plan":
-					// Volcengine takes thinking: {type: "enabled" | "disabled"};
-					// Doubao Seed 2.0/2.1 default thinking ON, so "None" must
-					// send an explicit disable.
+					// Volcengine deep-thinking doc (2026-09-22). thinking.type
+					// "enabled" is the default for every plan model except
+					// glm-5.3-flash, which accepts "enabled" only — its
+					// always-on behavior is enforced upstream via
+					// ALWAYS_THINKING_MODEL_IDS, so a disable can never be
+					// serialized for it; its reasoning_effort domain is
+					// low|high|max (API default max) and maps 1:1 from the
+					// always-on menu.
+					// reasoning_effort mapping for the rest (official table):
+					// - doubao-seed-2.1-pro/lite/evolving (default high) and
+					//   doubao-seed-2.0-mini (default medium): low/medium/high
+					//   pass through natively (menu Max not offered).
+					// - deepseek-v4.1-flash (default high): low/high/max pass
+					//   through natively.
+					// - deepseek-v4-flash/v4-pro (default high): medium→low and
+					//   max→high server-side, so Medium is not offered and the
+					//   menu's Max maps to high here.
+					if (model === "glm-5.3-flash") {
+						if (thinking && effort) {
+							// medium is out of the low|high|max domain; the
+							// picker always sends an in-domain value, so this
+							// only normalizes the legacy/fallback default.
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
+						}
+						break;
+					}
+					// Doubao Seed / DeepSeek default thinking ON, so "None"
+					// must send an explicit disable.
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					if (thinking && effort) {
+						// Normalize the generic "medium" fallback (and any
+						// legacy caller) per model: the Doubao menus include
+						// Medium so it passes through; the DeepSeek menus do
+						// not, and v4.1-flash maps medium→high per the
+						// official table while v4-flash/v4-pro map it to low
+						// server-side — normalize both to their declared
+						// default "high" so the fallback never silently
+						// downgrades reasoning.
+						const legacyDeepSeek =
+							model === "deepseek-v4-flash" ||
+							model === "deepseek-v4-pro" ||
+							model === "deepseek-v4.1-flash";
+						if (effort === "medium" && legacyDeepSeek) {
+							body.reasoning_effort = "high";
+						} else if (effort === "max" && legacyDeepSeek && model !== "deepseek-v4.1-flash") {
+							body.reasoning_effort = "high";
+						} else {
+							body.reasoning_effort = effort;
+						}
+					}
 					break;
 
 				case "glm-coding-plan":

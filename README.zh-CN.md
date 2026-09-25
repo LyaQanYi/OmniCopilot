@@ -15,8 +15,8 @@
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| 火山引擎编程计划 Coding Plan | `volcengine` | doubao-seed-2.1-turbo, doubao-seed-evolving, doubao-seed-2.0-lite, kimi-k2.7-code, minimax-m3, deepseek-v4-flash, deepseek-v4-pro, glm-5.3, glm-5.3-flash |
-| 火山引擎智能体计划 Agent Plan | `volcengine-agent-plan` | Coding Plan 全部模型，另加 doubao-seed-2.0-mini 与 kimi-k3 |
+| 火山引擎编程计划 Coding Plan | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
+| 火山引擎智能体计划 Agent Plan | `volcengine-agent-plan` | 与 Coding Plan 相同的 13 个模型（kimi-k3 需 Medium 及以上套餐） |
 
 ## 已测试且可用
 
@@ -58,7 +58,7 @@
   - 思考锁定的模型不提供菜单：K2.7 Code（Code Plan 的 kimi-for-coding(-highspeed)、开放平台的 kimi-k2.7-code(-highspeed)）与 MiniMax M2.x——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
 - **上下文用量显示**：请求携带 `stream_options: { include_usage: true }` 并把真实 token 用量回报给 Copilot Chat，上下文指示条显示实际用量而不是 0；首轮拿到真实用量前以 CJK 感知估算兜底（中文 ≈ 1 token/字）
-- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash，及火山托管的 doubao-seed-2.1-pro/lite、doubao-seed-2.0-mini、doubao-seed-evolving、kimi-k2.7-code、kimi-k2.8-preview、kimi-k3、minimax-m3、glm-5.3-flash、deepseek-v4.1-flash）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 
 ## 使用方法
@@ -153,6 +153,17 @@ src/
 - GitHub Copilot 扩展
 
 ## 更新日志
+
+### 0.4.3 — 2026-09-25
+
+- **火山引擎模型列表对齐官方 09-23/24 套餐概览**：新增 `doubao-seed-2.1-pro`、`doubao-seed-2.1-lite`、`kimi-k2.8-preview`（1M 上下文 / 1M 输出）、`deepseek-v4.1-flash`（原生视觉），并补齐 Coding Plan 的 `doubao-seed-2.0-mini` 与 `kimi-k3`；移除即将下线的 `doubao-seed-2.1-turbo`、`doubao-seed-2.0-lite`（10-09 下线）；按官方长度表修正参数（evolving 输出 256K、MiniMax-M3 128K、K3 128K）
+- **火山引擎接入 reasoning_effort 思考等级**（深度思考文档 2026-09-22）：Doubao Seed 2.1 系列 / evolving / 2.0-mini 开放 None/Low/Medium/High；火山托管 DeepSeek 开放 None/Low/High/Max（v4-flash/v4-pro 按官方兼容表 Max→high）；`glm-5.3-flash` 由锁定改为恒开 Low/High/Max 三档菜单（思考不可关闭；菜单默认 High，API 默认 max）
+
+### 0.4.2 — 2026-09-24
+
+- **DeepSeek 对齐 V4.1 模型阵容**：`deepseek-v4-flash` → `deepseek-flash`（DeepSeek-V4.1-Flash，支持图像输入），移除已下线的 `deepseek-v4-flash-vision-exp`；BASE URL 对齐 `https://api.deepseek.com`；`deepseek-v4-pro` tooltip 按更新日志口径标注服务保留、计费不变
+- **新增提供方：GLM Coding Plan（Z.AI 国际版）**——`glm-coding-plan`，端点 `https://api.z.ai/api/coding/paas/v4`，与 CN 版相同的 GLM-5.3 / 5.3-Flash 阵容和思考行为
+- **tsconfig**：显式 `"types": ["node"]`——TS 6.0（新版 VS Code 内置）不再自动包含 `node_modules/@types`，否则编辑器会出现 10 条 "Cannot find name" 误报
 
 ### 0.4.1 — 2026-09-03
 
