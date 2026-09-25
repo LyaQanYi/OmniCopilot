@@ -154,6 +154,17 @@ Contributions are welcome! Here's how you can help:
 
 ## Changelog
 
+### 0.4.3 — 2026-09-25
+
+- **Volcengine lineups realigned** with the 2026-09-23/24 plan overviews: added `doubao-seed-2.1-pro`, `doubao-seed-2.1-lite`, `kimi-k2.8-preview` (1M context / 1M output), `deepseek-v4.1-flash` (native vision), plus `doubao-seed-2.0-mini` and `kimi-k3` now also on Coding Plan; removed the deprecated `doubao-seed-2.1-turbo` and `doubao-seed-2.0-lite` (offline 2026-10-09); length limits corrected per the official tables (evolving 256K output, MiniMax-M3 128K, K3 128K)
+- **Volcengine reasoning_effort levels** per the deep-thinking doc (2026-09-22): Doubao Seed 2.1 series / evolving / 2.0-mini get None/Low/Medium/High; Volcengine-hosted DeepSeek gets None/Low/High/Max (v4-flash/v4-pro map Max→high per the official compatibility table); `glm-5.3-flash` moves from locked to an always-on Low/High/Max menu (its thinking cannot be disabled, default max)
+
+### 0.4.2 — 2026-09-24
+
+- **DeepSeek aligned with the V4.1 lineup**: `deepseek-v4-flash` → `deepseek-flash` (DeepSeek-V4.1-Flash, now with image input), retired `deepseek-v4-flash-vision-exp`; BASE URL updated to `https://api.deepseek.com`; `deepseek-v4-pro` tooltip reflects the service-retained-with-unchanged-pricing status per the update log
+- **New provider: GLM Coding Plan (Z.AI international)** — `glm-coding-plan` at `https://api.z.ai/api/coding/paas/v4`, same GLM-5.3 / 5.3-Flash lineup and thinking behavior as the CN plan
+- **tsconfig**: explicit `"types": ["node"]` — TS 6.0 (bundled with current VS Code) no longer auto-includes `node_modules/@types`, which surfaced 10 false "Cannot find name" diagnostics in the editor
+
 ### 0.4.1 — 2026-09-03
 
 - **Fix: answer text leaking into the thinking block** — when a model's answer quoted literal `<think>` / `</think>` strings (e.g. while reviewing this very codebase), the tag parser mistook them for delimiters and rerouted answer segments into the collapsible thinking section. Thinking now flows through two dedicated paths: `reasoning_content` deltas map straight to `LanguageModelThinkingPart`, `content` deltas stream verbatim as text; literal-tag parsing only runs for vendors that inline thinking inside `content` (MiniMax native API, opt-in via `inlineThinkTags`)

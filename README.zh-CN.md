@@ -154,6 +154,17 @@ src/
 
 ## 更新日志
 
+### 0.4.3 — 2026-09-25
+
+- **火山引擎模型列表对齐官方 09-23/24 套餐概览**：新增 `doubao-seed-2.1-pro`、`doubao-seed-2.1-lite`、`kimi-k2.8-preview`（1M 上下文 / 1M 输出）、`deepseek-v4.1-flash`（原生视觉），并补齐 Coding Plan 的 `doubao-seed-2.0-mini` 与 `kimi-k3`；移除即将下线的 `doubao-seed-2.1-turbo`、`doubao-seed-2.0-lite`（10-09 下线）；按官方长度表修正参数（evolving 输出 256K、MiniMax-M3 128K、K3 128K）
+- **火山引擎接入 reasoning_effort 思考等级**（深度思考文档 2026-09-22）：Doubao Seed 2.1 系列 / evolving / 2.0-mini 开放 None/Low/Medium/High；火山托管 DeepSeek 开放 None/Low/High/Max（v4-flash/v4-pro 按官方兼容表 Max→high）；`glm-5.3-flash` 由锁定改为恒开 Low/High/Max 三档菜单（思考不可关闭，默认 max）
+
+### 0.4.2 — 2026-09-24
+
+- **DeepSeek 对齐 V4.1 模型阵容**：`deepseek-v4-flash` → `deepseek-flash`（DeepSeek-V4.1-Flash，支持图像输入），移除已下线的 `deepseek-v4-flash-vision-exp`；BASE URL 对齐 `https://api.deepseek.com`；`deepseek-v4-pro` tooltip 按更新日志口径标注服务保留、计费不变
+- **新增提供方：GLM Coding Plan（Z.AI 国际版）**——`glm-coding-plan`，端点 `https://api.z.ai/api/coding/paas/v4`，与 CN 版相同的 GLM-5.3 / 5.3-Flash 阵容和思考行为
+- **tsconfig**：显式 `"types": ["node"]`——TS 6.0（新版 VS Code 内置）不再自动包含 `node_modules/@types`，否则编辑器会出现 10 条 "Cannot find name" 误报
+
 ### 0.4.1 — 2026-09-03
 
 - **修复：正文被渲染进思考块**——当模型回答中引用了 `<think>` / `</think>` 字面量（比如审查本项目的标签解析代码）时，标签解析器会把字面量误当定界符，把正文片段错路由进可折叠的思考区。思考流现在走两条独立通道：`reasoning_content` 增量直接映射为 `LanguageModelThinkingPart`，`content` 增量逐字作为正文输出；字面量标签解析仅对在 `content` 里内联思考的提供方（MiniMax 原生 API，经 `inlineThinkTags` 显式开启）生效
