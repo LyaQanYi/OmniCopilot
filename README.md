@@ -15,8 +15,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-turbo, doubao-seed-evolving, doubao-seed-2.0-lite, kimi-k2.7-code, minimax-m3, deepseek-v4-flash, deepseek-v4-pro, glm-5.3, glm-5.3-flash |
-| Volcengine Agent Plan CN | `volcengine-agent-plan` | the Coding Plan set plus doubao-seed-2.0-mini and kimi-k3 |
+| Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-2.1-turbo (deprecated 10-09), doubao-seed-evolving, doubao-seed-2.0-lite (deprecated), minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
+| Volcengine Agent Plan CN | `volcengine-agent-plan` | the same 15-model set (kimi-k3 requires Medium+ plans) |
 
 ## Tested & Working
 
