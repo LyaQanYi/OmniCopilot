@@ -449,7 +449,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "doubao-seed-2.1-lite",
@@ -463,7 +463,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "doubao-seed-2.0-mini",
@@ -476,7 +476,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "doubao-seed-evolving",
@@ -490,7 +490,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "minimax-m3",
@@ -632,7 +632,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "doubao-seed-2.1-lite",
@@ -646,7 +646,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "deepseek-v4-flash",
@@ -686,7 +686,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "doubao-seed-evolving",
@@ -700,7 +700,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		capabilities: { imageInput: false, toolCalling: true },
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
 		id: "minimax-m3",

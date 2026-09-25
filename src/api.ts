@@ -334,7 +334,10 @@ export class OpenAICompatibleClient {
 					//   menu's Max maps to high here.
 					if (model === "glm-5.3-flash") {
 						if (thinking && effort) {
-							body.reasoning_effort = effort;
+							// medium is out of the low|high|max domain; the
+							// picker always sends an in-domain value, so this
+							// only normalizes the legacy/fallback default.
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
 						}
 						break;
 					}
@@ -342,11 +345,25 @@ export class OpenAICompatibleClient {
 					// must send an explicit disable.
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
 					if (thinking && effort) {
-						body.reasoning_effort =
-							(model === "deepseek-v4-flash" || model === "deepseek-v4-pro") &&
-							effort === "max"
-								? "high"
-								: effort;
+						// Normalize the generic "medium" fallback (and any
+						// legacy caller) per model: the Doubao menus include
+						// Medium so it passes through; the DeepSeek menus do
+						// not, and v4.1-flash maps medium→high per the
+						// official table while v4-flash/v4-pro map it to low
+						// server-side — normalize both to their declared
+						// default "high" so the fallback never silently
+						// downgrades reasoning.
+						const legacyDeepSeek =
+							model === "deepseek-v4-flash" ||
+							model === "deepseek-v4-pro" ||
+							model === "deepseek-v4.1-flash";
+						if (effort === "medium" && legacyDeepSeek) {
+							body.reasoning_effort = "high";
+						} else if (effort === "max" && legacyDeepSeek && model !== "deepseek-v4.1-flash") {
+							body.reasoning_effort = "high";
+						} else {
+							body.reasoning_effort = effort;
+						}
 					}
 					break;
 
