@@ -199,6 +199,7 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
+		"test": "npm run compile && node --test \"out/**/*.test.js\"",
 		"package": "npx @vscode/vsce package",
 		"publish": "npx @vscode/vsce publish"
 	},

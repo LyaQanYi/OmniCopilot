@@ -106,6 +106,20 @@ npm run watch
 
 调试扩展时，在 VS Code 中按 **F5** 即可启动扩展开发宿主（Extension Development Host），扩展会自动加载。
 
+### 测试
+
+```bash
+# 编译并运行单元测试
+npm test
+```
+
+测试使用 Node 内置的测试运行器，无需安装额外的测试框架。测试覆盖的是那些行为由厂商 API 文档（而非代码本身）决定的部分：
+
+- `types.test.ts` —— 模型目录完整性、思考等级菜单的不变量（菜单里的选项绝不能是无效选项），以及上下文长度预设与 `package.json` 的同步
+- `thinking-tags.test.ts` —— 内联 `<think>` 解析器，覆盖所有可能的分块边界
+
+CI（`.github/workflows/ci.yml`）会在每次 push 和 pull request 时执行编译、测试与打包冒烟。
+
 ### 打包 .vsix
 
 ```bash
@@ -116,11 +130,13 @@ npx @vscode/vsce package --no-dependencies
 
 ```text
 src/
-├── extension.ts   # 扩展入口，激活逻辑与命令注册
-├── provider.ts    # 语言模型提供方实现
-├── api.ts         # API 调用逻辑（流式、思考、视觉）
-├── models.ts      # 各提供方的预设模型定义
-└── types.ts       # 共享 TypeScript 接口
+├── extension.ts      # 扩展入口，激活逻辑与命令注册
+├── provider.ts       # 语言模型提供方实现
+├── api.ts            # API 调用逻辑（流式、思考、视觉）
+├── thinking-tags.ts  # 内联 <think> 解析器（不依赖 vscode，可独立单测）
+├── models.ts         # 各提供方的预设模型定义
+├── types.ts          # 共享 TypeScript 接口
+└── *.test.ts         # 单元测试（node:test）
 ```
 
 ## 贡献

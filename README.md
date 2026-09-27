@@ -106,6 +106,20 @@ npm run watch
 
 To debug the extension, press **F5** in VS Code to launch an Extension Development Host with the extension loaded.
 
+### Testing
+
+```bash
+# Compile, then run the unit suite
+npm test
+```
+
+Tests run on Node's built-in test runner, so there is no test framework to install. They cover the parts of the codebase whose behaviour is decided by vendor API documentation rather than by the code itself:
+
+- `types.test.ts` — model catalog integrity, thinking-effort menu invariants (a picker option must never be a no-op), and context-length presets kept in sync with `package.json`
+- `thinking-tags.test.ts` — the inline `<think>` parser, exercised across every possible chunk boundary
+
+CI (`.github/workflows/ci.yml`) runs the compile, the test suite and a packaging smoke test on every push and pull request.
+
 ### Package .vsix
 
 ```bash
@@ -116,11 +130,13 @@ npx @vscode/vsce package --no-dependencies
 
 ```text
 src/
-├── extension.ts   # Extension entry point, activation & commands
-├── provider.ts    # Language model provider implementation
-├── api.ts         # API call logic (streaming, thinking, vision)
-├── models.ts      # Preset model definitions per vendor
-└── types.ts       # Shared TypeScript interfaces
+├── extension.ts      # Extension entry point, activation & commands
+├── provider.ts       # Language model provider implementation
+├── api.ts            # API call logic (streaming, thinking, vision)
+├── thinking-tags.ts  # Inline <think> parser (kept free of vscode imports so it is unit-testable)
+├── models.ts         # Preset model definitions per vendor
+├── types.ts          # Shared TypeScript interfaces
+└── *.test.ts         # Unit tests (node:test)
 ```
 
 ## Contributing

@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Node 20+ is required by `node --test`; the extension itself runs on
+          # the Node that ships with the VS Code build in `engines`.
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Type-checks src/ and runs the unit suite (model catalog, thinking-effort
+      # menu invariants, inline thinking-tag state machine).
+      - name: Compile and test
+        run: npm test
+
+      # Smoke test that the extension still packages. Marked non-blocking
+      # because vsce also fails on marketplace-metadata issues that have
+      # nothing to do with the code under test.
+      - name: Package smoke test
+        run: npm run package
+        continue-on-error: true
