@@ -549,7 +549,14 @@ export class MultiModelChatProvider
 			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
 			(this.vendorConfig.vendorId === "moonshot-open" && thinking) ||
 			(thinking && modelDef?.needsReasoningBackfillWhenThinking === true);
-		if (needsReasoningBackfill && apiTools && apiTools.length > 0) {
+		// Gate on either trigger: history already carries a tool loop — the
+		// rejection case, reachable even when this turn's tool list is empty
+		// (session continues without tools) — or a loop is about to start
+		// with tools attached now.
+		const hasHistoricalToolCalls = apiMessages.some(
+			(msg) => msg.role === "assistant" && (msg.tool_calls?.length ?? 0) > 0,
+		);
+		if (needsReasoningBackfill && (hasHistoricalToolCalls || (apiTools?.length ?? 0) > 0)) {
 			apiMessages = apiMessages.map((msg) =>
 				msg.role === "assistant" && msg.reasoning_content === undefined
 					? { ...msg, reasoning_content: "" }
