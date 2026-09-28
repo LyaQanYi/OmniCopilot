@@ -316,6 +316,7 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "moonshot-open":
 		case "glm-coding-plan":
 		case "glm-coding-plan-cn":
+		case "mimo-token-plan-cn":
 			return true;
 		default:
 			return false;

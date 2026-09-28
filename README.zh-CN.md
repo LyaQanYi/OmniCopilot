@@ -17,6 +17,7 @@
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
 | 火山引擎编程计划 Coding Plan | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
 | 火山引擎智能体计划 Agent Plan | `volcengine-agent-plan` | 与 Coding Plan 相同的 13 个模型（kimi-k3 需 Medium 及以上套餐） |
+| MiMo Token Plan CN | `mimo-token-plan-cn` | mimo-v2.6-pro、mimo-v2.6-flash |
 
 ## 已测试且可用
 
@@ -33,12 +34,17 @@
 
 > [!WARNING]
 > **Qwen Token Plan 条款与端点**：本扩展指向 Token Plan 专用端点（`token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`），需使用 platform.qianwenai.com 签发的订阅 Key（`sk-sp-` 开头）——Token Plan 与按量计费的 Key/端点完全隔离、不可混用（按量 Key 为 `sk-ws-` 开头，属 `dashscope.aliyuncs.com/compatible-mode/v1`）。Key 亦仅限在交互式编程/智能体工具（Claude Code、Cursor、Qwen Code、Qoder、OpenClaw 等）中使用——官方文档明确禁止通用 API 调用，违规可能导致订阅暂停或 API Key 被封禁。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
+<!---->
+
+> [!WARNING]
+> **MiMo Token Plan CN 条款与端点**：本扩展指向 Token Plan 中国集群（`token-plan-cn.xiaomimimo.com/v1`，另有新加坡/欧洲集群 `token-plan-sgp/ams.xiaomimimo.com/v1`），需使用 platform.xiaomimimo.com 套餐专属 Key（个人版 `tp-` / 团队版 `ttp-` 开头）——与按量计费 Key（`sk-` 开头，属 `api.xiaomimimo.com/v1`）完全隔离、不可混用。套餐额度仅限在编程工具（OpenCode、OpenClaw、Claude Code 等）中使用，官方文档将非 Coding 场景的 API 调用视为违规滥用，可能导致订阅暂停或 Key 被封。VS Code Copilot Chat 不在官方工具列表中，请自行斟酌使用并留意账号状态。
 
 ## 待办事项
 
 - [ ] 测试火山引擎 Coding Plan / Agent Plan
 - [ ] 测试 Qwen Token Plan
 - [ ] 测试 Kimi 开放平台
+- [ ] 测试 MiMo Token Plan CN
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版）
@@ -54,11 +60,11 @@
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort
   - **GLM-5.3 / GLM-5.3-Flash** 菜单：Low / High / Max——无 None 档，思考始终开启（Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到这两个模型；Token Plan 托管的 `glm-5.3` 同样使用恒开菜单）
   - 4 档菜单（None / Low / Medium / High）：通义千问推理款
-  - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、火山引擎推理款）——MiniMax-M3 的 None 是真关闭思考
+  - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、火山引擎推理款、MiMo v2.6）——MiniMax-M3 与 MiMo 的 None 是真关闭思考
   - 思考锁定的模型不提供菜单：K2.7 Code（Code Plan 的 kimi-for-coding(-highspeed)、开放平台的 kimi-k2.7-code(-highspeed)）与 MiniMax M2.x——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
 - **上下文用量显示**：请求携带 `stream_options: { include_usage: true }` 并把真实 token 用量回报给 Copilot Chat，上下文指示条显示实际用量而不是 0；首轮拿到真实用量前以 CJK 感知估算兜底（中文 ≈ 1 token/字）
-- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash、Token Plan 托管的 deepseek-v4.1-flash，及火山托管的 doubao-seed-2.1-pro/lite、doubao-seed-2.0-mini、doubao-seed-evolving、kimi-k2.7-code、kimi-k2.8-preview、kimi-k3、minimax-m3、glm-5.3-flash、deepseek-v4.1-flash）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash、Token Plan 托管的 deepseek-v4.1-flash、mimo-v2.6-pro、mimo-v2.6-flash，及火山托管的 doubao-seed-2.1-pro/lite、doubao-seed-2.0-mini、doubao-seed-evolving、kimi-k2.7-code、kimi-k2.8-preview、kimi-k3、minimax-m3、glm-5.3-flash、deepseek-v4.1-flash）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 
 ## 使用方法
@@ -154,92 +160,13 @@ src/
 
 ## 更新日志
 
-### 0.4.4 — 2026-09-28
+> 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
-- **Qwen Token Plan 模型阵容对齐官方 09-24 个人版概览**：新增 `auto`（平台智能路由）、`glm-5.3`、`deepseek-v4.1-flash`（原生视觉）；现有 qwen3.8/3.7/3.6 与托管的 glm-5.2、deepseek-v4 系列 ID 不变。套餐内的非对话模型（qwen-image-3.0-pro、wan2.7-image*、qwen-audio-3.0-*、happyhorse-1.1-*、decision-model-preview）不在本扩展范围内
-- **Token Plan 思考菜单**：`deepseek-v4.1-flash` 加入托管模型的 None/Low/High/Max 菜单（按 DashScope DeepSeek 文档为原生 low|high|max，medium 归一到 high）；`glm-5.3` 沿用全局恒开 Low/High/Max 菜单（DashScope 托管为仅思考模式——enable_thinking=false 不生效——与智谱自有端点一致）；`auto` 走通义千问通用 None/Low/Medium/High 菜单（enable_thinking/thinking_budget；属尽力而为的提示——路由落到托管 GLM/DeepSeek 时目标端可能重新映射该等级）
-- **Token Plan 上限与可靠性**：`auto` 的 max output 按路由目标中的最小值保守声明为 65K；托管 `deepseek-v4*` 沿用文档声明的 393,216 shared max_tokens + thinking_budget 池；多步工具循环为 `auto` 与托管 `glm-5.3` 回填 `reasoning_content`——回填要求改由模型目录逐模型声明，不再依赖 provider 里的 ID 前缀匹配
+### 0.4.5 — 2026-09-29
 
-### 0.4.3 — 2026-09-25
-
-- **火山引擎模型列表对齐官方 09-23/24 套餐概览**：新增 `doubao-seed-2.1-pro`、`doubao-seed-2.1-lite`、`kimi-k2.8-preview`（1M 上下文 / 1M 输出）、`deepseek-v4.1-flash`（原生视觉），并补齐 Coding Plan 的 `doubao-seed-2.0-mini` 与 `kimi-k3`；移除即将下线的 `doubao-seed-2.1-turbo`、`doubao-seed-2.0-lite`（10-09 下线）；按官方长度表修正参数（evolving 输出 256K、MiniMax-M3 128K、K3 128K）
-- **火山引擎接入 reasoning_effort 思考等级**（深度思考文档 2026-09-22）：Doubao Seed 2.1 系列 / evolving / 2.0-mini 开放 None/Low/Medium/High；火山托管 DeepSeek 开放 None/Low/High/Max（v4-flash/v4-pro 按官方兼容表 Max→high）；`glm-5.3-flash` 由锁定改为恒开 Low/High/Max 三档菜单（思考不可关闭；菜单默认 High，API 默认 max）
-
-### 0.4.2 — 2026-09-24
-
-- **DeepSeek 对齐 V4.1 模型阵容**：`deepseek-v4-flash` → `deepseek-flash`（DeepSeek-V4.1-Flash，支持图像输入），移除已下线的 `deepseek-v4-flash-vision-exp`；BASE URL 对齐 `https://api.deepseek.com`；`deepseek-v4-pro` tooltip 按更新日志口径标注服务保留、计费不变
-- **新增提供方：GLM Coding Plan（Z.AI 国际版）**——`glm-coding-plan`，端点 `https://api.z.ai/api/coding/paas/v4`，与 CN 版相同的 GLM-5.3 / 5.3-Flash 阵容和思考行为
-- **tsconfig**：显式 `"types": ["node"]`——TS 6.0（新版 VS Code 内置）不再自动包含 `node_modules/@types`，否则编辑器会出现 10 条 "Cannot find name" 误报
-
-### 0.4.1 — 2026-09-03
-
-- **修复：正文被渲染进思考块**——当模型回答中引用了 `<think>` / `</think>` 字面量（比如审查本项目的标签解析代码）时，标签解析器会把字面量误当定界符，把正文片段错路由进可折叠的思考区。思考流现在走两条独立通道：`reasoning_content` 增量直接映射为 `LanguageModelThinkingPart`，`content` 增量逐字作为正文输出；字面量标签解析仅对在 `content` 里内联思考的提供方（MiniMax 原生 API，经 `inlineThinkTags` 显式开启）生效
-- **上下文指示条不再恒为 0**：请求携带 `stream_options: { include_usage: true }`（400/422 时自动去参重试），并通过 `LanguageModelDataPart`（`usage` mime）把真实用量回报给 Copilot Chat，点亮扩展贡献模型的 token 指示条
-- **`provideTokenCount` 改为 CJK 感知估算**：中日韩文本按 ≈ 1 token/字计，替代原先的 `长度 / 4`，修正中文对话 4-6 倍的低估
-
-### 0.4.0 — 2026-08-30
-
-预发布版本：全部提供方已逐项对照官方文档核验。**GLM 的 API Key 需要重新填写**（vendor ID 已变更）。
-
-- **更名**：Bigmodel Plan → **GLM Coding Plan CN**（vendor ID 变更为 `glm-coding-plan-cn`）、Qwen → **Qwen Token Plan**、MiniMax → **MiniMax Token Plan CN**
-- **Kimi 拆分**为 Kimi Code Plan（`moonshot`）与 Moonshot 开放平台（`moonshot-open`）：k3、k3-256k、kimi-for-coding(-highspeed)、kimi-k3、kimi-k2.7-code(-highspeed)、kimi-k2.6
-- **火山引擎拆分**为火山引擎 Coding Plan CN（`volcengine`）与 Agent Plan CN（`volcengine-agent-plan`）：Doubao Seed 2.1 Turbo / Seed Evolving / 2.0 Lite（Agent Plan 另有 2.0 Mini 与 Kimi K3），托管 kimi-k2.7-code、minimax-m3、deepseek-v4-flash/pro 与 glm-5.3(-flash)；doubao-seed-2.0-pro、ark-code-latest 及过时的第三方 ID 已移除
-- **新增模型**：deepseek-v4-flash-vision-exp、qwen3.7-max、qwen3.6-flash、glm-5.3 / glm-5.3-flash；各平台模型列表按实际在售清理（GLM Coding 端点仅保留 5.3 / 5.3-Flash）
-- **思考语义重构**：新增 `thinkingLocked`（不渲染菜单）用于 K2.7 Code 与 MiniMax M2.x 等思考无法关闭的模型；Kimi K3 与 GLM-5.3(-Flash) 使用三档 Low/High/Max 菜单；DeepSeek 增加 Low 档（None 真关闭）；MiniMax-M3 与火山引擎的 None 现在会显式发送关闭参数
-- **思考参数逐项对齐官方文档**：DeepSeek `reasoning_effort`（low/high/max）、Qwen `thinking_budget`（上限 32768）、千问托管的 GLM/DeepSeek 走 `reasoning_effort`、智谱流式工具调用 `tool_stream`、MiniMax `max_completion_tokens`
-- **可靠性**：DeepSeek、GLM、Kimi 开放平台的工具调用循环会自动补齐 reasoning_content；视觉支持列表刷新（deepseek-v4-flash-vision-exp、glm-5.3-flash、MiniMax-M3 及五个千问模型）
-- **移除自定义模型支持**：`custom-openai` 提供方、各提供方的 `customModelIds` 设置与 Add Custom Model ID 命令已移除——VS Code 内置的自定义模型功能已覆盖该场景
-
-### 0.3.0 — 2026-05-08
-
-- **Copilot 模型选择器二级菜单**：hover 任一支持思考的模型，可就地为本轮对话选思考等级，无需全局设置
-  - **DeepSeek V4** 专属菜单：None / High / Max（对齐 V4 API 的 `reasoning_effort` 取值）
-  - 4 档菜单（None / Low / Medium / High）：通义千问推理款
-  - 2 档菜单（None / On）：GLM、Kimi、MiniMax、火山引擎推理款
-- **DeepSeek 模型表更新**：`deepseek-chat` / `deepseek-reasoner` → `deepseek-v4-flash` / `deepseek-v4-pro`（1M 输入、384K 输出，均支持推理）
-- **彻底移除**全局 `omniCopilot.enableThinking` 与 `omniCopilot.thinkingEffort` 设置、对应状态栏项、`OmniCopilot: Toggle Thinking Mode` / `Set Thinking Effort` 命令——picker 已覆盖所有用法
-- vendor 推理参数映射重做，覆盖 None / On / Low / Medium / High / Max 全集：
-  - DeepSeek：启用时发 `reasoning_effort: high|max`，None 时不发
-  - 通义千问：`enable_thinking` + `thinking_budget`（1024 / 4096 / 16384 tokens；max → 16384）
-  - Moonshot：显式 `thinking: { type: "enabled"|"disabled" }`
-  - 火山引擎：仅启用时发 `thinking: { type: "enabled" }`
-  - 智谱 / MiniMax：无 API 旋钮，picker 仅控制是否剥离输出中的思考标签
-
-### 0.2.0 — 2026-04-30
-
-- 新增可配置的最大输入上下文长度上限（4K–1M 预设 + 自定义 1K-2M tokens），状态栏可实时切换
-
-### 0.1.3 — 2026-04-12
-
-- 新增火山引擎编程计划提供方，包含 8 个模型（doubao-seed、minimax-m2.5、glm-4.7、deepseek-v3.2、kimi-k2.5）
-- `reasoning_content` 字段按厂商能力门控 — 仅对 DeepSeek、通义千问、Moonshot/Kimi、智谱发送；避免严格后端（火山引擎、MiniMax、自定义）拒绝请求
-- 提取共享 `buildOpenAIMessages` 辅助函数，消除 `MultiModelChatProvider` 与 `CustomOpenAIProvider` 之间的消息序列化重复逻辑
-- 在 `CustomOpenAIProvider` 中增加 `reasoning_content` 处理
-
-### 0.1.2 — 2026-04-09
-
-- 新增智谱 Bigmodel Plan 提供方，包含 GLM-5.1、GLM-5-Turbo、GLM-4.7、GLM-4.5-Air 模型
-- 启用智谱模型的思考能力
-- 规范化智谱模型 ID
-
-### 0.1.1 — 2026-04-07
-
-- 启用 MiniMax 厂商的思考能力
-- 增强 `MultiModelChatProvider` 和 `CustomOpenAIProvider` 的思考支持逻辑
-- 修复：流结束后刷新剩余思考缓冲区和未发送的工具调用
-- 添加 MIT 许可证文件
-- 修复 package.json 中的仓库 URL
-
-### 0.1.0 — 2026-04-06
-
-- 首次发布
-- 多模型提供方架构，支持 DeepSeek、Moonshot（Kimi）、通义千问、MiniMax
-- 自定义 OpenAI 兼容提供方，可接入任意端点
-- 思考模式，解析 `<think>` 标签并以可折叠 UI 展示（通过 `LanguageModelThinkingPart`）
-- 视觉支持，图片输入能力
-- 工具调用 / 函数调用支持
-- 通过设置和命令面板管理自定义模型 ID
-- 可配置思考力度（低 / 中 / 高）
+- **新增提供方：MiMo Token Plan CN**（`mimo-token-plan-cn`，小米）——首个遵循新命名约定的 vendor：ID = 显示名称的 kebab-case 全小写（存量 vendor ID 保持不变）——`mimo-v2.6-pro`（万亿参数旗舰）与 `mimo-v2.6-flash`，均 1M 上下文 / 128K 输出、全模态（视觉）输入，走套餐 OpenAI 兼容中国集群端点（`token-plan-cn.xiaomimimo.com/v1`）。套餐 Key 为 `tp-`/`ttp-` 前缀，与按量 `sk-` Key 完全隔离。mimo-v2.5 / mimo-v2.5-pro 将于 2026-10-21 下线，不予收录；ASR/TTS 非对话模型不在范围；mimo-v2.6-pro-ultraspeed 为定制服务、不在套餐清单
+- **思考与参数对齐官方「深度思考」文档**：`thinking: {type: enabled|disabled}`（默认开启——选 None 会显式发送关闭；无 effort 分档，picker 呈现 None/On 两档菜单）；输出经 `max_completion_tokens` 限制（思考+回答共享额度）；思考以 `reasoning_content` 流式返回并计入 completion tokens
+- **工具循环可靠性**：思考开启时带 `tool_calls` 的历史 assistant 消息必须回传 `reasoning_content`，否则 API 返回 400——由模型目录声明的 `needsReasoningBackfillWhenThinking` 标记覆盖，`mimo-token-plan-cn` vendor 现已序列化历史 `reasoning_content` 字段
 
 ## License
 

@@ -876,6 +876,50 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 	},
 ];
 
+// ─── MiMo Token Plan CN ─────────────────────────────────────────────────────
+
+// Xiaomi MiMo Token Plan, CN cluster (personal `tp-` / team `ttp-` keys), OpenAI Chat
+// Completions compatible. Base URL per the Token Plan quick-access doc —
+// CN cluster below (alternatives: token-plan-sgp/ams.xiaomimimo.com/v1).
+// The v2.6 text models are the current plan lineup; mimo-v2.5 / v2.5-pro
+// retire 2026-10-21, ASR/TTS are non-chat, and mimo-v2.6-pro-ultraspeed is
+// a custom-service offering not included in the plan's model list.
+const MIMO_TOKEN_PLAN_BASE_URL = "https://token-plan-cn.xiaomimimo.com/v1";
+
+const MIMO_MODELS: ModelInfo[] = [
+	{
+		id: "mimo-v2.6-pro",
+		name: "MiMo V2.6 Pro",
+		family: "mimo",
+		version: "2.6-pro",
+		tooltip:
+			"MiMo V2.6 Pro — trillion-param flagship reasoning model, omni understanding, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		// Thinking is default-on server-side; when on, tool loops must echo
+		// reasoning_content back on assistant turns or the API 400s (deep-thinking doc).
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "mimo-v2.6-flash",
+		name: "MiMo V2.6 Flash",
+		family: "mimo",
+		version: "2.6-flash",
+		tooltip: "MiMo V2.6 Flash — efficient omni model for high-frequency tasks, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
 // ─── All Vendors ─────────────────────────────────────────────────────────────
 
 export const VENDOR_CONFIGS: VendorConfig[] = [
@@ -943,6 +987,13 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 		displayName: "Volcengine Agent Plan CN",
 		defaultBaseUrl: VOLCENGINE_AGENT_BASE_URL,
 		models: VOLCENGINE_AGENT_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "mimo-token-plan-cn",
+		displayName: "MiMo Token Plan CN",
+		defaultBaseUrl: MIMO_TOKEN_PLAN_BASE_URL,
+		models: MIMO_MODELS,
 		thinkingCapable: true,
 	},
 ];
