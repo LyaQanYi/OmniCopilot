@@ -13,6 +13,16 @@ export interface ModelInfo {
 	thinkingEffortSupport: boolean;
 	/** Thinking permanently on: no picker menu, "None" is not available. */
 	thinkingLocked?: boolean;
+	/**
+	 * With thinking on, the endpoint rejects multi-step tool loops whose
+	 * assistant messages lack `reasoning_content` (interleaved thinking must
+	 * be preserved alongside tool results); provider.ts backfills an empty
+	 * string when the host dropped thinking parts. Declared on the Qwen
+	 * Token Plan hosted models — and on `auto`, which may route to them
+	 * (native Qwen targets ignore the empty field) — so the backfill list
+	 * lives in the catalog instead of a hardcoded ID-prefix match.
+	 */
+	needsReasoningBackfillWhenThinking?: boolean;
 	capabilities: {
 		imageInput: boolean;
 		toolCalling: boolean;
@@ -150,8 +160,10 @@ export const THINKING_EFFORT_SCHEMA = {
 	},
 } as const;
 
-// Qwen-hosted DeepSeek V4 Pro (non-snapshot) menu — the API rejects "low"
-// on this variant, so the honest domain is None / High / Max.
+// Qwen-hosted DeepSeek V4 Pro (non-snapshot) menu — DashScope's DeepSeek
+// doc lists "low" as supported only on deepseek-v4.1-flash,
+// deepseek-v4-flash-0731 and deepseek-v4-pro-0813, so the honest domain on
+// the non-snapshot v4-pro is None / High / Max.
 export const THINKING_EFFORT_NO_LOW_SCHEMA = {
 	properties: {
 		reasoningEffort: {
@@ -342,10 +354,13 @@ export function toLanguageModelChatInformation(
 	) {
 		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
 		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
-		// cannot express. Token Plan's glm-5.3 never reaches this branch:
-		// the global ALWAYS_THINKING_MODEL_IDS check above matches it first,
-		// which is also the correct menu here — Zhipu treats GLM-5.3 thinking
-		// as non-disableable on every endpoint, DashScope included.
+		// cannot express — per the DashScope DeepSeek/GLM docs, "low" is
+		// supported on v4.1-flash and the two snapshot IDs, and GLM hosts
+		// low|high|max natively. Token Plan's glm-5.3 never reaches this
+		// branch: the global ALWAYS_THINKING_MODEL_IDS check above matches it
+		// first, which is also the correct menu here — DashScope hosts
+		// GLM-5.3 in thinking-only mode (enable_thinking=false is ignored),
+		// matching Zhipu's own endpoints.
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else if (
 		(vendorId === "volcengine" || vendorId === "volcengine-agent-plan") &&

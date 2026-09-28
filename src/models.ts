@@ -250,14 +250,21 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "Qwen Auto (Token Plan)",
 		family: "qwen",
 		version: "auto",
-		tooltip: "auto — platform smart routing: picks the underlying model per request, balancing quality and Credits",
+		tooltip:
+			"auto — platform smart routing: picks the underlying model per request, balancing quality and Credits; the effort hint is generic (thinking_budget) and a hosted GLM/DeepSeek target may remap it",
 		maxInputTokens: 1000000,
-		// Route targets cap output between 65K (3.6-flash) and 131K; declare
-		// the largest so a big max_tokens is never rejected outright.
-		maxOutputTokens: 131072,
+		// max_tokens is validated against whichever model the router picks,
+		// so declare the smallest cap across the documented route targets
+		// (65,536 on qwen3.6-flash) — a larger value 400s mid-session the
+		// moment routing lands on that target.
+		maxOutputTokens: 65536,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// Routing may land on a hosted DeepSeek/GLM whose tool loops demand
+		// reasoning_content on every assistant message; native Qwen targets
+		// ignore the empty backfill.
+		needsReasoningBackfillWhenThinking: true,
 		// Text-only by contract: the Auto routing doc (alibabacloud.com
 		// model-routing) restricts smart routing to text Chat Completions —
 		// image/video inputs are explicitly out of scope, even though most
@@ -331,8 +338,12 @@ const QWEN_MODELS: ModelInfo[] = [
 	},
 	// Third-party models hosted on Qwen Token Plan — billed against the
 	// plan's Credits instead of the vendor's own API. Thinking goes through
-	// the Qwen-style enable_thinking/thinking_budget params, which
-	// DashScope-hosted GLM and DeepSeek models accept.
+	// the vendor-native reasoning_effort knob documented by DashScope for
+	// its GLM / DeepSeek hosting (the generic enable_thinking/thinking_budget
+	// path in api.ts fits the native Qwen IDs and `auto` only). When adding
+	// a hosted model, keep three places in sync: the effort whitelist in
+	// api.ts, the picker-menu branch in types.ts, and the
+	// needsReasoningBackfillWhenThinking flag on the entry itself.
 	{
 		id: "glm-5.3",
 		name: "GLM-5.3 (Token Plan)",
@@ -344,6 +355,10 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// DashScope hosts GLM-5.3 in thinking-only mode (enable_thinking=false
+		// is ignored) with effort low|high|max — same contract as Zhipu's own
+		// endpoints, hence the global always-thinking menu and backfill.
+		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -366,12 +381,13 @@ const QWEN_MODELS: ModelInfo[] = [
 		version: "deepseek-v4-pro",
 		tooltip: "DeepSeek V4 Pro — via Qwen Token Plan, 1M context",
 		maxInputTokens: 1000000,
-		// DashScope-hosted DeepSeek V4 shares a 393,216-token pool between
-		// max_tokens and thinking_budget.
+		// DashScope's DeepSeek doc: max_tokens and thinking_budget share one
+		// pool capped at 393,216 tokens (applies to the whole hosted V4 line).
 		maxOutputTokens: 393216,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -385,6 +401,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -398,6 +415,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -407,10 +425,14 @@ const QWEN_MODELS: ModelInfo[] = [
 		version: "deepseek-v4.1-flash",
 		tooltip: "DeepSeek V4.1 Flash — via Qwen Token Plan, 1M context, vision support",
 		maxInputTokens: 1000000,
+		// 393,216 per DashScope's own parameter table for deepseek-v4.1-flash
+		// (same shared max_tokens + thinking_budget pool as the rest of the
+		// hosted V4 line — not Volcengine's 384K declaration).
 		maxOutputTokens: 393216,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];

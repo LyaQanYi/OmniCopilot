@@ -157,7 +157,8 @@ src/
 ### 0.4.4 — 2026-09-28
 
 - **Qwen Token Plan 模型阵容对齐官方 09-24 个人版概览**：新增 `auto`（平台智能路由）、`glm-5.3`、`deepseek-v4.1-flash`（原生视觉）；现有 qwen3.8/3.7/3.6 与托管的 glm-5.2、deepseek-v4 系列 ID 不变。套餐内的非对话模型（qwen-image-3.0-pro、wan2.7-image*、qwen-audio-3.0-*、happyhorse-1.1-*、decision-model-preview）不在本扩展范围内
-- **Token Plan 思考菜单**：`deepseek-v4.1-flash` 加入托管模型的 None/Low/High/Max 菜单（原生 reasoning_effort，medium 归一到 high）；`glm-5.3` 沿用全局恒开 Low/High/Max 菜单（智谱在其所有端点均不提供关闭 5.3 思考的方式，DashScope 托管同理）；`auto` 走通义千问通用 None/Low/Medium/High 菜单（enable_thinking/thinking_budget）
+- **Token Plan 思考菜单**：`deepseek-v4.1-flash` 加入托管模型的 None/Low/High/Max 菜单（按 DashScope DeepSeek 文档为原生 low|high|max，medium 归一到 high）；`glm-5.3` 沿用全局恒开 Low/High/Max 菜单（DashScope 托管为仅思考模式——enable_thinking=false 不生效——与智谱自有端点一致）；`auto` 走通义千问通用 None/Low/Medium/High 菜单（enable_thinking/thinking_budget；属尽力而为的提示——路由落到托管 GLM/DeepSeek 时目标端可能重新映射该等级）
+- **Token Plan 上限与可靠性**：`auto` 的 max output 按路由目标中的最小值保守声明为 65K；托管 `deepseek-v4*` 沿用文档声明的 393,216 shared max_tokens + thinking_budget 池；多步工具循环为 `auto` 与托管 `glm-5.3` 回填 `reasoning_content`——回填要求改由模型目录逐模型声明，不再依赖 provider 里的 ID 前缀匹配
 
 ### 0.4.3 — 2026-09-25
 

@@ -157,7 +157,8 @@ Contributions are welcome! Here's how you can help:
 ### 0.4.4 — 2026-09-28
 
 - **Qwen Token Plan lineup aligned** with the 2026-09-24 personal-plan overview: added `auto` (platform smart routing), `glm-5.3`, and `deepseek-v4.1-flash` (native vision); the existing qwen3.8/3.7/3.6 and hosted glm-5.2 / deepseek-v4 IDs are unchanged. Non-chat models on the plan (qwen-image-3.0-pro, wan2.7-image*, qwen-audio-3.0-*, happyhorse-1.1-*, decision-model-preview) stay out of scope
-- **Token Plan thinking menus**: `deepseek-v4.1-flash` joins the hosted-model None/Low/High/Max menu (native reasoning_effort, medium normalized to high); `glm-5.3` keeps the global always-on Low/High/Max menu (Zhipu treats its thinking as non-disableable on every endpoint, DashScope included); `auto` uses the generic Qwen None/Low/Medium/High menu via enable_thinking/thinking_budget
+- **Token Plan thinking menus**: `deepseek-v4.1-flash` joins the hosted-model None/Low/High/Max menu (native reasoning_effort low|high|max per DashScope's DeepSeek doc, medium normalized to high); `glm-5.3` keeps the global always-on Low/High/Max menu (DashScope hosts it in thinking-only mode — enable_thinking=false is ignored — matching Zhipu's own endpoints); `auto` uses the generic Qwen None/Low/Medium/High menu via enable_thinking/thinking_budget (a best-effort hint: a hosted GLM/DeepSeek route target may remap it)
+- **Token Plan limits & reliability**: `auto` declares the conservative 65K floor across its route targets as max output; hosted `deepseek-v4*` keep the documented 393,216-token shared max_tokens + thinking_budget pool; multi-step tool loops backfill `reasoning_content` for `auto` and hosted `glm-5.3` — the requirement is now declared per model in the catalog instead of an ID-prefix match in the provider
 
 ### 0.4.3 — 2026-09-25
 
