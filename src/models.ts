@@ -258,9 +258,11 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		// Declared permissive: current route targets (3.7/3.8 series) all
-		// accept images; a text-only fallback target would reject them.
-		capabilities: { imageInput: true, toolCalling: true },
+		// Text-only by contract: the Auto routing doc (alibabacloud.com
+		// model-routing) restricts smart routing to text Chat Completions —
+		// image/video inputs are explicitly out of scope, even though most
+		// route targets are vision-capable.
+		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
 		id: "qwen3.8-max",

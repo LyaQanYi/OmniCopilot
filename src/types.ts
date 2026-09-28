@@ -338,12 +338,14 @@ export function toLanguageModelChatInformation(
 		(model.id === "deepseek-v4-pro-0813" ||
 			model.id === "deepseek-v4-flash-0731" ||
 			model.id === "deepseek-v4.1-flash" ||
-			model.id === "glm-5.2" ||
-			model.id === "glm-5.3")
+			model.id === "glm-5.2")
 	) {
 		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
 		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
-		// cannot express.
+		// cannot express. Token Plan's glm-5.3 never reaches this branch:
+		// the global ALWAYS_THINKING_MODEL_IDS check above matches it first,
+		// which is also the correct menu here — Zhipu treats GLM-5.3 thinking
+		// as non-disableable on every endpoint, DashScope included.
 		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
 	} else if (
 		(vendorId === "volcengine" || vendorId === "volcengine-agent-plan") &&

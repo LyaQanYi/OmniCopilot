@@ -52,13 +52,13 @@
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
   - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort
-  - **GLM-5.3 / GLM-5.3-Flash** 菜单：Low / High / Max——无 None 档，思考始终开启（Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到这两个模型）
+  - **GLM-5.3 / GLM-5.3-Flash** 菜单：Low / High / Max——无 None 档，思考始终开启（Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到这两个模型；Token Plan 托管的 `glm-5.3` 同样使用恒开菜单）
   - 4 档菜单（None / Low / Medium / High）：通义千问推理款
   - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、火山引擎推理款）——MiniMax-M3 的 None 是真关闭思考
   - 思考锁定的模型不提供菜单：K2.7 Code（Code Plan 的 kimi-for-coding(-highspeed)、开放平台的 kimi-k2.7-code(-highspeed)）与 MiniMax M2.x——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
 - **上下文用量显示**：请求携带 `stream_options: { include_usage: true }` 并把真实 token 用量回报给 Copilot Chat，上下文指示条显示实际用量而不是 0；首轮拿到真实用量前以 CJK 感知估算兜底（中文 ≈ 1 token/字）
-- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash、Token Plan auto、Token Plan 托管的 deepseek-v4.1-flash，及火山托管的 doubao-seed-2.1-pro/lite、doubao-seed-2.0-mini、doubao-seed-evolving、kimi-k2.7-code、kimi-k2.8-preview、kimi-k3、minimax-m3、glm-5.3-flash、deepseek-v4.1-flash）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：支持视觉的模型（deepseek-flash、glm-5.3-flash、kimi-for-coding、MiniMax-M3、qwen3.8-max、qwen3.8-flash、qwen3.7-plus、qwen3.6-flash、Token Plan 托管的 deepseek-v4.1-flash，及火山托管的 doubao-seed-2.1-pro/lite、doubao-seed-2.0-mini、doubao-seed-evolving、kimi-k2.7-code、kimi-k2.8-preview、kimi-k3、minimax-m3、glm-5.3-flash、deepseek-v4.1-flash）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 
 ## 使用方法
@@ -157,7 +157,7 @@ src/
 ### 0.4.4 — 2026-09-28
 
 - **Qwen Token Plan 模型阵容对齐官方 09-24 个人版概览**：新增 `auto`（平台智能路由）、`glm-5.3`、`deepseek-v4.1-flash`（原生视觉）；现有 qwen3.8/3.7/3.6 与托管的 glm-5.2、deepseek-v4 系列 ID 不变。套餐内的非对话模型（qwen-image-3.0-pro、wan2.7-image*、qwen-audio-3.0-*、happyhorse-1.1-*、decision-model-preview）不在本扩展范围内
-- **Token Plan 思考菜单**：`glm-5.3` 与 `deepseek-v4.1-flash` 加入托管模型的 None/Low/High/Max 菜单（原生 reasoning_effort，medium 归一到 high）；`auto` 走通义千问通用 None/Low/Medium/High 菜单（enable_thinking/thinking_budget）
+- **Token Plan 思考菜单**：`deepseek-v4.1-flash` 加入托管模型的 None/Low/High/Max 菜单（原生 reasoning_effort，medium 归一到 high）；`glm-5.3` 沿用全局恒开 Low/High/Max 菜单（智谱在其所有端点均不提供关闭 5.3 思考的方式，DashScope 托管同理）；`auto` 走通义千问通用 None/Low/Medium/High 菜单（enable_thinking/thinking_budget）
 
 ### 0.4.3 — 2026-09-25
 
