@@ -235,9 +235,33 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 
 // ─── Qwen Token Plan ─────────────────────────────────────────────────────────
 
+// Supported-model list per the official Token Plan (personal) overview,
+// https://help.aliyun.com/zh/model-studio/token-plan-personal-overview
+// (updated 2026-09-24). Night-window Credits discounts apply automatically
+// server-side (qwen3.8-max/flash 40%, deepseek-v4.1-flash and the
+// deepseek-v4-*-snapshot IDs 50%, 22:00-08:00). Image/audio/video models
+// (qwen-image-3.0-pro, wan2.7-image*, qwen-audio-3.0-*, happyhorse-1.1-*,
+// decision-model-preview) are omitted — this extension is chat-only.
 const QWEN_TOKEN_PLAN_BASE_URL = "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1";
 
 const QWEN_MODELS: ModelInfo[] = [
+	{
+		id: "auto",
+		name: "Qwen Auto (Token Plan)",
+		family: "qwen",
+		version: "auto",
+		tooltip: "auto — platform smart routing: picks the underlying model per request, balancing quality and Credits",
+		maxInputTokens: 1000000,
+		// Route targets cap output between 65K (3.6-flash) and 131K; declare
+		// the largest so a big max_tokens is never rejected outright.
+		maxOutputTokens: 131072,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// Declared permissive: current route targets (3.7/3.8 series) all
+		// accept images; a text-only fallback target would reject them.
+		capabilities: { imageInput: true, toolCalling: true },
+	},
 	{
 		id: "qwen3.8-max",
 		name: "Qwen3.8 Max",
@@ -308,6 +332,19 @@ const QWEN_MODELS: ModelInfo[] = [
 	// the Qwen-style enable_thinking/thinking_budget params, which
 	// DashScope-hosted GLM and DeepSeek models accept.
 	{
+		id: "glm-5.3",
+		name: "GLM-5.3 (Token Plan)",
+		family: "qwen",
+		version: "glm-5.3",
+		tooltip: "GLM-5.3 — via Qwen Token Plan, 1M context",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
 		id: "glm-5.2",
 		name: "GLM-5.2 (Token Plan)",
 		family: "qwen",
@@ -360,6 +397,19 @@ const QWEN_MODELS: ModelInfo[] = [
 		thinking: true,
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4.1-flash",
+		name: "DeepSeek V4.1 Flash (Token Plan)",
+		family: "qwen",
+		version: "deepseek-v4.1-flash",
+		tooltip: "DeepSeek V4.1 Flash — via Qwen Token Plan, 1M context, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 393216,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];
 

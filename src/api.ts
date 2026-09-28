@@ -234,21 +234,32 @@ export class OpenAICompatibleClient {
 					//
 					// DashScope-hosted GLM/DeepSeek models take the
 					// vendor-native reasoning_effort knob instead of
-					// thinking_budget: GLM-5.2 accepts low|medium|high|max;
+					// thinking_budget: GLM-5.2/5.3 accept low|medium|high|max
+					// (medium normalized to the declared high default here);
 					// DeepSeek V4 accepts low|high|max where low is
 					// unsupported on the non-snapshot v4-pro and medium
-					// aliases to high (default high).
+					// aliases to high (default high). v4.1-flash takes
+					// low|high|max natively (per the Volcengine deep-thinking
+					// table for the same model ID).
 					if (
 						thinking &&
 						effort &&
 						(model === "glm-5.2" ||
+							model === "glm-5.3" ||
 							model === "deepseek-v4-pro" ||
 							model === "deepseek-v4-pro-0813" ||
-							model === "deepseek-v4-flash-0731")
+							model === "deepseek-v4-flash-0731" ||
+							model === "deepseek-v4.1-flash")
 					) {
-						if (model === "glm-5.2") {
-							// medium → high: this model's picker schema has no
-							// Medium option and declares High as its default.
+						if (model === "glm-5.2" || model === "glm-5.3") {
+							// medium → high: these models' picker schema has
+							// no Medium option and declares High as its
+							// default.
+							body.reasoning_effort =
+								effort === "medium" ? "high" : effort;
+						} else if (model === "deepseek-v4.1-flash") {
+							// Native low|high|max; medium (legacy fallback)
+							// maps to the declared default high.
 							body.reasoning_effort =
 								effort === "medium" ? "high" : effort;
 						} else if (

@@ -337,7 +337,9 @@ export function toLanguageModelChatInformation(
 		vendorId === "qwen" &&
 		(model.id === "deepseek-v4-pro-0813" ||
 			model.id === "deepseek-v4-flash-0731" ||
-			model.id === "glm-5.2")
+			model.id === "deepseek-v4.1-flash" ||
+			model.id === "glm-5.2" ||
+			model.id === "glm-5.3")
 	) {
 		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
 		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
