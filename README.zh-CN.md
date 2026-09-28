@@ -46,6 +46,7 @@
 - [ ] 测试 Kimi 开放平台
 - [ ] 测试 MiMo Token Plan CN
 - [ ] 将 vendor 专属序列化开关（outputLimitField、acceptsReasoningContent）下沉到 VendorConfig，替代按 vendor ID 的分支判断
+- [ ] 为 MiMo 工具循环历史添加请求序列化自动化测试（thinking 开/关，含 VS Code 丢弃思考 part 的历史）
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版）

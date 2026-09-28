@@ -46,6 +46,7 @@ The following platforms have been tested and confirmed working:
 - [ ] Test Kimi Open Platform
 - [ ] Test MiMo Token Plan CN
 - [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
+- [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
 - [ ] Support SiliconFlow
 - [ ] Support MiniMax International
 - [ ] Test GLM Coding Plan (Z.AI international)
