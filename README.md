@@ -13,7 +13,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | GLM Coding Plan | `glm-coding-plan` | GLM-5.3, GLM-5.3-Flash |
 | Kimi Code Plan | `moonshot` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Qwen Token Plan | `qwen` | qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731 |
+| Qwen Token Plan | `qwen` | auto, qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
 | Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
 | Volcengine Agent Plan CN | `volcengine-agent-plan` | the same 13-model set (kimi-k3 requires Medium+ plans) |
@@ -52,13 +52,13 @@ The following platforms have been tested and confirmed working:
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort on both endpoints
-  - **GLM-5.3 / GLM-5.3-Flash** menu: Low / High / Max — no None option, thinking is always on (the Coding endpoint routes old GLM IDs like glm-5.1 / glm-4.7 to these two models)
+  - **GLM-5.3 / GLM-5.3-Flash** menu: Low / High / Max — no None option, thinking is always on (the Coding endpoint routes old GLM IDs like glm-5.1 / glm-4.7 to these two models; Token Plan-hosted `glm-5.3` uses the same always-on menu)
   - 4-level menu (None / Low / Medium / High) for Qwen reasoning models
   - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, Volcengine reasoning models) — MiniMax-M3's None genuinely disables thinking
   - Thinking-locked models expose no menu at all: K2.7 Code (Code Plan `kimi-for-coding`(-highspeed), Open Platform `kimi-k2.7-code`(-highspeed)) and MiniMax M2.x — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
-- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash, and Volcengine-hosted doubao-seed-2.1-pro/lite, doubao-seed-2.0-mini, doubao-seed-evolving, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, minimax-m3, glm-5.3-flash, deepseek-v4.1-flash) can read images attached in Copilot Chat
+- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash, Token Plan-hosted deepseek-v4.1-flash, and Volcengine-hosted doubao-seed-2.1-pro/lite, doubao-seed-2.0-mini, doubao-seed-evolving, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, minimax-m3, glm-5.3-flash, deepseek-v4.1-flash) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
 ## Usage
@@ -153,6 +153,12 @@ Contributions are welcome! Here's how you can help:
 - GitHub Copilot extension
 
 ## Changelog
+
+### 0.4.4 — 2026-09-28
+
+- **Qwen Token Plan lineup aligned** with the 2026-09-24 personal-plan overview: added `auto` (platform smart routing), `glm-5.3`, and `deepseek-v4.1-flash` (native vision); the existing qwen3.8/3.7/3.6 and hosted glm-5.2 / deepseek-v4 IDs are unchanged. Non-chat models on the plan (qwen-image-3.0-pro, wan2.7-image*, qwen-audio-3.0-*, happyhorse-1.1-*, decision-model-preview) stay out of scope
+- **Token Plan thinking menus**: `deepseek-v4.1-flash` joins the hosted-model None/Low/High/Max menu (native reasoning_effort low|high|max per DashScope's DeepSeek doc, medium normalized to high); `glm-5.3` keeps the global always-on Low/High/Max menu (DashScope hosts it in thinking-only mode — enable_thinking=false is ignored — matching Zhipu's own endpoints); `auto` uses the generic Qwen None/Low/Medium/High menu via enable_thinking/thinking_budget (a best-effort hint: a hosted GLM/DeepSeek route target may remap it)
+- **Token Plan limits & reliability**: `auto` declares the conservative 65K floor across its route targets as max output; hosted `deepseek-v4*` keep the documented 393,216-token shared max_tokens + thinking_budget pool; multi-step tool loops backfill `reasoning_content` for `auto` and hosted `glm-5.3` — the requirement is now declared per model in the catalog instead of an ID-prefix match in the provider
 
 ### 0.4.3 — 2026-09-25
 

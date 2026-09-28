@@ -538,17 +538,25 @@ export class MultiModelChatProvider
 		// messages lack reasoning_content — DeepSeek always; Zhipu for its
 		// always-thinking 5.3 models (interleaved thinking requires
 		// preserving reasoning_content alongside tool results); Kimi Open
-		// Platform whenever thinking is on (K3 and K2.7 always think). The
-		// host may drop thinking parts from history, so backfill "".
+		// Platform whenever thinking is on (K3 and K2.7 always think); Qwen
+		// Token Plan models that declare it in the catalog (hosted
+		// GLM-5.3/DeepSeek V4, plus `auto` which may route to either —
+		// native Qwen targets ignore the empty field). The host may drop
+		// thinking parts from history, so backfill "".
 		const needsReasoningBackfill =
 			this.vendorConfig.vendorId === "deepseek" ||
 			this.vendorConfig.vendorId === "glm-coding-plan" ||
 			this.vendorConfig.vendorId === "glm-coding-plan-cn" ||
 			(this.vendorConfig.vendorId === "moonshot-open" && thinking) ||
-			(this.vendorConfig.vendorId === "qwen" &&
-				thinking &&
-				(model.id ?? "").startsWith("deepseek-v4"));
-		if (needsReasoningBackfill && apiTools && apiTools.length > 0) {
+			(thinking && modelDef?.needsReasoningBackfillWhenThinking === true);
+		// Gate on either trigger: history already carries a tool loop — the
+		// rejection case, reachable even when this turn's tool list is empty
+		// (session continues without tools) — or a loop is about to start
+		// with tools attached now.
+		const hasHistoricalToolCalls = apiMessages.some(
+			(msg) => msg.role === "assistant" && (msg.tool_calls?.length ?? 0) > 0,
+		);
+		if (needsReasoningBackfill && (hasHistoricalToolCalls || (apiTools?.length ?? 0) > 0)) {
 			apiMessages = apiMessages.map((msg) =>
 				msg.role === "assistant" && msg.reasoning_content === undefined
 					? { ...msg, reasoning_content: "" }
