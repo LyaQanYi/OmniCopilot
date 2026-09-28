@@ -140,8 +140,9 @@ export class OpenAICompatibleClient {
 
 		if (stream && includeUsage) {
 			// Ask for a final usage chunk so the chat UI's context gauge can
-			// show real token counts (all 8 vendors document support; a 400/422
-			// from an endpoint that rejects it triggers one retry without it).
+			// show real token counts; a 400/422 from an endpoint that rejects
+			// it triggers one retry without it (usage reporting is
+			// best-effort, never worth failing on).
 			body.stream_options = { include_usage: true };
 		}
 
@@ -152,9 +153,12 @@ export class OpenAICompatibleClient {
 			// fields). K3 documents max_completion_tokens as its
 			// output-limit field on the Kimi endpoints (Code Plan k3/k3-256k
 			// and Open Platform kimi-k3); Volcengine-hosted kimi-k3 stays on
-			// the Ark max_tokens convention.
+			// the Ark max_tokens convention. MiMo's docs and examples use
+			// max_completion_tokens exclusively — it caps thinking + answer
+			// combined (deep-thinking doc), like the MiniMax field.
 			if (
 				options.vendorId === "minimax" ||
+				options.vendorId === "mimo-token-plan-cn" ||
 				((options.vendorId === "moonshot" || options.vendorId === "moonshot-open") &&
 					(model === "k3" || model === "k3-256k" || model === "kimi-k3"))
 			) {
@@ -407,12 +411,23 @@ export class OpenAICompatibleClient {
 					}
 					break;
 
-			default:
-				// Generic OpenAI-compatible: only send thinking when enabled.
-				if (thinking) {
-					body.thinking = { type: "enabled" };
-				}
-				break;
+				case "mimo-token-plan-cn":
+					// Xiaomi MiMo (Token Plan / open platform, OpenAI-compatible)
+					// per the deep-thinking doc: thinking {"type": "enabled" |
+					// "disabled"}, thinking default ON, no effort knob, and
+					// temperature/top_p are ignored while thinking. Reasoning
+					// streams via reasoning_content and counts into
+					// completion tokens. "None" must send an explicit disable
+					// — omitting the field keeps thinking (and its billing) on.
+					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					break;
+
+				default:
+					// Generic OpenAI-compatible: only send thinking when enabled.
+					if (thinking) {
+						body.thinking = { type: "enabled" };
+					}
+					break;
 		}
 	}
 

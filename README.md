@@ -17,15 +17,19 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
 | Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
 | Volcengine Agent Plan CN | `volcengine-agent-plan` | the same 13-model set (kimi-k3 requires Medium+ plans) |
+| MiMo Token Plan CN | `mimo-token-plan-cn` | mimo-v2.6-pro, mimo-v2.6-flash |
 
 ## Tested & Working
 
 The following platforms have been tested and confirmed working:
 
 - **DeepSeek Open Platform** (`platform.deepseek.com`)
-- **Kimi Code** (Kimi coding model)
+- **Kimi Code Plan** (`kimi.com/code`)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
+- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API)
+- **Volcengine Coding Plan / Agent Plan** (`console.volcengine.com`)
+- **Qwen Token Plan** (`platform.qianwenai.com`)
+- **MiMo Token Plan CN** (`platform.xiaomimimo.com`)
 
 > [!NOTE]
 > **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — success is not guaranteed, usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status. The same caveat applies to the international **GLM Coding Plan** on Z.AI (`api.z.ai/api/coding/paas/v4`): it is strictly limited to officially supported tools, and team plan members must use the team plan key (not interchangeable with other Z.AI API keys).
@@ -33,12 +37,16 @@ The following platforms have been tested and confirmed working:
 
 > [!WARNING]
 > **Qwen Token Plan terms and endpoint**: the extension points at the Token Plan endpoint (`token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`) and expects the subscription key (`sk-sp-…`) from platform.qianwenai.com — Token Plan and pay-as-you-go credentials/endpoints are fully isolated and must not be mixed (pay-as-you-go keys (`sk-ws-…`) belong to `dashscope.aliyuncs.com/compatible-mode/v1`). The key is also restricted to interactive coding/agent tools (Claude Code, Cursor, Qwen Code, Qoder, OpenClaw, etc.) — the docs explicitly forbid generic API usage and state that violations may suspend the subscription or ban the API key. VS Code Copilot Chat is not on the official tool list, so use at your own discretion and watch your account status.
+<!---->
+
+> [!WARNING]
+> **MiMo Token Plan CN terms and endpoint**: the extension points at the Token Plan CN cluster (`token-plan-cn.xiaomimimo.com/v1`; Singapore/Europe clusters exist at `token-plan-sgp/ams.xiaomimimo.com/v1`) and expects the plan's dedicated key (`tp-…` personal / `ttp-…` team) from platform.xiaomimimo.com — plan keys and pay-as-you-go keys (`sk-…` on `api.xiaomimimo.com/v1`) are fully isolated and must not be mixed. The plan's quota may only be used inside coding tools (OpenCode, OpenClaw, Claude Code, etc.); the docs classify non-coding API usage as abuse that may suspend the subscription or ban the key. VS Code Copilot Chat is not on the official tool list, so use at your own discretion and watch your account status.
 
 ## TODO
 
-- [ ] Test Volcengine Coding Plan / Agent Plan
-- [ ] Test Qwen Token Plan
 - [ ] Test Kimi Open Platform
+- [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
+- [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
 - [ ] Support SiliconFlow
 - [ ] Support MiniMax International
 - [ ] Test GLM Coding Plan (Z.AI international)
@@ -54,11 +62,11 @@ The following platforms have been tested and confirmed working:
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort on both endpoints
   - **GLM-5.3 / GLM-5.3-Flash** menu: Low / High / Max — no None option, thinking is always on (the Coding endpoint routes old GLM IDs like glm-5.1 / glm-4.7 to these two models; Token Plan-hosted `glm-5.3` uses the same always-on menu)
   - 4-level menu (None / Low / Medium / High) for Qwen reasoning models
-  - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, Volcengine reasoning models) — MiniMax-M3's None genuinely disables thinking
+  - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, Volcengine reasoning models, MiMo v2.6) — MiniMax-M3's and MiMo's None genuinely disables thinking
   - Thinking-locked models expose no menu at all: K2.7 Code (Code Plan `kimi-for-coding`(-highspeed), Open Platform `kimi-k2.7-code`(-highspeed)) and MiniMax M2.x — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
-- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash, Token Plan-hosted deepseek-v4.1-flash, and Volcengine-hosted doubao-seed-2.1-pro/lite, doubao-seed-2.0-mini, doubao-seed-evolving, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, minimax-m3, glm-5.3-flash, deepseek-v4.1-flash) can read images attached in Copilot Chat
+- **Vision Support**: Vision-capable models (deepseek-flash, glm-5.3-flash, kimi-for-coding, MiniMax-M3, qwen3.8-max, qwen3.8-flash, qwen3.7-plus, qwen3.6-flash, Token Plan-hosted deepseek-v4.1-flash, mimo-v2.6-pro, mimo-v2.6-flash, and Volcengine-hosted doubao-seed-2.1-pro/lite, doubao-seed-2.0-mini, doubao-seed-evolving, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, minimax-m3, glm-5.3-flash, deepseek-v4.1-flash) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
 ## Usage
@@ -154,92 +162,13 @@ Contributions are welcome! Here's how you can help:
 
 ## Changelog
 
-### 0.4.4 — 2026-09-28
+> Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
-- **Qwen Token Plan lineup aligned** with the 2026-09-24 personal-plan overview: added `auto` (platform smart routing), `glm-5.3`, and `deepseek-v4.1-flash` (native vision); the existing qwen3.8/3.7/3.6 and hosted glm-5.2 / deepseek-v4 IDs are unchanged. Non-chat models on the plan (qwen-image-3.0-pro, wan2.7-image*, qwen-audio-3.0-*, happyhorse-1.1-*, decision-model-preview) stay out of scope
-- **Token Plan thinking menus**: `deepseek-v4.1-flash` joins the hosted-model None/Low/High/Max menu (native reasoning_effort low|high|max per DashScope's DeepSeek doc, medium normalized to high); `glm-5.3` keeps the global always-on Low/High/Max menu (DashScope hosts it in thinking-only mode — enable_thinking=false is ignored — matching Zhipu's own endpoints); `auto` uses the generic Qwen None/Low/Medium/High menu via enable_thinking/thinking_budget (a best-effort hint: a hosted GLM/DeepSeek route target may remap it)
-- **Token Plan limits & reliability**: `auto` declares the conservative 65K floor across its route targets as max output; hosted `deepseek-v4*` keep the documented 393,216-token shared max_tokens + thinking_budget pool; multi-step tool loops backfill `reasoning_content` for `auto` and hosted `glm-5.3` — the requirement is now declared per model in the catalog instead of an ID-prefix match in the provider
+### 0.4.5 — 2026-09-29
 
-### 0.4.3 — 2026-09-25
-
-- **Volcengine lineups realigned** with the 2026-09-23/24 plan overviews: added `doubao-seed-2.1-pro`, `doubao-seed-2.1-lite`, `kimi-k2.8-preview` (1M context / 1M output), `deepseek-v4.1-flash` (native vision), plus `doubao-seed-2.0-mini` and `kimi-k3` now also on Coding Plan; removed the deprecated `doubao-seed-2.1-turbo` and `doubao-seed-2.0-lite` (offline 2026-10-09); length limits corrected per the official tables (evolving 256K output, MiniMax-M3 128K, K3 128K)
-- **Volcengine reasoning_effort levels** per the deep-thinking doc (2026-09-22): Doubao Seed 2.1 series / evolving / 2.0-mini get None/Low/Medium/High; Volcengine-hosted DeepSeek gets None/Low/High/Max (v4-flash/v4-pro map Max→high per the official compatibility table); `glm-5.3-flash` moves from locked to an always-on Low/High/Max menu (its thinking cannot be disabled; menu default High, API default max)
-
-### 0.4.2 — 2026-09-24
-
-- **DeepSeek aligned with the V4.1 lineup**: `deepseek-v4-flash` → `deepseek-flash` (DeepSeek-V4.1-Flash, now with image input), retired `deepseek-v4-flash-vision-exp`; BASE URL updated to `https://api.deepseek.com`; `deepseek-v4-pro` tooltip reflects the service-retained-with-unchanged-pricing status per the update log
-- **New provider: GLM Coding Plan (Z.AI international)** — `glm-coding-plan` at `https://api.z.ai/api/coding/paas/v4`, same GLM-5.3 / 5.3-Flash lineup and thinking behavior as the CN plan
-- **tsconfig**: explicit `"types": ["node"]` — TS 6.0 (bundled with current VS Code) no longer auto-includes `node_modules/@types`, which surfaced 10 false "Cannot find name" diagnostics in the editor
-
-### 0.4.1 — 2026-09-03
-
-- **Fix: answer text leaking into the thinking block** — when a model's answer quoted literal `<think>` / `</think>` strings (e.g. while reviewing this very codebase), the tag parser mistook them for delimiters and rerouted answer segments into the collapsible thinking section. Thinking now flows through two dedicated paths: `reasoning_content` deltas map straight to `LanguageModelThinkingPart`, `content` deltas stream verbatim as text; literal-tag parsing only runs for vendors that inline thinking inside `content` (MiniMax native API, opt-in via `inlineThinkTags`)
-- **Context gauge no longer stuck at 0**: streams `stream_options: { include_usage: true }` (with an automatic retry without the flag on 400/422) and reports the real usage to Copilot Chat via a `LanguageModelDataPart` (`usage` mime), lighting up the token indicator for extension-contributed models
-- **CJK-aware token estimation** in `provideTokenCount`: Chinese/Japanese/Korean text counts ≈ 1 token per character instead of `length / 4`, fixing 4-6x undercounts in Chinese-heavy conversations
-
-### 0.4.0 — 2026-08-30
-
-Pre-release: every provider re-verified against official docs. **GLM API keys must be re-entered** (vendor ID changed).
-
-- **Renames**: Bigmodel Plan → **GLM Coding Plan CN** (vendor ID now `glm-coding-plan-cn`), Qwen → **Qwen Token Plan**, MiniMax → **MiniMax Token Plan CN**
-- **Kimi split** into Kimi Code Plan (`moonshot`) and Moonshot Open Platform (`moonshot-open`): k3, k3-256k, kimi-for-coding(-highspeed), kimi-k3, kimi-k2.7-code(-highspeed), kimi-k2.6
-- **Volcengine split** into Volcengine Coding Plan CN (`volcengine`) and Volcengine Agent Plan CN (`volcengine-agent-plan`): Doubao Seed 2.1 Turbo / Seed Evolving / 2.0 Lite (plus 2.0 Mini and Kimi K3 on Agent Plan) hosted alongside kimi-k2.7-code, minimax-m3, deepseek-v4-flash/pro and glm-5.3(-flash); doubao-seed-2.0-pro, ark-code-latest and the stale third-party IDs are gone
-- **New models**: deepseek-v4-flash-vision-exp, qwen3.7-max, qwen3.6-flash, glm-5.3 / glm-5.3-flash; lineups trimmed to what each platform actually serves (GLM Coding endpoint keeps only 5.3 / 5.3-Flash)
-- **Thinking semantics overhauled**: new `thinkingLocked` (no picker menu) for K2.7 Code and MiniMax M2.x whose thinking cannot be disabled; three-level Low/High/Max menu for Kimi K3 and GLM-5.3(-Flash); Low added to DeepSeek where None genuinely disables; MiniMax-M3 and Volcengine "None" now send an explicit disable
-- **Doc-verified effort knobs**: DeepSeek `reasoning_effort` (low/high/max), Qwen `thinking_budget` (max 32768), DashScope-hosted GLM/DeepSeek on `reasoning_effort`, Zhipu `tool_stream` for streaming tool calls, MiniMax `max_completion_tokens`
-- **Reliability**: reasoning_content backfilled for tool loops on DeepSeek, GLM and Kimi Open Platform; vision lists refreshed (deepseek-v4-flash-vision-exp, glm-5.3-flash, MiniMax-M3, five Qwen models)
-- **Custom model support removed**: the `custom-openai` provider, the per-vendor `customModelIds` settings and the Add Custom Model ID command are gone — VS Code's built-in custom model flow covers this
-
-### 0.3.0 — 2026-05-08
-
-- **Per-model Thinking Effort picker** in Copilot model selector — hover a thinking-capable model and choose effort for the next turn, no global setting needed
-  - **DeepSeek V4** menu: None / High / Max (matches the V4 API's `reasoning_effort` domain)
-  - 4-level menu (None / Low / Medium / High) for Qwen reasoning models
-  - 2-level menu (None / On) for GLM, Kimi, MiniMax, and Volcengine reasoning models
-- **DeepSeek model list updated** from `deepseek-chat` / `deepseek-reasoner` to `deepseek-v4-flash` / `deepseek-v4-pro` (1M input, 384K output, both reasoning-capable)
-- **Removed** global `omniCopilot.enableThinking` and `omniCopilot.thinkingEffort` settings, the matching status-bar items, and `OmniCopilot: Toggle Thinking Mode` / `Set Thinking Effort` commands — picker covers all cases now
-- Vendor-specific reasoning mapping reworked to handle the full None / On / Low / Medium / High / Max space:
-  - DeepSeek: `reasoning_effort: high|max` when enabled, omitted when None
-  - Qwen: `enable_thinking` + `thinking_budget` (1024 / 4096 / 16384 tokens; max → 16384)
-  - Moonshot: explicit `thinking: { type: "enabled"|"disabled" }`
-  - Volcengine: `thinking: { type: "enabled" }` only when enabled
-  - Zhipu / MiniMax: no API knob, picker only controls output stripping
-
-### 0.2.0 — 2026-04-30
-
-- Add user-configurable max input context length cap (presets 4K–1M + custom 1K-2M tokens), shown in status bar
-
-### 0.1.3 — 2026-04-12
-
-- Add Volcengine Plan provider with 8 models (doubao-seed, minimax-m2.5, glm-4.7, deepseek-v3.2, kimi-k2.5)
-- Gate `reasoning_content` field by vendor capability — only send it for DeepSeek, Qwen, Moonshot/Kimi, and Zhipu; avoids request rejection on strict backends (Volcengine, MiniMax, custom)
-- Extract shared `buildOpenAIMessages` helper to deduplicate message-serialization logic between `MultiModelChatProvider` and `CustomOpenAIProvider`
-- Add `reasoning_content` handling in `CustomOpenAIProvider`
-
-### 0.1.2 — 2026-04-09
-
-- Add Bigmodel Plan (Zhipu) provider with GLM-5.1, GLM-5-Turbo, GLM-4.7, GLM-4.5-Air models
-- Enable thinking capability for Zhipu models
-- Normalize Zhipu model IDs
-
-### 0.1.1 — 2026-04-07
-
-- Enable thinking capability for MiniMax vendor
-- Enhance thinking support logic in both `MultiModelChatProvider` and `CustomOpenAIProvider`
-- Fix: flush remaining thinking buffer and pending tool calls after stream ends
-- Add MIT LICENSE file
-- Fix repository URL in package.json
-
-### 0.1.0 — 2026-04-06
-
-- Initial release
-- Multi-model provider architecture with DeepSeek, Moonshot (Kimi), Qwen, MiniMax support
-- Custom OpenAI-compatible provider for any endpoint
-- Thinking mode with `<think>` tag parsing and collapsible UI (via `LanguageModelThinkingPart`)
-- Vision support for image-capable models
-- Tool calling / function calling support
-- Custom model ID management via settings and command palette
-- Configurable thinking effort (low / medium / high)
+- **New provider: MiMo Token Plan CN** (`mimo-token-plan-cn`, Xiaomi) — the first vendor to follow the new ID convention: kebab-case lowercase of the display name (existing vendor IDs stay unchanged) — `mimo-v2.6-pro` (trillion-param flagship) and `mimo-v2.6-flash`, both 1M context / 128K output with omni (vision) input, via the plan's OpenAI-compatible CN cluster endpoint (`token-plan-cn.xiaomimimo.com/v1`). Plan keys are `tp-`/`ttp-`-prefixed and isolated from pay-as-you-go `sk-` keys. mimo-v2.5 / mimo-v2.5-pro retire 2026-10-21 and are not included; ASR/TTS models stay out of scope; mimo-v2.6-pro-ultraspeed is a custom-service offering outside the plan
+- **MiMo thinking & params per the deep-thinking doc**: `thinking: {type: enabled|disabled}` (default on — None sends an explicit disable; no effort knob, so the picker shows the None/On menu); output capped via `max_completion_tokens` (thinking + answer share it); reasoning streams via `reasoning_content` and counts into completion tokens
+- **MiMo tool-loop reliability**: with thinking on, assistant turns carrying `tool_calls` must echo `reasoning_content` back or the API returns 400 — covered by the catalog-declared `needsReasoningBackfillWhenThinking` flag, and `reasoning_content` on history is now serialized for the `mimo-token-plan-cn` vendor
 
 ## License
 

@@ -316,6 +316,7 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "moonshot-open":
 		case "glm-coding-plan":
 		case "glm-coding-plan-cn":
+		case "mimo-token-plan-cn":
 			return true;
 		default:
 			return false;
@@ -338,6 +339,9 @@ function convertRole(
 interface BuildMessagesOptions {
 	supportsVision: boolean;
 	vendorId?: string;
+	/** Whether thinking is enabled for this turn — MiMo gates its
+	 * reasoning_content echo on it. */
+	thinking?: boolean;
 }
 
 /**
@@ -350,6 +354,13 @@ function buildOpenAIMessages(
 	opts: BuildMessagesOptions,
 ): OpenAIMessage[] {
 	const includeReasoning = supportsReasoningContent(opts.vendorId);
+	// MiMo's deep-thinking contract requires reasoning_content only on
+	// assistant turns that carry tool_calls, and only while thinking is
+	// on. Serializing it on plain turns would re-send (and re-bill) the
+	// whole reasoning trace every round and pair a thinking-disabled
+	// request with stale reasoning history.
+	const isMimo = opts.vendorId === "mimo-token-plan-cn";
+	const mimoReasoningAllowed = isMimo && opts.thinking === true;
 	const result: OpenAIMessage[] = [];
 
 	for (const msg of messages) {
@@ -412,7 +423,7 @@ function buildOpenAIMessages(
 				content: textContent || "",
 				tool_calls: toolCalls,
 			};
-			if (includeReasoning && reasoningContent) {
+			if (includeReasoning && reasoningContent && (!isMimo || mimoReasoningAllowed)) {
 				message.reasoning_content = reasoningContent;
 			}
 			result.push(message);
@@ -425,7 +436,9 @@ function buildOpenAIMessages(
 			result.push({ role, content: contentParts, name: msg.name });
 		} else {
 			const message: OpenAIMessage = { role, content: textContent, name: msg.name };
-			if (includeReasoning && role === "assistant" && reasoningContent) {
+			// MiMo: plain assistant turns never carry reasoning_content —
+			// see the isMimo note above.
+			if (includeReasoning && !isMimo && role === "assistant" && reasoningContent) {
 				message.reasoning_content = reasoningContent;
 			}
 			result.push(message);
@@ -514,7 +527,7 @@ export class MultiModelChatProvider
 		const supportsVision =
 			isVisionEnabled() && (modelDef?.capabilities.imageInput ?? false);
 
-		let apiMessages = this.convertMessages(messages, supportsVision);
+		let apiMessages = this.convertMessages(messages, supportsVision, thinking);
 		const apiTools = this.convertTools(options.tools);
 		const maxTokens = options.modelOptions?.maxTokens as number | undefined;
 
@@ -539,9 +552,11 @@ export class MultiModelChatProvider
 		// always-thinking 5.3 models (interleaved thinking requires
 		// preserving reasoning_content alongside tool results); Kimi Open
 		// Platform whenever thinking is on (K3 and K2.7 always think); Qwen
-		// Token Plan models that declare it in the catalog (hosted
-		// GLM-5.3/DeepSeek V4, plus `auto` which may route to either —
-		// native Qwen targets ignore the empty field). The host may drop
+		// Token Plan models and MiMo's v2.6 pair whenever they declare
+		// needsReasoningBackfillWhenThinking in the catalog (hosted
+		// GLM-5.3/DeepSeek V4 plus `auto` which may route to either;
+		// MiMo — whose doc scopes the requirement to tool_calls turns,
+		// so for it only those get filled below). The host may drop
 		// thinking parts from history, so backfill "".
 		const needsReasoningBackfill =
 			this.vendorConfig.vendorId === "deepseek" ||
@@ -556,9 +571,14 @@ export class MultiModelChatProvider
 		const hasHistoricalToolCalls = apiMessages.some(
 			(msg) => msg.role === "assistant" && (msg.tool_calls?.length ?? 0) > 0,
 		);
+		// MiMo's requirement covers only tool_calls-bearing turns.
+		const mimoToolLoopOnly =
+			this.vendorConfig.vendorId === "mimo-token-plan-cn";
 		if (needsReasoningBackfill && (hasHistoricalToolCalls || (apiTools?.length ?? 0) > 0)) {
 			apiMessages = apiMessages.map((msg) =>
-				msg.role === "assistant" && msg.reasoning_content === undefined
+				msg.role === "assistant" &&
+				msg.reasoning_content === undefined &&
+				(!mimoToolLoopOnly || (msg.tool_calls?.length ?? 0) > 0)
 					? { ...msg, reasoning_content: "" }
 					: msg,
 			);
@@ -740,10 +760,12 @@ export class MultiModelChatProvider
 	private convertMessages(
 		messages: readonly vscode.LanguageModelChatRequestMessage[],
 		supportsVision: boolean,
+		thinking: boolean,
 	): OpenAIMessage[] {
 		return buildOpenAIMessages(messages, {
 			supportsVision,
 			vendorId: this.vendorConfig.vendorId,
+			thinking,
 		});
 	}
 

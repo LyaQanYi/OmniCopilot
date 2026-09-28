@@ -1,8 +1,8 @@
 {
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
-	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan) in GitHub Copilot Chat as language model providers.",
-	"version": "0.4.4",
+	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan, MiMo) in GitHub Copilot Chat as language model providers.",
+	"version": "0.4.5",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -130,6 +130,19 @@
 						"apiKey": {
 							"type": "string",
 							"description": "API key from console.volcengine.com (Ark Agent Plan)",
+							"secret": true
+						}
+					}
+				}
+			},
+			{
+				"vendor": "mimo-token-plan-cn",
+				"displayName": "MiMo Token Plan CN",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from platform.xiaomimimo.com Token Plan (tp- or ttp- prefixed; not interchangeable with pay-as-you-go sk- keys)",
 							"secret": true
 						}
 					}
