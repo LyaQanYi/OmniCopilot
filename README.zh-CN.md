@@ -45,6 +45,7 @@
 - [ ] 测试 Qwen Token Plan
 - [ ] 测试 Kimi 开放平台
 - [ ] 测试 MiMo Token Plan CN
+- [ ] 将 vendor 专属序列化开关（outputLimitField、acceptsReasoningContent）下沉到 VendorConfig，替代按 vendor ID 的分支判断
 - [ ] 支持硅基流动
 - [ ] 支持 MiniMax 国际版
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版）

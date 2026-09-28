@@ -144,8 +144,8 @@
 							"type": "string",
 							"description": "API key from platform.xiaomimimo.com Token Plan (tp- or ttp- prefixed; not interchangeable with pay-as-you-go sk- keys)",
 							"secret": true
-							}
 						}
+					}
 				}
 			}
 		],

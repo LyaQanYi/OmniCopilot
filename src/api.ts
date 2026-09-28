@@ -140,8 +140,9 @@ export class OpenAICompatibleClient {
 
 		if (stream && includeUsage) {
 			// Ask for a final usage chunk so the chat UI's context gauge can
-			// show real token counts (all 8 vendors document support; a 400/422
-			// from an endpoint that rejects it triggers one retry without it).
+			// show real token counts; a 400/422 from an endpoint that rejects
+			// it triggers one retry without it (usage reporting is
+			// best-effort, never worth failing on).
 			body.stream_options = { include_usage: true };
 		}
 
@@ -422,11 +423,11 @@ export class OpenAICompatibleClient {
 					break;
 
 				default:
-				// Generic OpenAI-compatible: only send thinking when enabled.
-				if (thinking) {
-					body.thinking = { type: "enabled" };
-				}
-				break;
+					// Generic OpenAI-compatible: only send thinking when enabled.
+					if (thinking) {
+						body.thinking = { type: "enabled" };
+					}
+					break;
 		}
 	}
 

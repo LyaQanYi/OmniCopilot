@@ -45,6 +45,7 @@ The following platforms have been tested and confirmed working:
 - [ ] Test Qwen Token Plan
 - [ ] Test Kimi Open Platform
 - [ ] Test MiMo Token Plan CN
+- [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
 - [ ] Support SiliconFlow
 - [ ] Support MiniMax International
 - [ ] Test GLM Coding Plan (Z.AI international)

@@ -886,37 +886,38 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 // a custom-service offering not included in the plan's model list.
 const MIMO_TOKEN_PLAN_BASE_URL = "https://token-plan-cn.xiaomimimo.com/v1";
 
+// Shared by both plan models — a single spread so a future lineup change
+// (context/output caps, thinking semantics, endpoint) can't drift between
+// the two entries.
+const MIMO_COMMON: Omit<ModelInfo, "id" | "name" | "version" | "tooltip"> = {
+	family: "mimo",
+	maxInputTokens: 1048576,
+	maxOutputTokens: 131072,
+	baseUrl: MIMO_TOKEN_PLAN_BASE_URL,
+	thinking: true,
+	thinkingEffortSupport: false,
+	// Thinking is default-on server-side; when on, tool loops must echo
+	// reasoning_content back on tool_calls turns or the API 400s
+	// (deep-thinking doc).
+	needsReasoningBackfillWhenThinking: true,
+	capabilities: { imageInput: true, toolCalling: true },
+};
+
 const MIMO_MODELS: ModelInfo[] = [
 	{
 		id: "mimo-v2.6-pro",
 		name: "MiMo V2.6 Pro",
-		family: "mimo",
 		version: "2.6-pro",
 		tooltip:
 			"MiMo V2.6 Pro — trillion-param flagship reasoning model, omni understanding, vision support",
-		maxInputTokens: 1048576,
-		maxOutputTokens: 131072,
-		baseUrl: MIMO_TOKEN_PLAN_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		// Thinking is default-on server-side; when on, tool loops must echo
-		// reasoning_content back on assistant turns or the API 400s (deep-thinking doc).
-		needsReasoningBackfillWhenThinking: true,
-		capabilities: { imageInput: true, toolCalling: true },
+		...MIMO_COMMON,
 	},
 	{
 		id: "mimo-v2.6-flash",
 		name: "MiMo V2.6 Flash",
-		family: "mimo",
 		version: "2.6-flash",
 		tooltip: "MiMo V2.6 Flash — efficient omni model for high-frequency tasks, vision support",
-		maxInputTokens: 1048576,
-		maxOutputTokens: 131072,
-		baseUrl: MIMO_TOKEN_PLAN_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		needsReasoningBackfillWhenThinking: true,
-		capabilities: { imageInput: true, toolCalling: true },
+		...MIMO_COMMON,
 	},
 ];
 
