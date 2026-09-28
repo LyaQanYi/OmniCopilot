@@ -26,7 +26,7 @@
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
 - **Kimi Code Plan**（`kimi.com/code`）
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API——vendor ID 变更后待复测）
+- **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API）
 - **火山引擎 Coding Plan / Agent Plan**（`console.volcengine.com`）
 - **Qwen Token Plan**（`platform.qianwenai.com`）
 - **MiMo Token Plan CN**（`platform.xiaomimimo.com`）

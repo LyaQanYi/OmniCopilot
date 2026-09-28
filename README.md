@@ -26,7 +26,7 @@ The following platforms have been tested and confirmed working:
 - **DeepSeek Open Platform** (`platform.deepseek.com`)
 - **Kimi Code Plan** (`kimi.com/code`)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
-- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
+- **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API)
 - **Volcengine Coding Plan / Agent Plan** (`console.volcengine.com`)
 - **Qwen Token Plan** (`platform.qianwenai.com`)
 - **MiMo Token Plan CN** (`platform.xiaomimimo.com`)
