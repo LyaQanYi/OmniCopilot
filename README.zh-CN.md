@@ -27,6 +27,9 @@
 - **Kimi Code**（Kimi 编程模型）
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API——vendor ID 变更后待复测）
+- **火山引擎 Coding Plan / Agent Plan**（`console.volcengine.com`）
+- **Qwen Token Plan**（`platform.qianwenai.com`）
+- **MiMo Token Plan CN**（`platform.xiaomimimo.com`）
 
 > [!NOTE]
 > **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用不保证成功，消耗可能按 API 按量计费而非套餐积分；且智谱《使用须知》将非指定工具中的调用视为违规，存在限流或账号受限的风险。请留意账单与账号状态。国际版 **GLM Coding Plan**（Z.AI，`api.z.ai/api/coding/paas/v4`）同样仅限官方指定工具使用，非指定工具（含 VS Code Copilot Chat）调用不保证计入套餐额度、可能按 API 按量计费；Team Plan 成员必须使用团队计划专属 Key（与其他 Z.AI API Key 不通用）。
@@ -41,10 +44,7 @@
 
 ## 待办事项
 
-- [ ] 测试火山引擎 Coding Plan / Agent Plan
-- [ ] 测试 Qwen Token Plan
 - [ ] 测试 Kimi 开放平台
-- [ ] 测试 MiMo Token Plan CN
 - [ ] 将 vendor 专属序列化开关（outputLimitField、acceptsReasoningContent）下沉到 VendorConfig，替代按 vendor ID 的分支判断
 - [ ] 为 MiMo 工具循环历史添加请求序列化自动化测试（thinking 开/关，含 VS Code 丢弃思考 part 的历史）
 - [ ] 支持硅基流动

@@ -27,6 +27,9 @@ The following platforms have been tested and confirmed working:
 - **Kimi Code** (Kimi coding model)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
+- **Volcengine Coding Plan / Agent Plan** (`console.volcengine.com`)
+- **Qwen Token Plan** (`platform.qianwenai.com`)
+- **MiMo Token Plan CN** (`platform.xiaomimimo.com`)
 
 > [!NOTE]
 > **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — success is not guaranteed, usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status. The same caveat applies to the international **GLM Coding Plan** on Z.AI (`api.z.ai/api/coding/paas/v4`): it is strictly limited to officially supported tools, and team plan members must use the team plan key (not interchangeable with other Z.AI API keys).
@@ -41,10 +44,7 @@ The following platforms have been tested and confirmed working:
 
 ## TODO
 
-- [ ] Test Volcengine Coding Plan / Agent Plan
-- [ ] Test Qwen Token Plan
 - [ ] Test Kimi Open Platform
-- [ ] Test MiMo Token Plan CN
 - [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
 - [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
 - [ ] Support SiliconFlow
