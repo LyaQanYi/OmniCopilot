@@ -24,7 +24,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 The following platforms have been tested and confirmed working:
 
 - **DeepSeek Open Platform** (`platform.deepseek.com`)
-- **Kimi Code** (Kimi coding model)
+- **Kimi Code Plan** (`kimi.com/code`)
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **GLM Coding Plan CN** (`open.bigmodel.cn` Coding API — re-verification pending after the vendor ID change)
 - **Volcengine Coding Plan / Agent Plan** (`console.volcengine.com`)

@@ -24,7 +24,7 @@
 以下平台已经过测试并确认可用：
 
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
-- **Kimi Code**（Kimi 编程模型）
+- **Kimi Code Plan**（`kimi.com/code`）
 - **MiniMax Token Plan CN** (`platform.minimaxi.com`)
 - **GLM Coding Plan CN**（智谱，`open.bigmodel.cn` Coding API——vendor ID 变更后待复测）
 - **火山引擎 Coding Plan / Agent Plan**（`console.volcengine.com`）
