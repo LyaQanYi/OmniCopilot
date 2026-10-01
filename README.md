@@ -43,11 +43,11 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | KUAE Cloud Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> The 22 providers added in 0.5.0 (SiliconFlow, Tencent Hunyuan, StepFun, SCNet, Alibaba Coding Plan, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go, …) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). Most providers have been smoke-tested against live endpoints; any not yet covered are expected to follow the same OpenAI-compatible contract — endpoints and key regimes follow each vendor's official docs, and 4xx/parameter errors are worth an issue.
+> The 22 providers added in 0.5.0 (SiliconFlow, Tencent Hunyuan, StepFun, SCNet, Alibaba Coding Plan, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go, …) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 12 of them are live-tested (see Tested & Working above); the rest — **Tencent Hunyuan plans, StepFun Step Plan, SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
 
 ## Tested & Working
 
-The following platforms have been tested and confirmed working:
+The following providers have been tested and confirmed working:
 
 - **DeepSeek Open Platform** (`platform.deepseek.com`)
 - **Kimi Code Plan** (`kimi.com/code`)
@@ -56,6 +56,14 @@ The following platforms have been tested and confirmed working:
 - **Volcengine Coding Plan / Agent Plan** (`console.volcengine.com`)
 - **Alibaba Token Plan** (`platform.qianwenai.com`)
 - **MiMo Token Plan CN** (`platform.xiaomimimo.com`)
+- **Moonshot AI (International)** (`platform.moonshot.ai`)
+- **Kimi Code Plan (kimi.ai)** (`kimi.ai/code`)
+- **SiliconFlow / SiliconFlow CN** (`siliconflow.com` / `siliconflow.cn`)
+- **MiniMax International** (`minimax.io`)
+- **Alibaba Coding Plan / CN** (`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`)
+- **MiMo Token Plan SGP / AMS, pay-as-you-go** (`token-plan-sgp/ams.xiaomimimo.com`, `api.xiaomimimo.com`)
+- **Zhipu AI pay-as-you-go** (`open.bigmodel.cn`)
+- **Z.AI pay-as-you-go** (`api.z.ai`)
 
 > [!NOTE]
 > **GLM Coding Plan billing**: per Zhipu's docs, the Coding endpoint (`open.bigmodel.cn/api/coding/paas/v4`) only counts toward the Coding Plan quota when called from officially supported tools (Claude Code, Kilo Code, OpenCode, TRAE, CodeBuddy, etc.). VS Code Copilot Chat is not on that list — success is not guaranteed, usage may be billed at pay-as-you-go API rates instead of your plan's credits, and Zhipu's usage notes treat non-listed-tool calls as a violation that may lead to throttling or account restrictions. Keep an eye on your billing and account status. The same caveat applies to the international **GLM Coding Plan** on Z.AI (`api.z.ai/api/coding/paas/v4`): it is strictly limited to officially supported tools, and team plan members must use the team plan key (not interchangeable with other Z.AI API keys).
@@ -75,11 +83,11 @@ The following platforms have been tested and confirmed working:
 
 ## TODO
 
-- [ ] Test Kimi Open Platform
-- [ ] Finish smoke-testing the models.dev-sourced providers added in 0.5.0 (most covered; any stragglers follow the same OpenAI-compatible contract)
+- [ ] Test Kimi Open Platform (`moonshot-open`)
+- [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
+- [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
 - [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
-- [ ] Test GLM Coding Plan (Z.AI international)
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
 - [ ] To be continued…
 

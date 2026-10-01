@@ -43,11 +43,11 @@
 | 夸娥 KUAE Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> 0.5.0 新增的 22 个提供方（硅基流动、腾讯、阶跃、SCNet、阿里 Coding Plan、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量等）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。大部分提供方已对真实端点做过连通性验证；个别尚未覆盖的也遵循同一套 OpenAI 兼容契约——端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
+> 0.5.0 新增的 22 个提供方（硅基流动、腾讯、阶跃、SCNet、阿里 Coding Plan、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量等）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 12 家已经实测（见上方「已测试且可用」）；其余——**腾讯混元三个计划、阶跃 Step Plan、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
 
 ## 已测试且可用
 
-以下平台已经过测试并确认可用：
+以下提供方已经过测试并确认可用：
 
 - **DeepSeek 开放平台** (`platform.deepseek.com`)
 - **Kimi Code Plan**（`kimi.com/code`）
@@ -56,6 +56,14 @@
 - **火山引擎 Coding Plan / Agent Plan**（`console.volcengine.com`）
 - **Alibaba Token Plan**（`platform.qianwenai.com`）
 - **MiMo Token Plan CN**（`platform.xiaomimimo.com`）
+- **Moonshot AI 国际平台**（`platform.moonshot.ai`）
+- **Kimi Code Plan 国际版**（`kimi.ai/code`）
+- **硅基流动 / 硅基流动 CN**（`siliconflow.com` / `siliconflow.cn`）
+- **MiniMax 国际版**（`minimax.io`）
+- **Alibaba Coding Plan / CN**（`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`）
+- **MiMo Token Plan SGP / AMS 及按量**（`token-plan-sgp/ams.xiaomimimo.com`、`api.xiaomimimo.com`）
+- **智谱按量**（`open.bigmodel.cn`）
+- **Z.AI 按量**（`api.z.ai`）
 
 > [!NOTE]
 > **GLM Coding Plan 计费说明**：根据智谱官方文档，Coding 端点（`open.bigmodel.cn/api/coding/paas/v4`）只有在官方指定工具（Claude Code、Kilo Code、OpenCode、TRAE、CodeBuddy 等）中调用才计入套餐额度。VS Code Copilot Chat 不在列表中——调用不保证成功，消耗可能按 API 按量计费而非套餐积分；且智谱《使用须知》将非指定工具中的调用视为违规，存在限流或账号受限的风险。请留意账单与账号状态。国际版 **GLM Coding Plan**（Z.AI，`api.z.ai/api/coding/paas/v4`）同样仅限官方指定工具使用，非指定工具（含 VS Code Copilot Chat）调用不保证计入套餐额度、可能按 API 按量计费；Team Plan 成员必须使用团队计划专属 Key（与其他 Z.AI API Key 不通用）。
@@ -74,8 +82,9 @@
 
 ## 待办事项
 
-- [ ] 测试 Kimi 开放平台
-- [ ] 补齐 0.5.0 新增提供方（models.dev 口径）的冒烟测试（大部分已覆盖）
+- [ ] 测试 Kimi 开放平台（`moonshot-open`）
+- [ ] 测试 GLM Coding Plan（Z.AI 国际版，`glm-coding-plan`）
+- [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量
 - [ ] 将 vendor 专属序列化开关（outputLimitField、acceptsReasoningContent）下沉到 VendorConfig，替代按 vendor ID 的分支判断
 - [ ] 为 MiMo 工具循环历史添加请求序列化自动化测试（thinking 开/关，含 VS Code 丢弃思考 part 的历史）
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版）
