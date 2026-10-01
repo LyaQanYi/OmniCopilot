@@ -1,6 +1,6 @@
 # OmniCopilot
 
-[English](README.md)
+[English](README.md) | 中文
 
 一个 VS Code 扩展，允许你在 GitHub Copilot Chat 中使用来自多个大模型平台的模型作为语言模型提供方。
 

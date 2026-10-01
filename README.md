@@ -1,6 +1,6 @@
 # OmniCopilot
 
-[中文版](README.zh-CN.md)
+[中文](README.zh-CN.md) | English
 
 A VS Code extension that lets you use models from multiple LLM platforms in GitHub Copilot Chat as language model providers.
 
