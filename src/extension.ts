@@ -56,7 +56,9 @@ async function runConnectionTest(): Promise<void> {
 
 	const client = new OpenAICompatibleClient(key.trim());
 	const extraHeaders =
-		picked.vendorId === "moonshot" ? getKimiExtraHeaders() : undefined;
+		picked.vendorId === "moonshot" || picked.vendorId === "kimi-code-plan-intl"
+			? getKimiExtraHeaders()
+			: undefined;
 	try {
 		await client.chat(
 			probeModel.id,

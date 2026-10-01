@@ -158,8 +158,14 @@ export class OpenAICompatibleClient {
 			// combined (deep-thinking doc), like the MiniMax field.
 			if (
 				options.vendorId === "minimax" ||
+				options.vendorId === "minimax-intl" ||
 				options.vendorId === "mimo-token-plan-cn" ||
-				((options.vendorId === "moonshot" || options.vendorId === "moonshot-open") &&
+				options.vendorId === "mimo-token-plan-sgp" ||
+				options.vendorId === "mimo-token-plan-ams" ||
+				options.vendorId === "mimo" ||
+				((options.vendorId === "moonshot" ||
+					options.vendorId === "moonshot-open" ||
+					options.vendorId === "kimi-code-plan-intl") &&
 					(model === "k3" || model === "k3-256k" || model === "kimi-k3"))
 			) {
 				body.max_completion_tokens = options.maxTokens;
@@ -175,7 +181,10 @@ export class OpenAICompatibleClient {
 		// enabled alongside stream:true (see the GLM-5.3 migration guide).
 		if (
 			(options?.vendorId === "glm-coding-plan-cn" ||
-				options?.vendorId === "glm-coding-plan") &&
+				options?.vendorId === "glm-coding-plan" ||
+				options?.vendorId === "zhipu" ||
+				options?.vendorId === "zai" ||
+				options?.vendorId === "kuae") &&
 			stream &&
 			options.tools?.length
 		) {
@@ -286,6 +295,7 @@ export class OpenAICompatibleClient {
 								low: 1024,
 								medium: 4096,
 								high: 16384,
+								xhigh: 24576,
 								max: 32768,
 							};
 							body.thinking_budget = THINKING_BUDGET[effort];
@@ -296,16 +306,33 @@ export class OpenAICompatibleClient {
 					break;
 
 			case "moonshot":
-				// Kimi requires thinking object on every request, enabled or disabled.
-				body.thinking = { type: thinking ? "enabled" : "disabled" };
-				// k3 / k3-256k take top-level reasoning_effort (low | high | max,
-				// endpoint default high); "medium" (legacy callers) coerces to
-				// "high" per the endpoint's own mapping. Other Code Plan models
-				// do not support effort.
-				if ((model === "k3" || model === "k3-256k") && thinking && effort) {
-					body.reasoning_effort = effort === "medium" ? "high" : effort;
-				}
-				break;
+				case "kimi-code-plan-intl":
+					// Kimi requires thinking object on every request, enabled or disabled.
+					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					// k3 / k3-256k / kimi-for-coding take top-level reasoning_effort
+					// (low | high | max, endpoint default high); "medium" (legacy
+					// callers) coerces to "high" per the endpoint's own mapping.
+					// Other Code Plan models do not support effort.
+					if (
+						(model === "k3" || model === "k3-256k" || model === "kimi-for-coding") &&
+						thinking &&
+						effort
+					) {
+						body.reasoning_effort = effort === "medium" ? "high" : effort;
+					}
+					break;
+
+				case "moonshot-intl":
+					// International open platform (api.moonshot.ai) — same contract
+					// as the CN one: kimi-k3 always thinks and takes top-level
+						// reasoning_effort (no thinking object); kimi-k2.6 accepts an
+						// explicit disable; K2.7 Code models think permanently.
+					if (model === "kimi-k3") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
+						}
+					} else if (model === "kimi-k2.6" && !thinking) {
+						body.thinking = { type: "disabled" };					}				break;
 
 			case "moonshot-open":
 				// Kimi Open Platform (api.moonshot.cn/v1) — per-model thinking
@@ -400,18 +427,27 @@ export class OpenAICompatibleClient {
 					break;
 
 				case "minimax":
+				case "minimax-intl":
 					// MiniMax takes thinking: {type: "adaptive" | "disabled"}.
 					// M3 can genuinely disable thinking; M2.x models accept
-					// "disabled" but keep thinking on regardless, so they are
-					// marked thinkingLocked upstream and the param is only
-					// sent for M3. Thinking output arrives as interleaved
-					// <think> tags inside content.
-					if (model === "MiniMax-M3") {
+						// "disabled" but keep thinking on regardless, so they are
+						// marked thinkingLocked upstream and the param is only
+						// sent for M3. M3.1 is always-on (enforced upstream) and
+					// adds a native reasoning_effort domain low|medium|high|
+					// xhigh|max (models.dev). Thinking output arrives as
+					// interleaved <think> tags inside content.
+					if (model === "MiniMax-M3" || model === "MiniMax-M3.1-Flash-Preview") {
 						body.thinking = { type: thinking ? "adaptive" : "disabled" };
+					}
+					if (model === "MiniMax-M3.1-Flash-Preview" && thinking && effort) {
+						body.reasoning_effort = effort;
 					}
 					break;
 
 				case "mimo-token-plan-cn":
+				case "mimo-token-plan-sgp":
+				case "mimo-token-plan-ams":
+				case "mimo":
 					// Xiaomi MiMo (Token Plan / open platform, OpenAI-compatible)
 					// per the deep-thinking doc: thinking {"type": "enabled" |
 					// "disabled"}, thinking default ON, no effort knob, and
@@ -420,6 +456,176 @@ export class OpenAICompatibleClient {
 					// completion tokens. "None" must send an explicit disable
 					// — omitting the field keeps thinking (and its billing) on.
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
+					break;
+
+				case "alibaba-coding-plan":
+				case "alibaba-coding-plan-cn":
+					// Alibaba Coding Plan (coding.*.dashscope) — same DashScope
+					// contract as the Token Plan for the native Qwen IDs
+					// (enable_thinking + thinking_budget); the hosted GLM-5 /
+					// Kimi-K2.5 toggles ride the same field.
+					if (thinking) {
+						body.enable_thinking = true;
+						if (effort) {
+							const BUDGET: Record<ThinkingEffort, number> = {
+								low: 1024,
+								medium: 4096,
+								high: 16384,
+								xhigh: 24576,
+								max: 32768,
+							};
+							body.thinking_budget = BUDGET[effort];
+						}
+					} else {
+						body.enable_thinking = false;
+					}
+					break;
+
+				case "tencent-coding-plan":
+				case "tencent-token-plan":
+				case "tencent-tokenhub":
+					// Hunyuan plans on LKEAP: Qwen-style enable_thinking.
+					// Non-reasoning models (instruct/turbos/tc-code) ignore it.
+					body.enable_thinking = thinking;
+					break;
+
+				case "stepfun-step-plan":
+				case "stepfun-step-plan-cn":
+					// Step Plan exposes a native reasoning_effort domain
+					// (low|medium|high); step-3.5-flash only documents
+					// low|high, so the legacy medium fallback clamps to high.
+					if (thinking && effort) {
+						body.reasoning_effort =
+							model === "step-3.5-flash" && effort === "medium" ? "high" : effort;
+					}
+					break;
+
+				case "scnet-token-plan":
+					// SCNet hosts DeepSeek behind its native knob (high|max per
+					// models.dev; low/medium clamp to high); the rest of the
+					// line-up takes enable_thinking.
+					if (model.startsWith("DeepSeek")) {
+						if (thinking) {
+							if (effort) {
+								body.reasoning_effort =
+									effort === "low" || effort === "medium" ? "high" : effort;
+							}
+						} else {
+							body.thinking = { type: "disabled" };
+						}
+					} else {
+						body.enable_thinking = thinking;
+					}
+					break;
+
+				case "umans-ai-coding-plan":
+					// Umans re-serves GLM/Kimi/DeepSeek/Qwen with a native
+					// reasoning_effort domain (low|high|max; medium coerces to
+					// high). Toggle-capable models get an explicit disable.
+					if (!thinking) {
+						body.thinking = { type: "disabled" };
+					} else if (effort) {
+						body.reasoning_effort = effort === "medium" ? "high" : effort;
+					}
+					break;
+
+				case "longcat":
+					// LongCat-2.0: thinking toggle via enable_thinking.
+					body.enable_thinking = thinking;
+					break;
+
+				case "sensenova":
+					// SenseNova expresses off as a literal reasoning_effort
+					// "none" value on the glm-5.2 / deepseek-v4-flash /
+					// 6.8-flash-lite models; deepseek-v4-pro disables via the
+					// thinking object and kimi-k3 mirrors its native contract.
+					if (model === "kimi-k3") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
+						}
+					} else if (model === "deepseek-v4-pro") {
+						if (!thinking) {
+							body.thinking = { type: "disabled" };
+						} else if (effort) {
+							body.reasoning_effort =
+								effort === "low" || effort === "medium" ? "high" : effort;
+						}
+					} else if (model === "glm-5.2" || model === "deepseek-v4-flash") {
+						body.reasoning_effort = thinking ? "high" : "none";
+					} else {
+						// sensenova-6.8-flash-lite: none|low|medium|high.
+						body.reasoning_effort = thinking ? (effort ?? "high") : "none";
+					}
+					break;
+
+				case "zhipu":
+				case "zai":
+				case "kuae":
+					// Zhipu/Z.AI pay-as-you-go and the KUAE coding host. The
+					// always-thinking GLM-5.3 family takes reasoning_effort
+					// only (enforced upstream via ALWAYS_THINKING_MODEL_IDS);
+					// GLM-5.2 is always-on with high|max (menu-clamped);
+					// toggle models (4.7 / 5-turbo / 5v-turbo) take the
+					// thinking object.
+					if (
+						model === "glm-5.3" ||
+						model === "glm-5.3-flash" ||
+						model === "glm-5.3-flashx" ||
+						model === "glm-5.3-highspeed" ||
+						model === "glm-5.2"
+					) {
+						if (thinking && effort) {
+							body.reasoning_effort =
+								model === "glm-5.2" && effort !== "max" ? "high" : effort;
+						}
+					} else {
+						body.thinking = { type: thinking ? "enabled" : "disabled" };
+					}
+					break;
+
+				case "volcengine-ark":
+					// Ark pay-as-you-go mirrors the plan endpoints: thinking
+					// object + native reasoning_effort. The dated GLM-5.3-Flash
+					// snapshot is always-on (effort only, like the plans).
+					if (model === "glm-5-3-flash-260828") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
+						}
+					} else {
+						body.thinking = { type: thinking ? "enabled" : "disabled" };
+						if (thinking && effort) {
+							body.reasoning_effort = effort;
+						}
+					}
+					break;
+
+				case "siliconflow":
+				case "siliconflow-cn":
+					// SiliconFlow hosts GLM behind its native reasoning_effort
+					// (5.3 family always-on; 5.2 high|max) and everything else
+					// behind enable_thinking + thinking_budget (128–32768 per
+					// models.dev). Qwen3.5-397B on CN is a plain toggle.
+					if (model === "zai-org/GLM-5.3" || model === "zai-org/GLM-5.3-Flash") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort === "medium" ? "high" : effort;
+						}
+					} else if (model === "zai-org/GLM-5.2") {
+						if (thinking && effort) {
+							body.reasoning_effort = effort === "max" ? "max" : "high";
+						}
+					} else {
+						body.enable_thinking = thinking;
+						if (thinking && effort) {
+							const BUDGET: Record<ThinkingEffort, number> = {
+								low: 1024,
+								medium: 4096,
+								high: 16384,
+								xhigh: 24576,
+								max: 32768,
+							};
+							body.thinking_budget = BUDGET[effort];
+						}
+					}
 					break;
 
 				default:

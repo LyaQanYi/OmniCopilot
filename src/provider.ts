@@ -279,7 +279,7 @@ function resolveRequestedEffort(
 
 	if (raw === "none") return { thinking: false, effort: undefined };
 	if (raw === "on") return { thinking: true, effort: undefined };
-	if (raw === "low" || raw === "medium" || raw === "high" || raw === "max") {
+	if (raw === "low" || raw === "medium" || raw === "high" || raw === "xhigh" || raw === "max") {
 		return { thinking: true, effort: raw };
 	}
 
@@ -314,9 +314,24 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "qwen":
 		case "moonshot":
 		case "moonshot-open":
+		case "moonshot-intl":
+		case "kimi-code-plan-intl":
 		case "glm-coding-plan":
 		case "glm-coding-plan-cn":
+		case "zhipu":
+		case "zai":
+		case "kuae":
 		case "mimo-token-plan-cn":
+		case "mimo-token-plan-sgp":
+		case "mimo-token-plan-ams":
+		case "mimo":
+		case "siliconflow":
+		case "siliconflow-cn":
+		case "scnet-token-plan":
+		case "umans-ai-coding-plan":
+		case "sensenova":
+		case "alibaba-coding-plan":
+		case "alibaba-coding-plan-cn":
 			return true;
 		default:
 			return false;
@@ -359,7 +374,11 @@ function buildOpenAIMessages(
 	// on. Serializing it on plain turns would re-send (and re-bill) the
 	// whole reasoning trace every round and pair a thinking-disabled
 	// request with stale reasoning history.
-	const isMimo = opts.vendorId === "mimo-token-plan-cn";
+	const isMimo =
+		opts.vendorId === "mimo-token-plan-cn" ||
+		opts.vendorId === "mimo-token-plan-sgp" ||
+		opts.vendorId === "mimo-token-plan-ams" ||
+		opts.vendorId === "mimo";
 	const mimoReasoningAllowed = isMimo && opts.thinking === true;
 	const result: OpenAIMessage[] = [];
 
@@ -533,12 +552,17 @@ export class MultiModelChatProvider
 
 		// Vendor-specific extra headers (Kimi requires special headers)
 		const extraHeaders =
-			this.vendorConfig.vendorId === "moonshot"
+			this.vendorConfig.vendorId === "moonshot" ||
+				this.vendorConfig.vendorId === "kimi-code-plan-intl"
 				? getKimiExtraHeaders()
 				: undefined;
 
 		// Kimi requires reasoning_content on all assistant messages when thinking is enabled
-		if (this.vendorConfig.vendorId === "moonshot" && thinking) {
+		if (
+			(this.vendorConfig.vendorId === "moonshot" ||
+				this.vendorConfig.vendorId === "kimi-code-plan-intl") &&
+			thinking
+		) {
 			apiMessages = apiMessages.map((msg) => {
 				if (msg.role === "assistant" && !msg.reasoning_content) {
 					return { ...msg, reasoning_content: "" };
@@ -573,7 +597,10 @@ export class MultiModelChatProvider
 		);
 		// MiMo's requirement covers only tool_calls-bearing turns.
 		const mimoToolLoopOnly =
-			this.vendorConfig.vendorId === "mimo-token-plan-cn";
+			this.vendorConfig.vendorId === "mimo-token-plan-cn" ||
+			this.vendorConfig.vendorId === "mimo-token-plan-sgp" ||
+			this.vendorConfig.vendorId === "mimo-token-plan-ams" ||
+			this.vendorConfig.vendorId === "mimo";
 		if (needsReasoningBackfill && (hasHistoricalToolCalls || (apiTools?.length ?? 0) > 0)) {
 			apiMessages = apiMessages.map((msg) =>
 				msg.role === "assistant" &&
