@@ -86,9 +86,10 @@ The following providers have been tested and confirmed working:
 - [ ] Test Kimi Open Platform (`moonshot-open`)
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
 - [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go
-- [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
-- [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
+- [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
+- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), KIMI_EFFORT / THINKING_BUDGET mappings, per-vendor effort clamping, and the 186-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
+- [ ] Decide whether 0.5.0 ships via the marketplace pre-release channel (11 providers still untested)
 - [ ] To be continued…
 
 ## Features
