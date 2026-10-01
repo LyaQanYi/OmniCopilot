@@ -112,6 +112,17 @@ The following platforms have been tested and confirmed working:
 3. Select a provider and enter your API key
 4. Start chatting with the selected model
 
+### Models added but not showing in the picker?
+
+These models live inside the Copilot Chat session, so whether they show up is gated by VS Code/Copilot itself, not this extension:
+
+- **Signed in to GitHub without a Copilot entitlement** (no subscription, lapsed, or org plan without a seat): this is a known VS Code bug — BYOK/extension models are blocked while a GitHub session without a Copilot token exists ([microsoft/vscode#324310](https://github.com/microsoft/vscode/issues/324310), [#327078](https://github.com/microsoft/vscode/issues/327078)). **Workaround: sign out of GitHub entirely and reload the window** — the models come back.
+- **Not signed in at all**: BYOK models are supposed to work without a GitHub account or Copilot plan, but the Chat view stays on the sign-in/BYOK dialog until you pick the "use your own key" path.
+- Copilot (Agent Host) sessions hide BYOK/extension models by default — enable the `chat.agentHost.byokModels.enabled` setting.
+- Workspaces in **Restricted Mode** only show `Auto` in the picker — trust the workspace first.
+- If a freshly added model doesn't appear, reload the window.
+- Without sign-in, utility features (title generation, commit messages, …) need `chat.utilityModel` / `chat.utilitySmallModel` pointed at one of these models.
+
 ## Configuration
 
 Thinking effort is now selected **per model, per turn** via the Copilot model picker's hover menu — there is no global thinking-effort setting.

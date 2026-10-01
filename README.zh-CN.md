@@ -108,6 +108,17 @@
 3. 选择提供方并输入 API 密钥
 4. 开始与所选模型对话
 
+### 添加的模型不显示在选择器里？
+
+这些模型运行在 Copilot Chat 会话内，是否显示由 VS Code/Copilot 本体控制，与本扩展无关：
+
+- **登录了 GitHub 但无 Copilot 权益**（无订阅/已过期/企业版没有席位）：这是 VS Code 的已知 bug——存在「有 GitHub 会话但无 Copilot token」时 BYOK/扩展模型会被封锁（[microsoft/vscode#324310](https://github.com/microsoft/vscode/issues/324310)、[#327078](https://github.com/microsoft/vscode/issues/327078)）。**临时解法：完全退出 GitHub 登录并重载窗口**，模型即可恢复。
+- **完全未登录**：官方口径 BYOK 模型无需 GitHub 账号/订阅，但聊天视图会停在登录/BYOK 对话框，需要选择「使用自己的 Key」路径继续。
+- Copilot（Agent Host）会话默认隐藏 BYOK/扩展模型——开启 `chat.agentHost.byokModels.enabled` 设置。
+- **受限模式（Restricted Mode）**的工作区在选择器里只显示 `Auto`——先信任工作区。
+- 刚添加的模型未出现时，重载窗口。
+- 未登录状态下，标题生成、commit message 等工具性功能需把 `chat.utilityModel` / `chat.utilitySmallModel` 指向其中一个模型。
+
 ## 配置项
 
 思考力度现已改为**每模型、每轮**通过 Copilot 模型选择器 hover 出的菜单当场选择，不再有全局思考力度设置。
