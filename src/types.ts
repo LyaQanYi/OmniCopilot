@@ -14,6 +14,14 @@ export interface ModelInfo {
 	/** Thinking permanently on: no picker menu, "None" is not available. */
 	thinkingLocked?: boolean;
 	/**
+	 * The picker's effort menu this model exposes, declared next to the
+	 * model instead of a vendorId/modelId branch chain in
+	 * toLanguageModelChatInformation. Only meaningful when thinking &&
+	 * !thinkingLocked && thinkingEffortSupport; omitted → generic fallback
+	 * rules apply (ALWAYS/High-Max/DeepSeek sets, then the 4-level default).
+	 */
+	effortMenu?: EffortMenu;
+	/**
 	 * With thinking on, the endpoint rejects multi-step tool loops whose
 	 * assistant messages lack `reasoning_content` (interleaved thinking must
 	 * be preserved alongside tool results); provider.ts backfills an empty
@@ -299,8 +307,7 @@ export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
 
 // 2-level menu for models that support thinking but no effort knob
 // (pre-5.3 GLM, Kimi, MiniMax, Volcengine reasoning models).
-export const THINKING_TOGGLE_SCHEMA = {
-	properties: {
+export const THINKING_TOGGLE_SCHEMA = {	properties: {
 		reasoningEffort: {
 			type: "string",
 			title: "Thinking",
@@ -312,6 +319,32 @@ export const THINKING_TOGGLE_SCHEMA = {
 		},
 	},
 } as const;
+
+// Catalog of picker effort menus. Declared per model via ModelInfo.effortMenu
+// so the menu and the model's serialization contract live in one place —
+// adding a model with a non-default domain no longer requires touching the
+// branch chain in toLanguageModelChatInformation.
+export type EffortMenu =
+	| "toggle" // None / On — no effort knob (THINKING_TOGGLE_SCHEMA)
+	| "four-level" // None/Low/Medium/High (THINKING_EFFORT_SCHEMA)
+	| "none-low-high-max" // DeepSeek domain (DEEPSEEK_THINKING_EFFORT_SCHEMA)
+	| "none-high-max" // DashScope non-snapshot V4 Pro etc. (THINKING_EFFORT_NO_LOW_SCHEMA)
+	| "low-high-max" // always-on K3/GLM-5.3 (ALWAYS_THINKING_EFFORT_SCHEMA)
+	| "high-max" // always-on GLM-5.2 family (ALWAYS_EFFORT_HIGH_MAX_SCHEMA)
+	| "low-medium-high-xhigh-max"; // MiniMax M3.1 (MINIMAX_M31_EFFORT_SCHEMA)
+
+export const EFFORT_MENU_SCHEMAS: Record<
+	EffortMenu,
+	ModelPickerChatInformation["configurationSchema"] extends infer S ? (S extends object ? S : never) : never
+> = {
+	toggle: THINKING_TOGGLE_SCHEMA,
+	"four-level": THINKING_EFFORT_SCHEMA,
+	"none-low-high-max": DEEPSEEK_THINKING_EFFORT_SCHEMA,
+	"none-high-max": THINKING_EFFORT_NO_LOW_SCHEMA,
+	"low-high-max": ALWAYS_THINKING_EFFORT_SCHEMA,
+	"high-max": ALWAYS_EFFORT_HIGH_MAX_SCHEMA,
+	"low-medium-high-xhigh-max": MINIMAX_M31_EFFORT_SCHEMA,
+};
 
 // `configurationSchema` is declared on the `chatProvider` proposed API
 // (`vscode.proposed.chatProvider.d.ts`) and is therefore absent from the
@@ -391,96 +424,21 @@ export function toLanguageModelChatInformation(
 	};
 	if (!model.thinking) return base;
 	if (model.thinkingLocked) return base;
-	let schema:
-		| typeof THINKING_EFFORT_SCHEMA
-		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
-		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
-		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
-		| typeof ALWAYS_EFFORT_HIGH_MAX_SCHEMA
-		| typeof MINIMAX_M31_EFFORT_SCHEMA
-		| typeof THINKING_TOGGLE_SCHEMA;
 	if (!model.thinkingEffortSupport) {
-		schema = THINKING_TOGGLE_SCHEMA;
-	} else if (model.id === "MiniMax-M3.1-Flash-Preview") {
-		// Checked before the ALWAYS set: M3.1 is always-on but exposes the
-		// five-level low…max domain instead of the three-level one.
-		schema = MINIMAX_M31_EFFORT_SCHEMA;
-	} else if (ALWAYS_THINKING_MODEL_IDS.has(model.id)) {
-		schema = ALWAYS_THINKING_EFFORT_SCHEMA;
-	} else if (
-		(vendorId === "glm-coding-plan" ||
-			vendorId === "zhipu" ||
-			vendorId === "zai" ||
-			vendorId === "siliconflow" ||
-			vendorId === "siliconflow-cn") &&
-		GLM_52_MODEL_IDS.has(model.id)
-	) {
-		// GLM-5.2 family: thinking always on, native domain high|max.
-		schema = ALWAYS_EFFORT_HIGH_MAX_SCHEMA;
-	} else if (
-		(vendorId === "siliconflow" || vendorId === "siliconflow-cn") &&
-		!model.id.startsWith("zai-org/")
-	) {
-		// SiliconFlow hosts the Kimi/DeepSeek/Qwen/… lineups behind a
-		// budget_tokens knob (128–32768) — the None/Low/High/Max menu maps
-		// to enable_thinking + thinking_budget in api.ts.
-		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
-	} else if (
-		(vendorId === "moonshot" || vendorId === "kimi-code-plan-intl") &&
-		model.id === "kimi-for-coding"
-	) {
-		// models.dev: kimi-for-coding gained a native low|high|max effort knob
-		// alongside the thinking object on both Code Plan endpoints.
-		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
-	} else if (
-		vendorId === "scnet-token-plan" &&
-		(model.id === "DeepSeek-V4.1-Flash" ||
-			model.id === "DeepSeek-V4-Pro" ||
-			model.id === "DeepSeek-V4-Flash")
-	) {
-		// SCNet's DeepSeek hosting: toggle + native high|max only.
-		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
-	} else if (vendorId === "sensenova" && model.id === "deepseek-v4-pro") {
-		// SenseNova's DeepSeek V4 Pro: toggle + high|max.
-		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
-	} else if (vendorId === "qwen" && model.id === "deepseek-v4-pro") {
-		// The non-snapshot DeepSeek V4 Pro rejects "low" on DashScope —
-		// see THINKING_EFFORT_NO_LOW_SCHEMA.
-		schema = THINKING_EFFORT_NO_LOW_SCHEMA;
-	} else if (
-		vendorId === "qwen" &&
-		(model.id === "deepseek-v4-pro-0813" ||
-			model.id === "deepseek-v4-flash-0731" ||
-			model.id === "deepseek-v4.1-flash" ||
-			model.id === "glm-5.2")
-	) {
-		// DashScope-hosted DeepSeek/GLM accept the full native effort domain
-		// (low/high/max) that the generic Qwen menu (None-Low-Medium-High)
-		// cannot express — per the DashScope DeepSeek/GLM docs, "low" is
-		// supported on v4.1-flash and the two snapshot IDs, and GLM hosts
-		// low|high|max natively. Token Plan's glm-5.3 never reaches this
-		// branch: the global ALWAYS_THINKING_MODEL_IDS check above matches it
-		// first, which is also the correct menu here — DashScope hosts
-		// GLM-5.3 in thinking-only mode (enable_thinking=false is ignored),
-		// matching Zhipu's own endpoints.
-		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
-	} else if (
-		(vendorId === "volcengine" || vendorId === "volcengine-agent-plan") &&
-		(model.id === "deepseek-v4-flash" ||
-			model.id === "deepseek-v4-pro" ||
-			model.id === "deepseek-v4.1-flash")
-	) {
-		// Volcengine-hosted DeepSeek per the deep-thinking doc: v4.1-flash
-		// takes low/high/max natively; v4-flash/v4-pro map medium→low and
-		// max→high (see applyThinkingParams in api.ts), so the honest menu
-		// is the DeepSeek None/Low/High/Max domain without Medium.
-		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
-	} else if (vendorId === "deepseek") {
-		schema = DEEPSEEK_THINKING_EFFORT_SCHEMA;
-	} else {
-		schema = THINKING_EFFORT_SCHEMA;
+		return { ...base, configurationSchema: THINKING_TOGGLE_SCHEMA };
 	}
-	return { ...base, configurationSchema: schema };
+	// Catalog-declared menu wins; the ID sets below are the fallback for
+	// entries that predate the field, kept in sync with models.ts.
+	const menu: EffortMenu =
+		model.effortMenu ??
+		(model.id === "MiniMax-M3.1-Flash-Preview"
+			? "low-medium-high-xhigh-max"
+			: ALWAYS_THINKING_MODEL_IDS.has(model.id)
+				? "low-high-max"
+				: GLM_52_MODEL_IDS.has(model.id)
+					? "high-max"
+					: "four-level");
+	return { ...base, configurationSchema: EFFORT_MENU_SCHEMAS[menu] };
 }
 
 /**

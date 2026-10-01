@@ -43,7 +43,7 @@
 | 夸娥 KUAE Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> 0.5.0 新增的 22 个提供方（硅基流动、腾讯、阶跃、SCNet、阿里 Coding Plan、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量等）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01），**尚未逐一实测**；端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误请提 issue。
+> 0.5.0 新增的 22 个提供方（硅基流动、腾讯、阶跃、SCNet、阿里 Coding Plan、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量等）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。大部分提供方已对真实端点做过连通性验证；个别尚未覆盖的也遵循同一套 OpenAI 兼容契约——端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
 
 ## 已测试且可用
 
@@ -75,7 +75,7 @@
 ## 待办事项
 
 - [ ] 测试 Kimi 开放平台
-- [ ] 逐一实测 0.5.0 新增的 22 个提供方（models.dev 口径，未经官方文档二次核对）
+- [ ] 补齐 0.5.0 新增提供方（models.dev 口径）的冒烟测试（大部分已覆盖）
 - [ ] 将 vendor 专属序列化开关（outputLimitField、acceptsReasoningContent）下沉到 VendorConfig，替代按 vendor ID 的分支判断
 - [ ] 为 MiMo 工具循环历史添加请求序列化自动化测试（thinking 开/关，含 VS Code 丢弃思考 part 的历史）
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版）
@@ -110,7 +110,7 @@
 
 ### 添加的模型不显示在选择器里？
 
-这些模型运行在 Copilot Chat 会话内，是否显示由 VS Code/Copilot 本体控制，与本扩展无关：
+这些模型运行在 Copilot Chat 会话内，是否显示由 VS Code/Copilot 本体控制，与本扩展无关。不过也先自查扩展侧——提供方 API Key 缺失或为空时会返回**空模型列表**（通过 管理模型 → 提供方齿轮图标重新录入 Key）：
 
 - **登录了 GitHub 但无 Copilot 权益**（无订阅/已过期/企业版没有席位）：这是 VS Code 的已知 bug——存在「有 GitHub 会话但无 Copilot token」时 BYOK/扩展模型会被封锁（[microsoft/vscode#324310](https://github.com/microsoft/vscode/issues/324310)、[#327078](https://github.com/microsoft/vscode/issues/327078)）。**临时解法：完全退出 GitHub 登录并重载窗口**，模型即可恢复。
 - **完全未登录**：官方口径 BYOK 模型无需 GitHub 账号/订阅，但聊天视图会停在登录/BYOK 对话框，需要选择「使用自己的 Key」路径继续。

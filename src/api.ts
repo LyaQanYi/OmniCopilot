@@ -25,6 +25,18 @@ const KIMI_EFFORT: Record<ThinkingEffort, "low" | "high" | "max"> = {
 	max: "max",
 };
 
+// DashScope-style thinking_budget ladder (range 1-32768, console default
+// 4000). Shared by every vendor that maps effort tiers to a token budget:
+// qwen / alibaba-coding-plan(-cn) natively, siliconflow(-cn) per models.dev's
+// budget_tokens contract (128-32768). "max" spends the whole budget.
+const THINKING_BUDGET: Record<ThinkingEffort, number> = {
+	low: 1024,
+	medium: 4096,
+	high: 16384,
+	xhigh: 24576,
+	max: 32768,
+};
+
 export function getKimiExtraHeaders(): Record<string, string> {
 	return {
 		"User-Agent": `KimiCLI/${LIB_VERSION}`,
@@ -299,16 +311,7 @@ export class OpenAICompatibleClient {
 					if (thinking) {
 						body.enable_thinking = true;
 						if (effort) {
-							// DashScope thinking_budget range: 1-32768
-							// (console default 4000); "max" uses the full
-							// budget.
-							const THINKING_BUDGET: Record<ThinkingEffort, number> = {
-								low: 1024,
-								medium: 4096,
-								high: 16384,
-								xhigh: 24576,
-								max: 32768,
-							};
+
 							body.thinking_budget = THINKING_BUDGET[effort];
 						}
 					} else {
@@ -480,14 +483,7 @@ export class OpenAICompatibleClient {
 					if (thinking) {
 						body.enable_thinking = true;
 						if (effort) {
-							const BUDGET: Record<ThinkingEffort, number> = {
-								low: 1024,
-								medium: 4096,
-								high: 16384,
-								xhigh: 24576,
-								max: 32768,
-							};
-							body.thinking_budget = BUDGET[effort];
+							body.thinking_budget = THINKING_BUDGET[effort];
 						}
 					} else {
 						body.enable_thinking = false;
@@ -635,14 +631,7 @@ export class OpenAICompatibleClient {
 					} else {
 						body.enable_thinking = thinking;
 						if (thinking && effort) {
-							const BUDGET: Record<ThinkingEffort, number> = {
-								low: 1024,
-								medium: 4096,
-								high: 16384,
-								xhigh: 24576,
-								max: 32768,
-							};
-							body.thinking_budget = BUDGET[effort];
+							body.thinking_budget = THINKING_BUDGET[effort];
 						}
 					}
 					break;

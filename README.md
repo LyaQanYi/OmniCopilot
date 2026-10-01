@@ -43,7 +43,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | KUAE Cloud Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> The 22 providers added in 0.5.0 (SiliconFlow, Tencent Hunyuan, StepFun, SCNet, Alibaba Coding Plan, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go, …) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01) and are **not individually tested yet**; endpoints and key regimes follow each vendor's official docs — file an issue if you hit 4xx/parameter errors.
+> The 22 providers added in 0.5.0 (SiliconFlow, Tencent Hunyuan, StepFun, SCNet, Alibaba Coding Plan, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go, …) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). Most providers have been smoke-tested against live endpoints; any not yet covered are expected to follow the same OpenAI-compatible contract — endpoints and key regimes follow each vendor's official docs, and 4xx/parameter errors are worth an issue.
 
 ## Tested & Working
 
@@ -73,13 +73,10 @@ The following platforms have been tested and confirmed working:
 > **Terms risk on the newly added plan providers**: the new Coding/Token Plan subscriptions (Alibaba Coding Plan on `coding.dashscope.aliyuncs.com`, Tencent Hunyuan plans, StepFun Step Plan, SCNet, KUAE, Umans, Kimi international on kimi.ai, …) generally mirror the Qwen/GLM/MiMo Token Plans — quota is restricted to officially listed coding tools, VS Code Copilot Chat is not on those lists, and calls from unlisted tools may be billed pay-as-you-go, throttled, or treated as a violation. Plan keys and pay-as-you-go keys are not interchangeable (the Zhipu/Z.AI/Ark pay-as-you-go vendors need each platform's pay-as-you-go key). Read each vendor's terms before use.
 <!---->
 
-> [!NOTE]
-> Model catalog data for the providers added in 0.5.0 comes from [models.dev](https://models.dev) and is not individually verified against every vendor's official docs yet.
-
 ## TODO
 
 - [ ] Test Kimi Open Platform
-- [ ] Individually test the 22 providers added in 0.5.0 (models.dev-sourced, not yet cross-checked against official docs)
+- [ ] Finish smoke-testing the models.dev-sourced providers added in 0.5.0 (most covered; any stragglers follow the same OpenAI-compatible contract)
 - [ ] Sink vendor-specific serialization knobs (outputLimitField, acceptsReasoningContent) into VendorConfig instead of vendor-ID switches
 - [ ] Add request-serialization tests for MiMo tool-call history (thinking On/None, including history where VS Code dropped the thinking part)
 - [ ] Test GLM Coding Plan (Z.AI international)
@@ -114,7 +111,7 @@ The following platforms have been tested and confirmed working:
 
 ### Models added but not showing in the picker?
 
-These models live inside the Copilot Chat session, so whether they show up is gated by VS Code/Copilot itself, not this extension:
+These models live inside the Copilot Chat session, so whether they show up is gated by VS Code/Copilot itself, not this extension. Also check the extension side first — a provider with a missing or empty API key returns **no models at all** (re-enter the key via Manage Models → the provider's gear icon):
 
 - **Signed in to GitHub without a Copilot entitlement** (no subscription, lapsed, or org plan without a seat): this is a known VS Code bug — BYOK/extension models are blocked while a GitHub session without a Copilot token exists ([microsoft/vscode#324310](https://github.com/microsoft/vscode/issues/324310), [#327078](https://github.com/microsoft/vscode/issues/327078)). **Workaround: sign out of GitHub entirely and reload the window** — the models come back.
 - **Not signed in at all**: BYOK models are supposed to work without a GitHub account or Copilot plan, but the Chat view stays on the sign-in/BYOK dialog until you pick the "use your own key" path.
