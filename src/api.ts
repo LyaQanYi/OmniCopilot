@@ -13,6 +13,18 @@ const CHAT_ENDPOINT = "/chat/completions";
 const LIB_VERSION = "0.1.0";
 const DEVICE_ID = randomUUID().replace(/-/g, "");
 
+// Kimi's reasoning_effort domain is low|high|max. The generic "medium" falls
+// back to high (the endpoints' own documented mapping) and "xhigh" — MiniMax
+// M3.1's extra tier that only its menu exposes — clamps to max, so a
+// programmatic caller can never push an out-of-domain value through.
+const KIMI_EFFORT: Record<ThinkingEffort, "low" | "high" | "max"> = {
+	low: "low",
+	medium: "high",
+	high: "high",
+	xhigh: "max",
+	max: "max",
+};
+
 export function getKimiExtraHeaders(): Record<string, string> {
 	return {
 		"User-Agent": `KimiCLI/${LIB_VERSION}`,
@@ -164,8 +176,7 @@ export class OpenAICompatibleClient {
 				options.vendorId === "mimo-token-plan-ams" ||
 				options.vendorId === "mimo" ||
 				((options.vendorId === "moonshot" ||
-					options.vendorId === "moonshot-open" ||
-					options.vendorId === "kimi-code-plan-intl") &&
+					options.vendorId === "moonshot-open" ||						options.vendorId === "moonshot-intl" ||					options.vendorId === "kimi-code-plan-intl") &&
 					(model === "k3" || model === "k3-256k" || model === "kimi-k3"))
 			) {
 				body.max_completion_tokens = options.maxTokens;
@@ -318,7 +329,7 @@ export class OpenAICompatibleClient {
 						thinking &&
 						effort
 					) {
-						body.reasoning_effort = effort === "medium" ? "high" : effort;
+						body.reasoning_effort = KIMI_EFFORT[effort];
 					}
 					break;
 
@@ -329,10 +340,12 @@ export class OpenAICompatibleClient {
 						// explicit disable; K2.7 Code models think permanently.
 					if (model === "kimi-k3") {
 						if (thinking && effort) {
-							body.reasoning_effort = effort === "medium" ? "high" : effort;
+							body.reasoning_effort = KIMI_EFFORT[effort];
 						}
 					} else if (model === "kimi-k2.6" && !thinking) {
-						body.thinking = { type: "disabled" };					}				break;
+						body.thinking = { type: "disabled" };
+					}
+					break;
 
 			case "moonshot-open":
 				// Kimi Open Platform (api.moonshot.cn/v1) — per-model thinking
@@ -348,7 +361,7 @@ export class OpenAICompatibleClient {
 				//   disable when the user picks None. No reasoning_effort.
 				if (model === "kimi-k3") {
 					if (thinking && effort) {
-						body.reasoning_effort = effort === "medium" ? "high" : effort;
+						body.reasoning_effort = KIMI_EFFORT[effort];
 					}
 				} else if (model === "kimi-k2.6" && !thinking) {
 					body.thinking = { type: "disabled" };
@@ -494,7 +507,13 @@ export class OpenAICompatibleClient {
 					// Step Plan exposes a native reasoning_effort domain
 					// (low|medium|high); step-3.5-flash only documents
 					// low|high, so the legacy medium fallback clamps to high.
-					if (thinking && effort) {
+					// models.dev lists no toggle for the Step line-up, so
+					// "None" is not guaranteed to be honored server-side —
+					// disable explicitly (the MiMo-style thinking object)
+					// when the user opts out.
+					if (!thinking) {
+						body.thinking = { type: "disabled" };
+					} else if (effort) {
 						body.reasoning_effort =
 							model === "step-3.5-flash" && effort === "medium" ? "high" : effort;
 					}
@@ -541,7 +560,7 @@ export class OpenAICompatibleClient {
 					// thinking object and kimi-k3 mirrors its native contract.
 					if (model === "kimi-k3") {
 						if (thinking && effort) {
-							body.reasoning_effort = effort === "medium" ? "high" : effort;
+							body.reasoning_effort = KIMI_EFFORT[effort];
 						}
 					} else if (model === "deepseek-v4-pro") {
 						if (!thinking) {
