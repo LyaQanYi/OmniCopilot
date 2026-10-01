@@ -254,12 +254,12 @@ export const MINIMAX_M31_EFFORT_SCHEMA = {
 	},
 } as const;
 
-// Models whose thinking is always on server-side and whose picker exposes
-// the three-level effort menu. Single source of truth: the picker branch and
-// the provider's always-on enforcement both read this set, so a legacy
-// "none" from programmatic callers can never serialize a disabling thinking
-// object for them. MiniMax-M3.1-Flash-Preview is always-on too (its dedicated
-// five-level menu is picked before this set in toLanguageModelChatInformation).
+// Models whose thinking is always on server-side. Single source of truth
+// for the provider's always-on enforcement: a legacy "none" from
+// programmatic callers can never serialize a disabling thinking object for
+// them. Picker menus come from ModelInfo.effortMenu in the catalog — every
+// always-thinking ID that exposes a menu (k3 / kimi-k3 / the GLM-5.3 family
+// / MiniMax-M3.1-Flash-Preview) is annotated there.
 export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
 	"k3",
 	"k3-256k",
@@ -274,13 +274,6 @@ export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
 	"umans-glm-5.3-flash",
 	"glm-5-3-flash-260828",
 	"MiniMax-M3.1-Flash-Preview",
-]);
-
-// GLM-5.2-family IDs that expose the High/Max always-on menu.
-export const GLM_52_MODEL_IDS: ReadonlySet<string> = new Set([
-	"glm-5.2",
-	"glm-5.2-highspeed",
-	"zai-org/GLM-5.2",
 ]);
 
 // DeepSeek V4 menu — the one effort-capable family where "None" genuinely
@@ -307,7 +300,8 @@ export const DEEPSEEK_THINKING_EFFORT_SCHEMA = {
 
 // 2-level menu for models that support thinking but no effort knob
 // (pre-5.3 GLM, Kimi, MiniMax, Volcengine reasoning models).
-export const THINKING_TOGGLE_SCHEMA = {	properties: {
+export const THINKING_TOGGLE_SCHEMA = {
+	properties: {
 		reasoningEffort: {
 			type: "string",
 			title: "Thinking",
@@ -407,10 +401,7 @@ export interface ChatOptions {
 	extraHeaders?: Record<string, string>;
 }
 
-export function toLanguageModelChatInformation(
-	model: ModelInfo,
-	vendorId?: string,
-): ModelPickerChatInformation {
+export function toLanguageModelChatInformation(model: ModelInfo): ModelPickerChatInformation {
 	const base: ModelPickerChatInformation = {
 		id: model.id,
 		name: model.name,
@@ -427,17 +418,10 @@ export function toLanguageModelChatInformation(
 	if (!model.thinkingEffortSupport) {
 		return { ...base, configurationSchema: THINKING_TOGGLE_SCHEMA };
 	}
-	// Catalog-declared menu wins; the ID sets below are the fallback for
-	// entries that predate the field, kept in sync with models.ts.
-	const menu: EffortMenu =
-		model.effortMenu ??
-		(model.id === "MiniMax-M3.1-Flash-Preview"
-			? "low-medium-high-xhigh-max"
-			: ALWAYS_THINKING_MODEL_IDS.has(model.id)
-				? "low-high-max"
-				: GLM_52_MODEL_IDS.has(model.id)
-					? "high-max"
-					: "four-level");
+	// The catalog is the single source of truth: every non-default menu is
+	// declared per model via effortMenu (73 annotations in models.ts);
+	// unannotated effort-capable models get the generic 4-level menu.
+	const menu: EffortMenu = model.effortMenu ?? "four-level";
 	return { ...base, configurationSchema: EFFORT_MENU_SCHEMAS[menu] };
 }
 

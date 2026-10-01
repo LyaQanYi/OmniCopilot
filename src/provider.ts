@@ -280,7 +280,17 @@ function resolveRequestedEffort(
 	if (raw === "none") return { thinking: false, effort: undefined };
 	if (raw === "on") return { thinking: true, effort: undefined };
 	if (raw === "low" || raw === "medium" || raw === "high" || raw === "xhigh" || raw === "max") {
-		return { thinking: true, effort: raw };
+		// "xhigh" exists in exactly one endpoint domain (MiniMax M3.1's
+		// low…max). Everywhere else it would flow into applyThinkingParams
+		// as an out-of-domain reasoning_effort (a 400 on most endpoints),
+		// so clamp it to "high" unless the model's own menu declares the
+		// five-level domain. The Kimi branches additionally map it to "max"
+		// via KIMI_EFFORT.
+		const effort =
+			raw === "xhigh" && modelDef?.effortMenu !== "low-medium-high-xhigh-max"
+				? "high"
+				: raw;
+		return { thinking: true, effort };
 	}
 
 	if (!(modelDef?.thinking ?? false)) return { thinking: false, effort: undefined };
@@ -332,6 +342,7 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "sensenova":
 		case "alibaba-coding-plan":
 		case "alibaba-coding-plan-cn":
+		case "tencent-coding-plan":
 			return true;
 		default:
 			return false;
@@ -494,7 +505,7 @@ export class MultiModelChatProvider
 
 		// Preset models
 		const result = this.vendorConfig.models.map((m) => {
-			const info = toLanguageModelChatInformation(m, this.vendorConfig.vendorId);
+			const info = toLanguageModelChatInformation(m);
 			return {
 				...info,
 				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),

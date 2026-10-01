@@ -320,21 +320,21 @@ export class OpenAICompatibleClient {
 					break;
 
 			case "moonshot":
-				case "kimi-code-plan-intl":
-					// Kimi requires thinking object on every request, enabled or disabled.
-					body.thinking = { type: thinking ? "enabled" : "disabled" };
-					// k3 / k3-256k / kimi-for-coding take top-level reasoning_effort
-					// (low | high | max, endpoint default high); "medium" (legacy
-					// callers) coerces to "high" per the endpoint's own mapping.
-					// Other Code Plan models do not support effort.
-					if (
-						(model === "k3" || model === "k3-256k" || model === "kimi-for-coding") &&
-						thinking &&
-						effort
-					) {
-						body.reasoning_effort = KIMI_EFFORT[effort];
-					}
-					break;
+			case "kimi-code-plan-intl":
+				// Kimi requires thinking object on every request, enabled or disabled.
+				body.thinking = { type: thinking ? "enabled" : "disabled" };
+				// k3 / k3-256k / kimi-for-coding take top-level reasoning_effort
+				// (low | high | max, endpoint default high); "medium" (legacy
+				// callers) coerces to "high" per the endpoint's own mapping.
+				// Other Code Plan models do not support effort.
+				if (
+					(model === "k3" || model === "k3-256k" || model === "kimi-for-coding") &&
+					thinking &&
+					effort
+				) {
+					body.reasoning_effort = KIMI_EFFORT[effort];
+				}
+				break;
 
 				case "moonshot-intl":
 					// International open platform (api.moonshot.ai) — same contract
@@ -446,9 +446,9 @@ export class OpenAICompatibleClient {
 				case "minimax-intl":
 					// MiniMax takes thinking: {type: "adaptive" | "disabled"}.
 					// M3 can genuinely disable thinking; M2.x models accept
-						// "disabled" but keep thinking on regardless, so they are
-						// marked thinkingLocked upstream and the param is only
-						// sent for M3. M3.1 is always-on (enforced upstream) and
+					// "disabled" but keep thinking on regardless, so they are
+					// marked thinkingLocked upstream and the param is only
+					// sent for M3. M3.1 is always-on (enforced upstream) and
 					// adds a native reasoning_effort domain low|medium|high|
 					// xhigh|max (models.dev). Thinking output arrives as
 					// interleaved <think> tags inside content.
@@ -510,8 +510,17 @@ export class OpenAICompatibleClient {
 					if (!thinking) {
 						body.thinking = { type: "disabled" };
 					} else if (effort) {
+						// Domain tops out at "high" (low|medium|high; the 3.5
+						// flash lane only documents low|high) — clamp the
+						// programmatic max/xhigh so nothing out-of-domain
+						// is serialized. "medium" on the 3.5 flash lane
+						// clamps to high per its narrower domain.
 						body.reasoning_effort =
-							model === "step-3.5-flash" && effort === "medium" ? "high" : effort;
+							effort === "max" || effort === "xhigh"
+								? "high"
+								: model === "step-3.5-flash" && effort === "medium"
+									? "high"
+									: effort;
 					}
 					break;
 
@@ -568,8 +577,13 @@ export class OpenAICompatibleClient {
 					} else if (model === "glm-5.2" || model === "deepseek-v4-flash") {
 						body.reasoning_effort = thinking ? "high" : "none";
 					} else {
-						// sensenova-6.8-flash-lite: none|low|medium|high.
-						body.reasoning_effort = thinking ? (effort ?? "high") : "none";
+							// sensenova-6.8-flash-lite: none|low|medium|high —
+							// clamp the programmatic max/xhigh into the domain.
+							body.reasoning_effort = thinking
+								? effort === "max" || effort === "xhigh"
+									? "high"
+									: (effort ?? "high")
+								: "none";
 					}
 					break;
 
@@ -601,7 +615,11 @@ export class OpenAICompatibleClient {
 				case "volcengine-ark":
 					// Ark pay-as-you-go mirrors the plan endpoints: thinking
 					// object + native reasoning_effort. The dated GLM-5.3-Flash
-					// snapshot is always-on (effort only, like the plans).
+					// snapshot is always-on (effort only, like the plans). The
+					// DeepSeek GA snapshots follow the plan DeepSeek contract —
+					// medium would be silently remapped to low server-side and
+					// max to high, so normalize both to high like the volcengine
+					// branch does.
 					if (model === "glm-5-3-flash-260828") {
 						if (thinking && effort) {
 							body.reasoning_effort = effort === "medium" ? "high" : effort;
@@ -609,7 +627,13 @@ export class OpenAICompatibleClient {
 					} else {
 						body.thinking = { type: thinking ? "enabled" : "disabled" };
 						if (thinking && effort) {
-							body.reasoning_effort = effort;
+							const legacyDeepSeekArk =
+								model === "deepseek-v4-flash-ga-260731" ||
+								model === "deepseek-v4-pro-ga-260813";
+							body.reasoning_effort =
+								effort === "medium" || (effort === "max" && legacyDeepSeekArk)
+									? "high"
+									: effort;
 						}
 					}
 					break;
