@@ -12,27 +12,20 @@ import type {
 	ModelConfigurationOptions,
 } from "./types.js";
 import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH, ALWAYS_THINKING_MODEL_IDS } from "./types.js";
+import {
+	processThinkingContent,
+	THINK_CLOSE,
+	type ThinkingState,
+	type ThinkingParsedPart,
+} from "./thinking-tags.js";
 
-// ─── Thinking Tag Processing ─────────────────────────────────────────────────
-
-interface ThinkingState {
-	buffer: string;
-	insideThinking: boolean;
-}
-
-interface ThinkingParsedPart {
-	type: "text" | "thinking";
-	value: string;
-}
+// ─── Tool Calls & Usage Reporting ────────────────────────────────────────────
 
 interface ToolCallBuilder {
 	id: string;
 	name: string;
 	arguments: string;
 }
-
-const THINK_OPEN = "<think>";
-const THINK_CLOSE = "</think>";
 
 // mimeType agreed with Copilot Chat's ExtensionContributedChatEndpoint: a
 // LanguageModelDataPart carrying this JSON payload is parsed as the turn's
@@ -92,77 +85,6 @@ function reportThinkingPart(
 	} else {
 		progress.report(new vscode.LanguageModelTextPart(part.value));
 	}
-}
-
-function findTrailingPartialMatch(buffer: string, tag: string): number {
-	for (let i = Math.min(tag.length - 1, buffer.length); i >= 1; i--) {
-		if (buffer.slice(-i) === tag.slice(0, i)) {
-			return i;
-		}
-	}
-	return 0;
-}
-
-/**
- * Parses content with <think>...</think> tags into structured parts.
- * When strip=true, thinking content is discarded.
- */
-function processThinkingContent(
-	content: string,
-	state: ThinkingState,
-	strip: boolean,
-): { parts: ThinkingParsedPart[]; state: ThinkingState } {
-	const parts: ThinkingParsedPart[] = [];
-	let buffer = state.buffer + content;
-	let insideThinking = state.insideThinking;
-
-	while (buffer.length > 0) {
-		const tag = insideThinking ? THINK_CLOSE : THINK_OPEN;
-		const tagIdx = buffer.indexOf(tag);
-
-		if (tagIdx !== -1) {
-			const before = buffer.slice(0, tagIdx);
-			if (before) {
-				if (insideThinking) {
-					if (!strip) {
-						parts.push({ type: "thinking", value: before });
-					}
-				} else {
-					parts.push({ type: "text", value: before });
-				}
-			}
-			buffer = buffer.slice(tagIdx + tag.length);
-			insideThinking = !insideThinking;
-			continue;
-		}
-
-		const partialMatch = findTrailingPartialMatch(buffer, tag);
-		if (partialMatch > 0) {
-			const emittable = buffer.slice(0, -partialMatch);
-			if (emittable) {
-				if (insideThinking) {
-					if (!strip) {
-						parts.push({ type: "thinking", value: emittable });
-					}
-				} else {
-					parts.push({ type: "text", value: emittable });
-				}
-			}
-			buffer = buffer.slice(-partialMatch);
-		} else {
-			if (insideThinking) {
-				if (!strip) {
-					parts.push({ type: "thinking", value: buffer });
-				}
-			} else {
-				parts.push({ type: "text", value: buffer });
-			}
-			buffer = "";
-		}
-		break;
-	}
-
-	return { parts, state: { buffer, insideThinking } };
 }
 
 // ─── Utilities ───────────────────────────────────────────────────────────────

@@ -5,3 +5,6 @@ tsconfig.json
 *.map
 *.d.ts
 .gitignore
+out/**/*.test.js
+out/**/*.test.d.ts
+out/**/*.test.js.map
