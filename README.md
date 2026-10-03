@@ -228,12 +228,6 @@ Contributions are welcome! Here's how you can help:
 - **Calibrated against models.dev** — SenseNova `glm-5.2` / `deepseek-v4-flash` domain collapsed to `none|high` (low/medium/high indistinguishable server-side); Volcengine plan/agent/ark DeepSeek models corrected to `minimal|low|medium|high` (no max); StepFun `step-5-preview` / `step-3.7-flash` annotated with `four-level` menus
 - **VSIX packaging** — `.claude/` worktree directories excluded from the bundle (53 KB → was 3.8 MB due to a missing `.vscodeignore` entry)
 
-### 0.4.5 — 2026-09-29
-
-- **New provider: MiMo Token Plan CN** (`mimo-token-plan-cn`, Xiaomi) — the first vendor to follow the new ID convention: kebab-case lowercase of the display name (existing vendor IDs stay unchanged) — `mimo-v2.6-pro` (trillion-param flagship) and `mimo-v2.6-flash`, both 1M context / 128K output with omni (vision) input, via the plan's OpenAI-compatible CN cluster endpoint (`token-plan-cn.xiaomimimo.com/v1`). Plan keys are `tp-`/`ttp-`-prefixed and isolated from pay-as-you-go `sk-` keys. mimo-v2.5 / mimo-v2.5-pro retire 2026-10-21 and are not included; ASR/TTS models stay out of scope; mimo-v2.6-pro-ultraspeed is a custom-service offering outside the plan
-- **MiMo thinking & params per the deep-thinking doc**: `thinking: {type: enabled|disabled}` (default on — None sends an explicit disable; no effort knob, so the picker shows the None/On menu); output capped via `max_completion_tokens` (thinking + answer share it); reasoning streams via `reasoning_content` and counts into completion tokens
-- **MiMo tool-loop reliability**: with thinking on, assistant turns carrying `tool_calls` must echo `reasoning_content` back or the API returns 400 — covered by the catalog-declared `needsReasoningBackfillWhenThinking` flag, and `reasoning_content` on history is now serialized for the `mimo-token-plan-cn` vendor
-
 ## License
 
 MIT
