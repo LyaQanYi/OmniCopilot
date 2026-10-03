@@ -17,6 +17,7 @@ const DEEPSEEK_MODELS: ModelInfo[] = [
 		baseUrl: DEEPSEEK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -31,6 +32,7 @@ const DEEPSEEK_MODELS: ModelInfo[] = [
 		baseUrl: DEEPSEEK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];
@@ -51,6 +53,7 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		baseUrl: ZHIPU_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -64,6 +67,34 @@ const ZHIPU_MODELS: ModelInfo[] = [
 		baseUrl: ZHIPU_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-highspeed",
+		name: "GLM-5.3 Highspeed",
+		family: "glm",
+		version: "5.3-highspeed",
+		tooltip: "GLM-5.3 Highspeed — faster serving of the flagship, thinking always on",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-4.6v",
+		name: "GLM-4.6V",
+		family: "glm",
+		version: "4.6v",
+		tooltip: "GLM-4.6V — vision model for visual reasoning, documents, and multimodal agents, vision support",
+		maxInputTokens: 128000,
+		maxOutputTokens: 32768,
+		baseUrl: ZHIPU_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];
@@ -88,6 +119,7 @@ const ZAI_MODELS: ModelInfo[] = [
 		baseUrl: ZAI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -101,7 +133,76 @@ const ZAI_MODELS: ModelInfo[] = [
 		baseUrl: ZAI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-highspeed",
+		name: "GLM-5.3 Highspeed",
+		family: "glm",
+		version: "5.3-highspeed",
+		tooltip: "GLM-5.3 Highspeed — faster serving of the flagship, thinking always on",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — open flagship for long-horizon coding agents, thinking always on, effort high/max",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.2-highspeed",
+		name: "GLM-5.2 Highspeed",
+		family: "glm",
+		version: "5.2-highspeed",
+		tooltip: "GLM-5.2 Highspeed — faster serving of GLM-5.2, thinking always on, effort high/max",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5-turbo",
+		name: "GLM-5-Turbo",
+		family: "glm",
+		version: "5-turbo",
+		tooltip: "GLM-5-Turbo — efficient GLM for fast reasoning, coding, and agent workflows",
+		maxInputTokens: 200000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-4.7",
+		name: "GLM-4.7",
+		family: "glm",
+		version: "4.7",
+		tooltip: "GLM-4.7 — hybrid reasoning flagship for coding and agentic engineering",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];
 
@@ -127,6 +228,7 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		baseUrl: KIMI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -142,6 +244,7 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		baseUrl: KIMI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -149,13 +252,14 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		name: "Kimi for Coding",
 		family: "kimi",
 		version: "for-coding",
-		tooltip: "Kimi for Coding — K2.7 Code, thinking always on, vision support",
-		maxInputTokens: 262144,
+		tooltip:
+			"Kimi for Coding — K2.8 Preview, thinking off or reasoning_effort low/high/max, 1M context, vision support",
+		maxInputTokens: 1048576,
 		maxOutputTokens: 32768,
 		baseUrl: KIMI_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
-		thinkingLocked: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -188,6 +292,7 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 		baseUrl: KIMI_OPEN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -233,7 +338,7 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 	},
 ];
 
-// ─── Qwen Token Plan ─────────────────────────────────────────────────────────
+// ─── Alibaba Token Plan ─────────────────────────────────────────────────────────
 
 // Supported-model list per the official Token Plan (personal) overview,
 // https://help.aliyun.com/zh/model-studio/token-plan-personal-overview
@@ -336,7 +441,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		thinkingEffortSupport: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
-	// Third-party models hosted on Qwen Token Plan — billed against the
+	// Third-party models hosted on Alibaba Token Plan — billed against the
 	// plan's Credits instead of the vendor's own API. Thinking goes through
 	// the vendor-native reasoning_effort knob documented by DashScope for
 	// its GLM / DeepSeek hosting (the generic enable_thinking/thinking_budget
@@ -349,12 +454,13 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "GLM-5.3 (Token Plan)",
 		family: "qwen",
 		version: "glm-5.3",
-		tooltip: "GLM-5.3 — via Qwen Token Plan, 1M context",
+		tooltip: "GLM-5.3 — via Alibaba Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		// DashScope hosts GLM-5.3 in thinking-only mode (enable_thinking=false
 		// is ignored) with effort low|high|max — same contract as Zhipu's own
 		// endpoints, hence the global always-thinking menu and backfill.
@@ -366,12 +472,13 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "GLM-5.2 (Token Plan)",
 		family: "qwen",
 		version: "glm-5.2",
-		tooltip: "GLM-5.2 — via Qwen Token Plan, 1M context",
+		tooltip: "GLM-5.2 — via Alibaba Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 131072,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -379,7 +486,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "DeepSeek V4 Pro (Token Plan)",
 		family: "qwen",
 		version: "deepseek-v4-pro",
-		tooltip: "DeepSeek V4 Pro — via Qwen Token Plan, 1M context",
+		tooltip: "DeepSeek V4 Pro — via Alibaba Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		// DashScope's DeepSeek doc: max_tokens and thinking_budget share one
 		// pool capped at 393,216 tokens (applies to the whole hosted V4 line).
@@ -387,6 +494,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-high-max",
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
@@ -395,12 +503,13 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "DeepSeek V4 Pro 0813 (Token Plan)",
 		family: "qwen",
 		version: "deepseek-v4-pro-0813",
-		tooltip: "DeepSeek V4 Pro 0813 — via Qwen Token Plan, 1M context",
+		tooltip: "DeepSeek V4 Pro 0813 — via Alibaba Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 393216,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
@@ -409,12 +518,13 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "DeepSeek V4 Flash 0731 (Token Plan)",
 		family: "qwen",
 		version: "deepseek-v4-flash-0731",
-		tooltip: "DeepSeek V4 Flash 0731 — via Qwen Token Plan, 1M context",
+		tooltip: "DeepSeek V4 Flash 0731 — via Alibaba Token Plan, 1M context",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 393216,
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
@@ -423,7 +533,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		name: "DeepSeek V4.1 Flash (Token Plan)",
 		family: "qwen",
 		version: "deepseek-v4.1-flash",
-		tooltip: "DeepSeek V4.1 Flash — via Qwen Token Plan, 1M context, vision support",
+		tooltip: "DeepSeek V4.1 Flash — via Alibaba Token Plan, 1M context, vision support",
 		maxInputTokens: 1000000,
 		// 393,216 per DashScope's own parameter table for deepseek-v4.1-flash
 		// (same shared max_tokens + thinking_budget pool as the rest of the
@@ -432,6 +542,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},
@@ -442,6 +553,21 @@ const QWEN_MODELS: ModelInfo[] = [
 const MINIMAX_BASE_URL = "https://api.minimaxi.com/v1";
 
 const MINIMAX_MODELS: ModelInfo[] = [
+	{
+		id: "MiniMax-M3.1-Flash-Preview",
+		name: "MiniMax M3.1 Flash Preview",
+		family: "minimax",
+		version: "m3.1-flash",
+		tooltip:
+			"MiniMax M3.1 Flash Preview — frontier multimodal coding model, 1M context, tunable thinking depth (low to max), vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 512000,
+		baseUrl: MINIMAX_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-medium-high-xhigh-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
 	{
 		id: "MiniMax-M3",
 		name: "MiniMax M3",
@@ -613,13 +739,13 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		family: "volcengine",
 		version: "kimi-k3",
 		tooltip:
-			"Kimi K3 — via Volcengine Coding Plan, 1M context, 128K output, vision support, thinking always on, high deduction rate (Pro plan recommended)",
+			"Kimi K3 — via Volcengine Coding Plan, 1M context, 128K output, vision support, reasoning_effort low/high/max, high deduction rate (Pro plan recommended)",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
-		thinkingLocked: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -648,6 +774,7 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -661,6 +788,9 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -674,6 +804,9 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -685,6 +818,35 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 			"DeepSeek V4.1 Flash — lightweight flagship of the new architecture, 552B MoE, 1M context, 384K output, native vision, thinking on by default",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 384000,
+		baseUrl: VOLCENGINE_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2.1-turbo",
+		name: "Doubao Seed 2.1 Turbo",
+		family: "volcengine",
+		version: "seed-2.1-turbo",
+		tooltip:
+			"Doubao Seed 2.1 Turbo — faster Seed 2.1 for latency-sensitive agent workflows, 256K context, 256K output, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: VOLCENGINE_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2.0-lite",
+		name: "Doubao Seed 2.0 Lite",
+		family: "volcengine",
+		version: "seed-2.0-lite",
+		tooltip:
+			"Doubao Seed 2.0 Lite — cost-efficient Seed 2.0 for production chat and structured generation, 256K context, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 32000,
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
@@ -733,6 +895,9 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -746,6 +911,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -843,6 +1009,9 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -851,13 +1020,13 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		family: "volcengine",
 		version: "kimi-k3",
 		tooltip:
-			"Kimi K3 — via Volcengine Agent Plan, 1M context, 128K output, vision support, thinking always on, high deduction rate (not in Small plan)",
+			"Kimi K3 — via Volcengine Agent Plan, 1M context, 128K output, vision support, reasoning_effort low/high/max, high deduction rate (not in Small plan)",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 131072,
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
-		thinkingLocked: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -872,6 +1041,7 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 ];
@@ -921,6 +1091,1950 @@ const MIMO_MODELS: ModelInfo[] = [
 	},
 ];
 
+// ─── Moonshot AI (International) ────────────────────────────────────────────
+
+// Pay-as-you-go OpenAI-compatible endpoint of Moonshot's international platform
+// (api.moonshot.ai) — same model lineup as the CN open platform, mirrored here
+// for keys issued on the international side.
+const MOONSHOT_INTL_BASE_URL = "https://api.moonshot.ai/v1";
+
+const MOONSHOT_INTL_MODELS: ModelInfo[] = [
+	{
+		id: "kimi-k3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 1048576,
+		baseUrl: MOONSHOT_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.7-code",
+		name: "Kimi K2.7 Code",
+		family: "kimi",
+		version: "k2.7-code",
+		tooltip:
+			"Kimi K2.7 Code — Coding-focused Kimi model, stronger on long-horizon repo work with less overthinking, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: MOONSHOT_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.7-code-highspeed",
+		name: "Kimi K2.7 Code HighSpeed",
+		family: "kimi",
+		version: "k2.7-code-highspeed",
+		tooltip:
+			"Kimi K2.7 Code HighSpeed — Coding-focused Kimi model, stronger on long-horizon repo work with less overthinking, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: MOONSHOT_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.6",
+		name: "Kimi K2.6",
+		family: "kimi",
+		version: "k2.6",
+		tooltip:
+			"Kimi K2.6 — Multimodal Kimi workhorse for agent loops, coding tasks, and visual context, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: MOONSHOT_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── Kimi Code Plan (kimi.ai, international) ────────────────────────────────
+
+// Same product and lineup as the kimi.com Code Plan, served from the
+// international kimi.ai domain.
+const KIMI_GLOBAL_CODING_BASE_URL = "https://api.kimi.ai/coding/v1";
+
+const KIMI_GLOBAL_MODELS: ModelInfo[] = [
+	{
+		id: "k3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: KIMI_GLOBAL_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "k3-256k",
+		name: "Kimi K3-256K",
+		family: "kimi",
+		version: "k3-256k",
+		tooltip:
+			"Kimi K3-256K — 256K-context version of Kimi K3, reducing token consumption for shorter coding sessions, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 131072,
+		baseUrl: KIMI_GLOBAL_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "kimi-for-coding",
+		name: "Kimi for Coding",
+		family: "kimi",
+		version: "for-coding",
+		tooltip:
+			"Kimi for Coding — Kimi coding model with more efficient thinking and up to 1M context, available through Kimi Code, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 32768,
+		baseUrl: KIMI_GLOBAL_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "kimi-for-coding-highspeed",
+		name: "Kimi For Coding HighSpeed",
+		family: "kimi",
+		version: "for-coding-highspeed",
+		tooltip:
+			"Kimi For Coding HighSpeed — Lower-latency Kimi Code variant for interactive edits and coding-agent loops, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: KIMI_GLOBAL_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── SiliconFlow (International) ────────────────────────────────────────────
+
+// OpenAI-compatible aggregator; hosted GLM takes native reasoning_effort while
+// the Kimi/DeepSeek/Qwen/… lineups take enable_thinking + thinking_budget.
+const SILICONFLOW_BASE_URL = "https://api.siliconflow.com/v1";
+
+const SILICONFLOW_MODELS: ModelInfo[] = [
+	{
+		id: "zai-org/GLM-5.3",
+		name: "GLM-5.3",
+		family: "glm",
+		version: "5.3",
+		tooltip: "GLM-5.3 — Flagship GLM model for long-horizon coding, agents, and complex project delivery",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "zai-org/GLM-5.3-Flash",
+		name: "GLM-5.3-Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip:
+			"GLM-5.3-Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "zai-org/GLM-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "moonshotai/Kimi-K3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "moonshotai/Kimi-K2.7-Code",
+		name: "Kimi K2.7 Code",
+		family: "kimi",
+		version: "k2.7-code",
+		tooltip:
+			"Kimi K2.7 Code — Coding-focused Kimi model, stronger on long-horizon repo work with less overthinking, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "deepseek-ai/DeepSeek-V4-Pro",
+		name: "DeepSeek V4 Pro",
+		family: "deepseek",
+		version: "v4-pro",
+		tooltip: "DeepSeek V4 Pro — Open MoE flagship with million-token context for coding and long agent runs",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "deepseek-ai/DeepSeek-V4-Flash",
+		name: "DeepSeek V4 Flash",
+		family: "deepseek",
+		version: "v4-flash",
+		tooltip:
+			"DeepSeek V4 Flash — Fast DeepSeek V4 lane for economical reasoning, coding, and long-context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Qwen/Qwen3.8-2.4T-A95B",
+		name: "Qwen3.8 2.4T A95B",
+		family: "qwen",
+		version: "3.8-2.4t",
+		tooltip:
+			"Qwen3.8 2.4T A95B — Open-weight sparse MoE (2.4T total, 95B active), the open-weight twin of Qwen3.8 Max for coding, research, complex reasoning, and agentic workflows",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 131000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "MiniMaxAI/MiniMax-M3",
+		name: "MiniMax-M3",
+		family: "minimax",
+		version: "m3",
+		tooltip:
+			"MiniMax-M3 — MiniMax multimodal model for long-context coding, perception, and agent planning, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "meituan-longcat/LongCat-2.0",
+		name: "LongCat-2.0",
+		family: "longcat",
+		version: "2.0",
+		tooltip:
+			"LongCat-2.0 — Meituan LongCat-2.0, a reasoning model with tool calling and a 1M-token context window",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 131072,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "tencent/Hy3",
+		name: "Hy3",
+		family: "hunyuan",
+		version: "hy3",
+		tooltip: "Hy3 — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 192000,
+		maxOutputTokens: 262144,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "openai/gpt-oss-120b",
+		name: "GPT-OSS 120B",
+		family: "gpt-oss",
+		version: "120b",
+		tooltip:
+			"GPT-OSS 120B — Open-weight GPT model for self-hosted reasoning and instruction-following workloads",
+		maxInputTokens: 131000,
+		maxOutputTokens: 8000,
+		baseUrl: SILICONFLOW_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── SiliconFlow (China) ────────────────────────────────────────────────────
+
+const SILICONFLOW_CN_BASE_URL = "https://api.siliconflow.cn/v1";
+
+const SILICONFLOW_CN_MODELS: ModelInfo[] = [
+	{
+		id: "zai-org/GLM-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Pro/moonshotai/Kimi-K2.6",
+		name: "Kimi K2.6 (Pro)",
+		family: "kimi",
+		version: "k2.6",
+		tooltip:
+			"Kimi K2.6 (Pro) — Kimi multimodal agent model for visual understanding, coding, and planning, vision support",
+		maxInputTokens: 262000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "deepseek-ai/DeepSeek-V4-Pro",
+		name: "DeepSeek V4 Pro",
+		family: "deepseek",
+		version: "v4-pro",
+		tooltip: "DeepSeek V4 Pro — Flagship DeepSeek model for coding, reasoning, and agentic work",
+		maxInputTokens: 1049000,
+		maxOutputTokens: 393000,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "deepseek-ai/DeepSeek-V4-Flash",
+		name: "DeepSeek V4 Flash",
+		family: "deepseek",
+		version: "v4-flash",
+		tooltip:
+			"DeepSeek V4 Flash — Fast DeepSeek V4 lane for economical reasoning, coding, and long-context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Qwen/Qwen3.5-397B-A17B",
+		name: "Qwen3.5 397B A17B",
+		family: "qwen",
+		version: "3.5-397b",
+		tooltip:
+			"Qwen3.5 397B A17B — Qwen vision-language model for visual reasoning, documents, and agent tasks, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 65536,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "stepfun-ai/Step-3.5-Flash",
+		name: "Step 3.5 Flash",
+		family: "step",
+		version: "3.5-flash",
+		tooltip: "Step 3.5 Flash — StepFun flash model for efficient multimodal reasoning, coding, and tool use",
+		maxInputTokens: 262000,
+		maxOutputTokens: 262000,
+		baseUrl: SILICONFLOW_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── MiniMax (International, minimax.io) ────────────────────────────────────
+
+// OpenAI-compatible endpoint of the international platform; same protocol as
+// the CN Token Plan (thinking object, inline <think> tags, max_completion_tokens).
+const MINIMAX_INTL_BASE_URL = "https://api.minimax.io/v1";
+
+const MINIMAX_INTL_MODELS: ModelInfo[] = [
+	{
+		id: "MiniMax-M3.1-Flash-Preview",
+		name: "MiniMax M3.1 Flash Preview",
+		family: "minimax",
+		version: "m3.1-flash",
+		tooltip:
+			"MiniMax M3.1 Flash Preview — Frontier multimodal coding model with 1M context window and tunable thinking depth, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 512000,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-medium-high-xhigh-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M3",
+		name: "MiniMax-M3",
+		family: "minimax",
+		version: "m3",
+		tooltip:
+			"MiniMax-M3 — MiniMax multimodal coding model for long-context reasoning and agent tasks, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 512000,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M2.7",
+		name: "MiniMax-M2.7",
+		family: "minimax",
+		version: "m2.7",
+		tooltip: "MiniMax-M2.7 — MiniMax model for chat, coding, office work, and agentic tasks",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M2.7-highspeed",
+		name: "MiniMax M2.7 HighSpeed",
+		family: "minimax",
+		version: "m2.7-highspeed",
+		tooltip: "MiniMax M2.7 HighSpeed — High-speed MiniMax model for low-latency coding and agent workflows",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M2.5",
+		name: "MiniMax-M2.5",
+		family: "minimax",
+		version: "m2.5",
+		tooltip: "MiniMax-M2.5 — MiniMax model for chat, coding, office work, and agentic tasks",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Alibaba Coding Plan (China) ───────────────────────────────────────────────
+
+// Alibaba's Coding Plan (通义编程方案) is a separate subscription from the Token
+// Plan above: dedicated coding.* endpoints and its own keys. Qwen-native IDs
+// take enable_thinking; the hosted GLM/Kimi/MiniMax entries mirror their
+// vendor-native thinking semantics.
+const ALIBABA_CODING_CN_BASE_URL = "https://coding.dashscope.aliyuncs.com/v1";
+
+const ALIBABA_CODING_CN_MODELS: ModelInfo[] = [
+	{
+		id: "qwen3.7-plus",
+		name: "Qwen3.7 Plus",
+		family: "qwen",
+		version: "3.7-plus",
+		tooltip:
+			"Qwen3.7 Plus — Multimodal Qwen workhorse for long-context agents, visual inputs, and coding, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 64000,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "qwen3.6-plus",
+		name: "Qwen3.6 Plus",
+		family: "qwen",
+		version: "3.6-plus",
+		tooltip:
+			"Qwen3.6 Plus — Qwen vision-language model for visual reasoning, documents, and agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "qwen3-coder-plus",
+		name: "Qwen3 Coder Plus",
+		family: "qwen",
+		version: "3-coder-plus",
+		tooltip: "Qwen3 Coder Plus — Qwen coding model for software agents, repository edits, and code reasoning",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "qwen3-coder-next",
+		name: "Qwen3 Coder Next",
+		family: "qwen",
+		version: "3-coder-next",
+		tooltip: "Qwen3 Coder Next — Qwen coding model for software agents, repository edits, and code reasoning",
+		maxInputTokens: 262144,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "qwen3-max-2026-01-23",
+		name: "Qwen3 Max",
+		family: "qwen",
+		version: "3-max",
+		tooltip: "Qwen3 Max — Flagship Qwen model for complex reasoning, coding, and agentic workflows",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5",
+		name: "GLM-5",
+		family: "glm",
+		version: "5",
+		tooltip: "GLM-5 — Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+		maxInputTokens: 202752,
+		maxOutputTokens: 16384,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.5",
+		name: "Kimi K2.5",
+		family: "kimi",
+		version: "k2.5",
+		tooltip:
+			"Kimi K2.5 — Kimi multimodal agent model for visual understanding, coding, and planning, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M2.5",
+		name: "MiniMax-M2.5",
+		family: "minimax",
+		version: "m2.5",
+		tooltip: "MiniMax-M2.5 — MiniMax model for chat, coding, office work, and agentic tasks",
+		maxInputTokens: 196608,
+		maxOutputTokens: 24576,
+		baseUrl: ALIBABA_CODING_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Alibaba Coding Plan (International) ───────────────────────────────────────
+
+const ALIBABA_CODING_BASE_URL = "https://coding-intl.dashscope.aliyuncs.com/v1";
+
+const ALIBABA_CODING_MODELS: ModelInfo[] = [
+	{
+		id: "qwen3.7-plus",
+		name: "Qwen3.7 Plus",
+		family: "qwen",
+		version: "3.7-plus",
+		tooltip:
+			"Qwen3.7 Plus — Multimodal Qwen workhorse for long-context agents, visual inputs, and coding, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 64000,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "qwen3.6-plus",
+		name: "Qwen3.6 Plus",
+		family: "qwen",
+		version: "3.6-plus",
+		tooltip:
+			"Qwen3.6 Plus — Qwen vision-language model for visual reasoning, documents, and agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "qwen3-coder-plus",
+		name: "Qwen3 Coder Plus",
+		family: "qwen",
+		version: "3-coder-plus",
+		tooltip: "Qwen3 Coder Plus — Qwen coding model for software agents, repository edits, and code reasoning",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "qwen3-coder-next",
+		name: "Qwen3 Coder Next",
+		family: "qwen",
+		version: "3-coder-next",
+		tooltip: "Qwen3 Coder Next — Qwen coding model for software agents, repository edits, and code reasoning",
+		maxInputTokens: 262144,
+		maxOutputTokens: 65536,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "qwen3-max-2026-01-23",
+		name: "Qwen3 Max",
+		family: "qwen",
+		version: "3-max",
+		tooltip: "Qwen3 Max — Flagship Qwen model for complex reasoning, coding, and agentic workflows",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5",
+		name: "GLM-5",
+		family: "glm",
+		version: "5",
+		tooltip: "GLM-5 — Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+		maxInputTokens: 202752,
+		maxOutputTokens: 16384,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.5",
+		name: "Kimi K2.5",
+		family: "kimi",
+		version: "k2.5",
+		tooltip:
+			"Kimi K2.5 — Kimi multimodal agent model for visual understanding, coding, and planning, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M2.5",
+		name: "MiniMax-M2.5",
+		family: "minimax",
+		version: "m2.5",
+		tooltip: "MiniMax-M2.5 — MiniMax model for chat, coding, office work, and agentic tasks",
+		maxInputTokens: 196608,
+		maxOutputTokens: 24576,
+		baseUrl: ALIBABA_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Tencent Coding Plan ────────────────────────────────────────────────────
+
+// Hunyuan coding subscription on LKEAP (api.lkeap.cloud.tencent.com), hosting
+// Hunyuan's own line-up plus selected GLM/Kimi/MiniMax models.
+const TENCENT_CODING_BASE_URL = "https://api.lkeap.cloud.tencent.com/coding/v3";
+
+const TENCENT_CODING_MODELS: ModelInfo[] = [
+	{
+		id: "hunyuan-2.0-thinking",
+		name: "Hunyuan 2.0 Think",
+		family: "hunyuan",
+		version: "2.0-thinking",
+		tooltip:
+			"Hunyuan 2.0 Think — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 131072,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "hunyuan-2.0-instruct",
+		name: "Hunyuan 2.0 Instruct",
+		family: "hunyuan",
+		version: "2.0-instruct",
+		tooltip:
+			"Hunyuan 2.0 Instruct — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 131072,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "hunyuan-t1",
+		name: "Hunyuan-T1",
+		family: "hunyuan",
+		version: "t1",
+		tooltip: "Hunyuan-T1 — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 131072,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "hunyuan-turbos",
+		name: "Hunyuan-TurboS",
+		family: "hunyuan",
+		version: "turbos",
+		tooltip: "Hunyuan-TurboS — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 131072,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "tc-code-latest",
+		name: "TC Code (Auto)",
+		family: "hunyuan",
+		version: "tc-code",
+		tooltip: "TC Code (Auto) — Automatic model router for matching prompts to suitable backends and budgets",
+		maxInputTokens: 131072,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: false,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5",
+		name: "GLM-5",
+		family: "glm",
+		version: "5",
+		tooltip: "GLM-5 — Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+		maxInputTokens: 202752,
+		maxOutputTokens: 16384,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "kimi-k2.5",
+		name: "Kimi K2.5",
+		family: "kimi",
+		version: "k2.5",
+		tooltip:
+			"Kimi K2.5 — Kimi multimodal agent model for visual understanding, coding, and planning, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 32768,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "minimax-m2.5",
+		name: "MiniMax-M2.5",
+		family: "minimax",
+		version: "m2.5",
+		tooltip: "MiniMax-M2.5 — MiniMax model for chat, coding, office work, and agentic tasks",
+		maxInputTokens: 204800,
+		maxOutputTokens: 32768,
+		baseUrl: TENCENT_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Tencent Token Plan ─────────────────────────────────────────────────────
+
+const TENCENT_TOKEN_PLAN_BASE_URL = "https://api.lkeap.cloud.tencent.com/plan/v3";
+
+const TENCENT_TOKEN_PLAN_MODELS: ModelInfo[] = [
+	{
+		id: "hy4-preview",
+		name: "Hy4 Preview",
+		family: "hunyuan",
+		version: "hy4",
+		tooltip:
+			"Hy4 Preview — A next-generation productivity model with significantly enhanced Agent and complex task execution capabilities.",
+		maxInputTokens: 1024000,
+		maxOutputTokens: 64000,
+		baseUrl: TENCENT_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "hy3",
+		name: "Hy3",
+		family: "hunyuan",
+		version: "hy3",
+		tooltip: "Hy3 — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 192000,
+		maxOutputTokens: 128000,
+		baseUrl: TENCENT_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Tencent TokenHub ───────────────────────────────────────────────────────
+
+const TENCENT_TOKENHUB_BASE_URL = "https://tokenhub.tencentmaas.com/v1";
+
+const TENCENT_TOKENHUB_MODELS: ModelInfo[] = [
+	{
+		id: "hy4-preview",
+		name: "Hy4 Preview",
+		family: "hunyuan",
+		version: "hy4",
+		tooltip:
+			"Hy4 Preview — A next-generation productivity model with significantly enhanced Agent and complex task execution capabilities.",
+		maxInputTokens: 1024000,
+		maxOutputTokens: 64000,
+		baseUrl: TENCENT_TOKENHUB_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "hy3",
+		name: "Hy3",
+		family: "hunyuan",
+		version: "hy3",
+		tooltip: "Hy3 — Tencent Hy reasoning model for coding, instruction following, and agent tasks",
+		maxInputTokens: 192000,
+		maxOutputTokens: 128000,
+		baseUrl: TENCENT_TOKENHUB_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── StepFun Step Plan (International) ──────────────────────────────────────
+
+const STEPFUN_STEP_PLAN_BASE_URL = "https://api.stepfun.ai/step_plan/v1";
+
+const STEPFUN_STEP_PLAN_MODELS: ModelInfo[] = [
+	{
+		id: "step-5-preview",
+		name: "Step 5 Preview",
+		family: "step",
+		version: "5-preview",
+		tooltip:
+			"Step 5 Preview — StepFun's next-generation flagship base model for coding and professional knowledge work, with native text, image, and video input and a 1M-token context window, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "step-3.7-flash",
+		name: "Step 3.7 Flash",
+		family: "step",
+		version: "3.7-flash",
+		tooltip:
+			"Step 3.7 Flash — Newer StepFun flash model for faster agents, coding, and multimodal prompts, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "step-3.5-flash",
+		name: "Step 3.5 Flash",
+		family: "step",
+		version: "3.5-flash",
+		tooltip: "Step 3.5 Flash — StepFun flash lane for quick multimodal reasoning and coding assistance",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── StepFun Step Plan (China) ──────────────────────────────────────────────
+
+const STEPFUN_STEP_PLAN_CN_BASE_URL = "https://api.stepfun.com/step_plan/v1";
+
+const STEPFUN_STEP_PLAN_CN_MODELS: ModelInfo[] = [
+	{
+		id: "step-5-preview",
+		name: "Step 5 Preview",
+		family: "step",
+		version: "5-preview",
+		tooltip:
+			"Step 5 Preview — StepFun's next-generation flagship base model for coding and professional knowledge work, with native text, image, and video input and a 1M-token context window, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "step-3.7-flash",
+		name: "Step 3.7 Flash",
+		family: "step",
+		version: "3.7-flash",
+		tooltip:
+			"Step 3.7 Flash — Newer StepFun flash model for faster agents, coding, and multimodal prompts, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "step-3.5-flash",
+		name: "Step 3.5 Flash",
+		family: "step",
+		version: "3.5-flash",
+		tooltip: "Step 3.5 Flash — StepFun flash lane for quick multimodal reasoning and coding assistance",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── SCNet Token Plan (China Telecom) ───────────────────────────────────────
+
+// Aggregator subscription hosting DeepSeek/GLM/Kimi/MiniMax/Qwen flagships.
+// DeepSeek IDs keep their native reasoning_effort knob (high/max); the rest are
+// served thinking-only per the plan's own model list.
+const SCNET_TOKEN_PLAN_BASE_URL = "https://api.scnet.cn/api/llm/v1";
+
+const SCNET_TOKEN_PLAN_MODELS: ModelInfo[] = [
+	{
+		id: "DeepSeek-V4.1-Flash",
+		name: "DeepSeek V4.1 Flash",
+		family: "deepseek",
+		version: "v4.1-flash",
+		tooltip: "DeepSeek V4.1 Flash — DeepSeek V4.1 Flash model for reasoning and agentic coding",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "DeepSeek-V4-Pro",
+		name: "DeepSeek V4 Pro",
+		family: "deepseek",
+		version: "v4-pro",
+		tooltip: "DeepSeek V4 Pro — Open MoE flagship with million-token context for coding and long agent runs",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "DeepSeek-V4-Flash",
+		name: "DeepSeek V4 Flash",
+		family: "deepseek",
+		version: "v4-flash",
+		tooltip:
+			"DeepSeek V4 Flash — Fast DeepSeek V4 lane for economical reasoning, coding, and long-context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-high-max",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "GLM-5.3",
+		name: "GLM-5.3",
+		family: "glm",
+		version: "5.3",
+		tooltip: "GLM-5.3 — Flagship GLM model for long-horizon coding, agents, and complex project delivery",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "GLM-5.3-Flash",
+		name: "GLM-5.3-Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip:
+			"GLM-5.3-Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "GLM-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Kimi-K3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Kimi-K2.7-Code",
+		name: "Kimi K2.7 Code",
+		family: "kimi",
+		version: "k2.7-code",
+		tooltip:
+			"Kimi K2.7 Code — Coding-focused Kimi model, stronger on long-horizon repo work with less overthinking",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "MiniMax-M3",
+		name: "MiniMax-M3",
+		family: "minimax",
+		version: "m3",
+		tooltip: "MiniMax-M3 — MiniMax multimodal model for long-context coding, perception, and agent planning",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 512000,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		thinkingLocked: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "Qwen3.8-Max",
+		name: "Qwen3.8 Max",
+		family: "qwen",
+		version: "3.8-max",
+		tooltip:
+			"Qwen3.8 Max — 2.4-trillion-parameter MoE flagship for coding, professional work, multimodal understanding, and long-horizon agentic workflows, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "Qwen3.8-Flash",
+		name: "Qwen3.8 Flash",
+		family: "qwen",
+		version: "3.8-flash",
+		tooltip:
+			"Qwen3.8 Flash — Qwen vision-language model for visual reasoning, documents, and agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── MiMo Token Plan SGP ────────────────────────────────────────────────────
+
+// Same Token Plan contract as the CN cluster (tp-/ttp- keys work on all
+// clusters), served from the Singapore region.
+const MIMO_TOKEN_PLAN_SGP_BASE_URL = "https://token-plan-sgp.xiaomimimo.com/v1";
+
+const MIMO_SGP_MODELS: ModelInfo[] = [
+	{
+		id: "mimo-v2.6-pro",
+		name: "MiMo V2.6 Pro",
+		family: "mimo",
+		version: "2.6-pro",
+		tooltip:
+			"MiMo V2.6 Pro (SGP) — Stronger MiMo Pro tier for multimodal reasoning and coding-agent execution, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_SGP_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "mimo-v2.6-flash",
+		name: "MiMo V2.6 Flash",
+		family: "mimo",
+		version: "2.6-flash",
+		tooltip:
+			"MiMo V2.6 Flash (SGP) — MiMo Flash model for multimodal coding agents and long-context automation, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_SGP_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── MiMo Token Plan AMS ────────────────────────────────────────────────────
+
+// Same Token Plan contract as the CN cluster, served from the Europe region.
+const MIMO_TOKEN_PLAN_AMS_BASE_URL = "https://token-plan-ams.xiaomimimo.com/v1";
+
+const MIMO_AMS_MODELS: ModelInfo[] = [
+	{
+		id: "mimo-v2.6-pro",
+		name: "MiMo V2.6 Pro",
+		family: "mimo",
+		version: "2.6-pro",
+		tooltip:
+			"MiMo V2.6 Pro (AMS) — Stronger MiMo Pro tier for multimodal reasoning and coding-agent execution, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_AMS_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "mimo-v2.6-flash",
+		name: "MiMo V2.6 Flash",
+		family: "mimo",
+		version: "2.6-flash",
+		tooltip:
+			"MiMo V2.6 Flash (AMS) — MiMo Flash model for multimodal coding agents and long-context automation, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_TOKEN_PLAN_AMS_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── Xiaomi MiMo (Pay-as-you-go) ────────────────────────────────────────────
+
+// Pay-as-you-go open platform (api.xiaomimimo.com) — sk- keys, separate from
+// the Token Plan endpoints. Includes the UltraSpeed serving tier.
+const MIMO_OPEN_BASE_URL = "https://api.xiaomimimo.com/v1";
+
+const MIMO_OPEN_MODELS: ModelInfo[] = [
+	{
+		id: "mimo-v2.6-pro",
+		name: "MiMo V2.6 Pro",
+		family: "mimo",
+		version: "2.6-pro",
+		tooltip: "MiMo V2.6 Pro — MiMo Pro model for multimodal coding agents and long-context automation, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "mimo-v2.6-flash",
+		name: "MiMo V2.6 Flash",
+		family: "mimo",
+		version: "2.6-flash",
+		tooltip: "MiMo V2.6 Flash — MiMo Flash model for multimodal coding agents and long-context automation, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "mimo-v2.6-pro-ultraspeed",
+		name: "MiMo V2.6 Pro UltraSpeed",
+		family: "mimo",
+		version: "2.6-pro-ultraspeed",
+		tooltip:
+			"MiMo V2.6 Pro UltraSpeed — MiMo pro model for strong multimodal reasoning and agent execution, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: MIMO_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── Umans AI Coding Plan ───────────────────────────────────────────────────
+
+const UMANS_CODING_BASE_URL = "https://api.code.umans.ai/v1";
+
+const UMANS_MODELS: ModelInfo[] = [
+	{
+		id: "umans-coder",
+		name: "Umans Coder",
+		family: "umans",
+		version: "umans-coder",
+		tooltip:
+			"Umans Coder — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131071,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "umans-flash",
+		name: "Umans Flash",
+		family: "umans",
+		version: "umans-flash",
+		tooltip:
+			"Umans Flash — Open multimodal Qwen MoE for local agents that need vision, audio, and code, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "umans-kimi-k3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "umans-glm-5.3-flash",
+		name: "GLM 5.3 Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip:
+			"GLM 5.3 Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131071,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "umans-deepseek-v4.1-flash",
+		name: "DeepSeek V4.1 Flash",
+		family: "deepseek",
+		version: "v4.1-flash",
+		tooltip: "DeepSeek V4.1 Flash — DeepSeek V4.1 Flash model for reasoning and agentic coding, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 393215,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "umans-qwen3.6-35b-a3b",
+		name: "Qwen3.6 35B A3B",
+		family: "qwen",
+		version: "3.6-35b",
+		tooltip:
+			"Qwen3.6 35B A3B — Open multimodal Qwen MoE for local agents that need vision, audio, and code, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 262144,
+		baseUrl: UMANS_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── LongCat (Meituan) ──────────────────────────────────────────────────────
+
+const LONGCAT_BASE_URL = "https://api.longcat.chat/openai";
+
+const LONGCAT_MODELS: ModelInfo[] = [
+	{
+		id: "LongCat-2.0",
+		name: "LongCat-2.0",
+		family: "longcat",
+		version: "2.0",
+		tooltip:
+			"LongCat-2.0 — Meituan LongCat-2.0, a reasoning model with tool calling and a 1M-token context window",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: LONGCAT_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── SenseNova (SenseTime) ──────────────────────────────────────────────────
+
+const SENSENOVA_BASE_URL = "https://token.sensenova.cn/v1";
+
+const SENSENOVA_MODELS: ModelInfo[] = [
+	{
+		id: "kimi-k3",
+		name: "Kimi K3",
+		family: "kimi",
+		version: "k3",
+		tooltip:
+			"Kimi K3 — Multimodal Kimi model with 1M context and toggleable max-effort thinking for long-horizon agent work, vision support",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 65536,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4-pro",
+		name: "DeepSeek V4 Pro",
+		family: "deepseek",
+		version: "v4-pro",
+		tooltip:
+			"DeepSeek V4 Pro — DeepSeek V4 Pro snapshot with million-token context and support for thinking and non-thinking modes",
+		maxInputTokens: 1048576,
+		maxOutputTokens: 65536,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip:
+			"GLM-5.2 — SenseNova-hosted GLM, thinking always on with none|high effort (models.dev: low/medium/high indistinguishable)",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		// models.dev: effort domain collapsed to none|high; low/medium/high
+		// produce indistinguishable output server-side.
+		thinkingEffortSupport: true,
+		effortMenu: "none-high",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4-flash",
+		name: "DeepSeek V4 Flash",
+		family: "deepseek",
+		version: "v4-flash",
+		tooltip:
+			"DeepSeek V4 Flash — Fast DeepSeek V4 lane for economical reasoning, coding, and long-context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 65536,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		// models.dev: host documents none|low|medium|high but live calls
+		// show no grading — low/medium/high produce indistinguishable output.
+		// Effective domain collapsed to none|high.
+		thinkingEffortSupport: true,
+		effortMenu: "none-high",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "sensenova-6.8-flash-lite",
+		name: "SenseNova 6.8 Flash Lite",
+		family: "sensenova",
+		version: "6.8-flash-lite",
+		tooltip:
+			"SenseNova 6.8 Flash Lite — SenseNova lightweight multimodal agent model for real-world complex tasks, data analysis, and complex information presentation, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 65536,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── KUAE Cloud Coding Plan ─────────────────────────────────────────────────
+
+const KUAE_CODING_BASE_URL = "https://coding-plan-endpoint.kuaecloud.net/v1";
+
+const KUAE_MODELS: ModelInfo[] = [
+	{
+		id: "GLM-4.7",
+		name: "GLM-4.7",
+		family: "glm",
+		version: "4.7",
+		tooltip: "GLM-4.7 — Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+		maxInputTokens: 204800,
+		maxOutputTokens: 131072,
+		baseUrl: KUAE_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
+// ─── Zhipu AI (Pay-as-you-go) ───────────────────────────────────────────────
+
+// The standard open.bigmodel.cn PaaS endpoint — per-token billing, not the
+// Coding Plan subscription.
+const ZHIPU_OPEN_BASE_URL = "https://open.bigmodel.cn/api/paas/v4";
+
+const ZHIPU_OPEN_MODELS: ModelInfo[] = [
+	{
+		id: "glm-5.3",
+		name: "GLM-5.3",
+		family: "glm",
+		version: "5.3",
+		tooltip: "GLM-5.3 — Flagship GLM model for long-horizon coding, agents, and complex project delivery",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-flash",
+		name: "GLM-5.3-Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip:
+			"GLM-5.3-Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-flashx",
+		name: "GLM-5.3-FlashX",
+		family: "glm",
+		version: "5.3-flashx",
+		tooltip:
+			"GLM-5.3-FlashX — High-speed GLM-5.3-Flash serving option for coding and agent workflows, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5v-turbo",
+		name: "GLM-5V-Turbo",
+		family: "glm",
+		version: "5v-turbo",
+		tooltip:
+			"GLM-5V-Turbo — Fast GLM vision model for screenshots, documents, and multimodal agent tasks, vision support",
+		maxInputTokens: 200000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── Z.AI (Pay-as-you-go) ───────────────────────────────────────────────────
+
+// The standard api.z.ai PaaS endpoint — per-token billing, not the Coding Plan.
+const ZAI_OPEN_BASE_URL = "https://api.z.ai/api/paas/v4";
+
+const ZAI_OPEN_MODELS: ModelInfo[] = [
+	{
+		id: "glm-5.3",
+		name: "GLM-5.3",
+		family: "glm",
+		version: "5.3",
+		tooltip: "GLM-5.3 — Flagship GLM model for long-horizon coding, agents, and complex project delivery",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-flash",
+		name: "GLM-5.3-Flash",
+		family: "glm",
+		version: "5.3-flash",
+		tooltip:
+			"GLM-5.3-Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.3-flashx",
+		name: "GLM-5.3-FlashX",
+		family: "glm",
+		version: "5.3-flashx",
+		tooltip:
+			"GLM-5.3-FlashX — High-speed GLM-5.3-Flash serving option for coding and agent workflows, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "high-max",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5-turbo",
+		name: "GLM-5-Turbo",
+		family: "glm",
+		version: "5-turbo",
+		tooltip: "GLM-5-Turbo — Faster GLM-5 lane for coding agents that need lower latency",
+		maxInputTokens: 200000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5v-turbo",
+		name: "GLM-5V-Turbo",
+		family: "glm",
+		version: "5v-turbo",
+		tooltip:
+			"GLM-5V-Turbo — Fast GLM vision model for screenshots, documents, and multimodal agent tasks, vision support",
+		maxInputTokens: 200000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_OPEN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: false,
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+];
+
+// ─── Volcengine Ark (Pay-as-you-go) ─────────────────────────────────────────
+
+// Ark's per-token endpoint (api/v3): snapshot-pinned model IDs with dates.
+// Thinking contract mirrors the plan endpoints (thinking object + effort).
+const VOLCENGINE_ARK_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3";
+
+const VOLCENGINE_ARK_MODELS: ModelInfo[] = [
+	{
+		id: "doubao-seed-2-1-pro-260628",
+		name: "Doubao Seed 2.1 Pro",
+		family: "volcengine",
+		version: "seed-2.1-pro",
+		tooltip:
+			"Doubao Seed 2.1 Pro — Flagship ByteDance Seed 2.1 model for complex multimodal reasoning, coding, and agents, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2-1-turbo-260628",
+		name: "Doubao Seed 2.1 Turbo",
+		family: "volcengine",
+		version: "seed-2.1-turbo",
+		tooltip:
+			"Doubao Seed 2.1 Turbo — Faster ByteDance Seed 2.1 model for multimodal reasoning and latency-sensitive agent workflows, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2-0-pro-260215",
+		name: "Doubao Seed 2.0 Pro",
+		family: "volcengine",
+		version: "seed-2.0-pro",
+		tooltip:
+			"Doubao Seed 2.0 Pro — Flagship ByteDance Seed 2.0 model for complex multimodal reasoning and long-horizon agent workflows, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 128000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2-0-mini-260428",
+		name: "Doubao Seed 2.0 Mini",
+		family: "volcengine",
+		version: "seed-2.0-mini",
+		tooltip:
+			"Doubao Seed 2.0 Mini — Lightweight ByteDance Seed 2.0 model for low-latency multimodal reasoning and high-volume tasks, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 131072,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2-0-lite-260428",
+		name: "Doubao Seed 2.0 Lite",
+		family: "volcengine",
+		version: "seed-2.0-lite",
+		tooltip:
+			"Doubao Seed 2.0 Lite — Cost-efficient ByteDance Seed 2.0 model for production chat, analysis, and structured generation, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 131072,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-2-0-code-preview-260215",
+		name: "Doubao Seed 2.0 Code",
+		family: "volcengine",
+		version: "seed-2.0-code",
+		tooltip:
+			"Doubao Seed 2.0 Code — ByteDance Seed coding model for multimodal software engineering and long-running agents, vision support",
+		maxInputTokens: 262144,
+		maxOutputTokens: 131072,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "doubao-seed-evolving",
+		name: "Doubao Seed Evolving",
+		family: "volcengine",
+		version: "seed-evolving",
+		tooltip:
+			"Doubao Seed Evolving — Rolling ByteDance Seed model for rapidly updated reasoning, coding, and agent capabilities, vision support",
+		maxInputTokens: 256000,
+		maxOutputTokens: 256000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "glm-5-2-260617",
+		name: "GLM-5.2",
+		family: "volcengine",
+		version: "5.2",
+		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "glm-5-3-flash-260828",
+		name: "GLM-5.3-Flash",
+		family: "volcengine",
+		version: "5.3-flash",
+		tooltip:
+			"GLM-5.3-Flash — Native multimodal GLM model for efficient coding and long-horizon agent tasks, vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4-flash-ga-260731",
+		name: "DeepSeek V4 Flash 0731",
+		family: "volcengine",
+		version: "v4-flash-ga",
+		tooltip:
+			"DeepSeek V4 Flash 0731 — Official DeepSeek V4 Flash release with enhanced agentic capabilities and integrated DSpark speculative decoding",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
+		id: "deepseek-v4-pro-ga-260813",
+		name: "DeepSeek V4 Pro 0813",
+		family: "volcengine",
+		version: "v4-pro-ga",
+		tooltip:
+			"DeepSeek V4 Pro 0813 — DeepSeek V4 Pro snapshot with million-token context and support for thinking and non-thinking modes",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 384000,
+		baseUrl: VOLCENGINE_ARK_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+];
+
 // ─── All Vendors ─────────────────────────────────────────────────────────────
 
 export const VENDOR_CONFIGS: VendorConfig[] = [
@@ -961,7 +3075,7 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 	},
 	{
 		vendorId: "qwen",
-		displayName: "Qwen Token Plan",
+		displayName: "Alibaba Token Plan",
 		defaultBaseUrl: QWEN_TOKEN_PLAN_BASE_URL,
 		models: QWEN_MODELS,
 		thinkingCapable: true,
@@ -995,6 +3109,169 @@ export const VENDOR_CONFIGS: VendorConfig[] = [
 		displayName: "MiMo Token Plan CN",
 		defaultBaseUrl: MIMO_TOKEN_PLAN_BASE_URL,
 		models: MIMO_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "moonshot-intl",
+		displayName: "Moonshot AI (International)",
+		defaultBaseUrl: MOONSHOT_INTL_BASE_URL,
+		models: MOONSHOT_INTL_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "kimi-code-plan-intl",
+		displayName: "Kimi Code Plan (kimi.ai)",
+		defaultBaseUrl: KIMI_GLOBAL_CODING_BASE_URL,
+		models: KIMI_GLOBAL_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "siliconflow",
+		displayName: "SiliconFlow",
+		defaultBaseUrl: SILICONFLOW_BASE_URL,
+		models: SILICONFLOW_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "siliconflow-cn",
+		displayName: "SiliconFlow CN",
+		defaultBaseUrl: SILICONFLOW_CN_BASE_URL,
+		models: SILICONFLOW_CN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "minimax-intl",
+		displayName: "MiniMax International",
+		defaultBaseUrl: MINIMAX_INTL_BASE_URL,
+		models: MINIMAX_INTL_MODELS,
+		thinkingCapable: true,
+		// Same inline <think> streaming as the CN Token Plan.
+		inlineThinkTags: true,
+	},
+	{
+		vendorId: "alibaba-coding-plan-cn",
+		displayName: "Alibaba Coding Plan CN",
+		defaultBaseUrl: ALIBABA_CODING_CN_BASE_URL,
+		models: ALIBABA_CODING_CN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "alibaba-coding-plan",
+		displayName: "Alibaba Coding Plan",
+		defaultBaseUrl: ALIBABA_CODING_BASE_URL,
+		models: ALIBABA_CODING_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "tencent-coding-plan",
+		displayName: "Tencent Coding Plan",
+		defaultBaseUrl: TENCENT_CODING_BASE_URL,
+		models: TENCENT_CODING_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "tencent-token-plan",
+		displayName: "Tencent Token Plan",
+		defaultBaseUrl: TENCENT_TOKEN_PLAN_BASE_URL,
+		models: TENCENT_TOKEN_PLAN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "tencent-tokenhub",
+		displayName: "Tencent TokenHub",
+		defaultBaseUrl: TENCENT_TOKENHUB_BASE_URL,
+		models: TENCENT_TOKENHUB_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "stepfun-step-plan",
+		displayName: "StepFun Step Plan",
+		defaultBaseUrl: STEPFUN_STEP_PLAN_BASE_URL,
+		models: STEPFUN_STEP_PLAN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "stepfun-step-plan-cn",
+		displayName: "StepFun Step Plan CN",
+		defaultBaseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
+		models: STEPFUN_STEP_PLAN_CN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "scnet-token-plan",
+		displayName: "SCNet Token Plan",
+		defaultBaseUrl: SCNET_TOKEN_PLAN_BASE_URL,
+		models: SCNET_TOKEN_PLAN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "mimo-token-plan-sgp",
+		displayName: "MiMo Token Plan SGP",
+		defaultBaseUrl: MIMO_TOKEN_PLAN_SGP_BASE_URL,
+		models: MIMO_SGP_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "mimo-token-plan-ams",
+		displayName: "MiMo Token Plan AMS",
+		defaultBaseUrl: MIMO_TOKEN_PLAN_AMS_BASE_URL,
+		models: MIMO_AMS_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "mimo",
+		displayName: "Xiaomi MiMo (Pay-as-you-go)",
+		defaultBaseUrl: MIMO_OPEN_BASE_URL,
+		models: MIMO_OPEN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "umans-ai-coding-plan",
+		displayName: "Umans AI Coding Plan",
+		defaultBaseUrl: UMANS_CODING_BASE_URL,
+		models: UMANS_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "longcat",
+		displayName: "LongCat",
+		defaultBaseUrl: LONGCAT_BASE_URL,
+		models: LONGCAT_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "sensenova",
+		displayName: "SenseNova",
+		defaultBaseUrl: SENSENOVA_BASE_URL,
+		models: SENSENOVA_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "kuae",
+		displayName: "KUAE Cloud Coding Plan",
+		defaultBaseUrl: KUAE_CODING_BASE_URL,
+		models: KUAE_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "zhipu",
+		displayName: "Zhipu AI (Pay-as-you-go)",
+		defaultBaseUrl: ZHIPU_OPEN_BASE_URL,
+		models: ZHIPU_OPEN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "zai",
+		displayName: "Z.AI (Pay-as-you-go)",
+		defaultBaseUrl: ZAI_OPEN_BASE_URL,
+		models: ZAI_OPEN_MODELS,
+		thinkingCapable: true,
+	},
+	{
+		vendorId: "volcengine-ark",
+		displayName: "Volcengine Ark (Pay-as-you-go)",
+		defaultBaseUrl: VOLCENGINE_ARK_BASE_URL,
+		models: VOLCENGINE_ARK_MODELS,
 		thinkingCapable: true,
 	},
 ];

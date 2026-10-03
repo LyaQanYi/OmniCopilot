@@ -1,8 +1,8 @@
 {
 	"name": "omni-copilot",
 	"displayName": "OmniCopilot",
-	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine Plan, MiMo) in GitHub Copilot Chat as language model providers.",
-	"version": "0.4.5",
+	"description": "Use models from multiple LLM platforms (DeepSeek, Kimi, Qwen, MiniMax, GLM, Volcengine, MiMo, SiliconFlow, Tencent Hunyuan, StepFun, and more) in GitHub Copilot Chat as language model providers.",
+	"version": "0.5.0",
 	"publisher": "LyaQanYi",
 	"license": "MIT",
 	"repository": "https://github.com/LyaQanYi/OmniCopilot",
@@ -85,12 +85,12 @@
 			},
 			{
 				"vendor": "qwen",
-				"displayName": "Qwen Token Plan",
+				"displayName": "Alibaba Token Plan",
 				"configuration": {
 					"properties": {
 						"apiKey": {
 							"type": "string",
-							"description": "API key from Qwen Token Plan (platform.qianwenai.com)",
+							"description": "API key from Alibaba Token Plan (platform.qianwenai.com)",
 							"secret": true
 						}
 					}
@@ -147,7 +147,305 @@
 						}
 					}
 				}
-			}
+			},
+			{
+				"vendor": "moonshot-intl",
+				"displayName": "Moonshot AI (International)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from platform.moonshot.ai",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "kimi-code-plan-intl",
+				"displayName": "Kimi Code Plan (kimi.ai)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from Kimi Code (kimi.ai/code)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "siliconflow",
+				"displayName": "SiliconFlow",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from siliconflow.com",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "siliconflow-cn",
+				"displayName": "SiliconFlow CN",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from siliconflow.cn",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "minimax-intl",
+				"displayName": "MiniMax International",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from minimax.io (not interchangeable with the CN platform key)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "alibaba-coding-plan-cn",
+				"displayName": "Alibaba Coding Plan CN",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+							"description": "API key from the Alibaba Coding Plan (dashscope console), separate from Token Plan keys",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "alibaba-coding-plan",
+				"displayName": "Alibaba Coding Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+							"type": "string",
+								"description": "API key from the international Alibaba Coding Plan (Alibaba Cloud international console), separate from Token Plan keys",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "tencent-coding-plan",
+				"displayName": "Tencent Coding Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from the Tencent Hunyuan Coding Plan (lkeap.cloud.tencent.com)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "tencent-token-plan",
+				"displayName": "Tencent Token Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from the Tencent Hunyuan Token Plan (lkeap.cloud.tencent.com)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "tencent-tokenhub",
+				"displayName": "Tencent TokenHub",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from Tencent TokenHub (tokenhub.tencentmaas.com)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "stepfun-step-plan",
+				"displayName": "StepFun Step Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from the StepFun Step Plan (stepfun.ai)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "stepfun-step-plan-cn",
+				"displayName": "StepFun Step Plan CN",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from the StepFun Step Plan (stepfun.com)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "scnet-token-plan",
+				"displayName": "SCNet Token Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from SCNet (scnet.cn) Token Plan",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "mimo-token-plan-sgp",
+				"displayName": "MiMo Token Plan SGP",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from platform.xiaomimimo.com Token Plan (tp- or ttp- prefixed; any cluster's key works)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "mimo-token-plan-ams",
+				"displayName": "MiMo Token Plan AMS",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from platform.xiaomimimo.com Token Plan (tp- or ttp- prefixed; any cluster's key works)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "mimo",
+				"displayName": "Xiaomi MiMo (Pay-as-you-go)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from platform.xiaomimimo.com pay-as-you-go (sk- prefixed; not interchangeable with Token Plan keys)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "umans-ai-coding-plan",
+				"displayName": "Umans AI Coding Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from Umans AI (code.umans.ai)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "longcat",
+				"displayName": "LongCat",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from LongCat (longcat.chat)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "sensenova",
+				"displayName": "SenseNova",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from SenseNova (token.sensenova.cn)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "kuae",
+				"displayName": "KUAE Cloud Coding Plan",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from KUAE Cloud (kuaecloud.net)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "zhipu",
+				"displayName": "Zhipu AI (Pay-as-you-go)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from open.bigmodel.cn (per-token billing, not the Coding Plan key)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "zai",
+				"displayName": "Z.AI (Pay-as-you-go)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from z.ai (per-token billing, not the Coding Plan key)",
+								"secret": true
+							}
+						}
+				}
+			},
+			{
+				"vendor": "volcengine-ark",
+				"displayName": "Volcengine Ark (Pay-as-you-go)",
+				"configuration": {
+					"properties": {
+						"apiKey": {
+								"type": "string",
+								"description": "API key from console.volcengine.com (Ark per-token endpoint, not the plan key)",
+								"secret": true
+							}
+						}
+				}			}
 		],
 		"commands": [
 			{

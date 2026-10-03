@@ -2,6 +2,6 @@
 src/
 node_modules/
 tsconfig.json
-*.map
-*.d.ts
+**/*.map
+**/*.d.ts
 .gitignore

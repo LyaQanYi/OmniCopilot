@@ -8,10 +8,18 @@ import type {
 	OpenAIContentPart,
 	OpenAIUsage,
 	ThinkingEffort,
+	RequestedEffort,
 	ContextLength,
 	ModelConfigurationOptions,
 } from "./types.js";
-import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH, ALWAYS_THINKING_MODEL_IDS } from "./types.js";
+import {
+	toLanguageModelChatInformation,
+	applyContextLength,
+	DEFAULT_CONTEXT_LENGTH,
+	ALWAYS_THINKING_MODEL_IDS,
+	EFFORT_MENU_SCHEMAS,
+	resolveEffortMenu,
+} from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -266,8 +274,14 @@ function emitToolCalls(
  *      THINKING_TOGGLE_SCHEMA).
  *   2. Legacy `modelOptions.thinkingBudget` (kept for callers that bypass the
  *      picker, e.g. older programmatic clients).
- *   3. Model default — `thinking: true` with effort=`medium` for effort-capable
+ *   3. Model default — the effort menu's declared default for effort-capable
  *      models, otherwise `thinking: true` with no effort knob.
+ *
+ * This is the single effort-normalization point: effort is clamped into the
+ * model's menu (resolveEffortMenu), and anything the menu does not offer —
+ * a programmatic "medium" / "xhigh" / "max" etc. — becomes "high", which
+ * every effort menu contains. Vendor branches in applyThinkingParams only
+ * translate field names and shapes.
  */
 function resolveRequestedEffort(
 	options: ModelConfigurationOptions,
@@ -276,18 +290,30 @@ function resolveRequestedEffort(
 	const raw =
 		(options.modelConfiguration?.reasoningEffort as unknown) ??
 		(options.modelOptions?.thinkingBudget as unknown);
+	const menu =
+		EFFORT_MENU_SCHEMAS[modelDef ? resolveEffortMenu(modelDef) : "four-level"].properties.reasoningEffort;
 
-	if (raw === "none") return { thinking: false, effort: undefined };
-	if (raw === "on") return { thinking: true, effort: undefined };
-	if (raw === "low" || raw === "medium" || raw === "high" || raw === "max") {
-		return { thinking: true, effort: raw };
+	let requested: RequestedEffort;
+	if (
+		raw === "none" ||
+		raw === "on" ||
+		raw === "low" ||
+		raw === "medium" ||
+		raw === "high" ||
+		raw === "xhigh" ||
+		raw === "max"
+	) {
+		requested = raw;
+	} else if (!(modelDef?.thinking ?? false)) {
+		return { thinking: false, effort: undefined };
+	} else {
+		requested = modelDef?.thinkingEffortSupport ? menu.default : "on";
 	}
 
-	if (!(modelDef?.thinking ?? false)) return { thinking: false, effort: undefined };
-	return {
-		thinking: true,
-		effort: modelDef?.thinkingEffortSupport ? "medium" : undefined,
-	};
+	if (requested === "none") return { thinking: false, effort: undefined };
+	if (requested === "on") return { thinking: true, effort: undefined };
+	const domain: readonly string[] = menu.enum;
+	return { thinking: true, effort: domain.includes(requested) ? requested : "high" };
 }
 
 function isVisionEnabled(): boolean {
@@ -314,9 +340,25 @@ function supportsReasoningContent(vendorId?: string): boolean {
 		case "qwen":
 		case "moonshot":
 		case "moonshot-open":
+		case "moonshot-intl":
+		case "kimi-code-plan-intl":
 		case "glm-coding-plan":
 		case "glm-coding-plan-cn":
+		case "zhipu":
+		case "zai":
+		case "kuae":
 		case "mimo-token-plan-cn":
+		case "mimo-token-plan-sgp":
+		case "mimo-token-plan-ams":
+		case "mimo":
+		case "siliconflow":
+		case "siliconflow-cn":
+		case "scnet-token-plan":
+		case "umans-ai-coding-plan":
+		case "sensenova":
+		case "alibaba-coding-plan":
+		case "alibaba-coding-plan-cn":
+		case "tencent-coding-plan":
 			return true;
 		default:
 			return false;
@@ -359,7 +401,11 @@ function buildOpenAIMessages(
 	// on. Serializing it on plain turns would re-send (and re-bill) the
 	// whole reasoning trace every round and pair a thinking-disabled
 	// request with stale reasoning history.
-	const isMimo = opts.vendorId === "mimo-token-plan-cn";
+	const isMimo =
+		opts.vendorId === "mimo-token-plan-cn" ||
+		opts.vendorId === "mimo-token-plan-sgp" ||
+		opts.vendorId === "mimo-token-plan-ams" ||
+		opts.vendorId === "mimo";
 	const mimoReasoningAllowed = isMimo && opts.thinking === true;
 	const result: OpenAIMessage[] = [];
 
@@ -475,7 +521,7 @@ export class MultiModelChatProvider
 
 		// Preset models
 		const result = this.vendorConfig.models.map((m) => {
-			const info = toLanguageModelChatInformation(m, this.vendorConfig.vendorId);
+			const info = toLanguageModelChatInformation(m);
 			return {
 				...info,
 				maxInputTokens: getEffectiveMaxInputTokens(info.maxInputTokens, contextLength, customContextLength),
@@ -533,12 +579,17 @@ export class MultiModelChatProvider
 
 		// Vendor-specific extra headers (Kimi requires special headers)
 		const extraHeaders =
-			this.vendorConfig.vendorId === "moonshot"
+			this.vendorConfig.vendorId === "moonshot" ||
+				this.vendorConfig.vendorId === "kimi-code-plan-intl"
 				? getKimiExtraHeaders()
 				: undefined;
 
 		// Kimi requires reasoning_content on all assistant messages when thinking is enabled
-		if (this.vendorConfig.vendorId === "moonshot" && thinking) {
+		if (
+			(this.vendorConfig.vendorId === "moonshot" ||
+				this.vendorConfig.vendorId === "kimi-code-plan-intl") &&
+			thinking
+		) {
 			apiMessages = apiMessages.map((msg) => {
 				if (msg.role === "assistant" && !msg.reasoning_content) {
 					return { ...msg, reasoning_content: "" };
@@ -573,7 +624,10 @@ export class MultiModelChatProvider
 		);
 		// MiMo's requirement covers only tool_calls-bearing turns.
 		const mimoToolLoopOnly =
-			this.vendorConfig.vendorId === "mimo-token-plan-cn";
+			this.vendorConfig.vendorId === "mimo-token-plan-cn" ||
+			this.vendorConfig.vendorId === "mimo-token-plan-sgp" ||
+			this.vendorConfig.vendorId === "mimo-token-plan-ams" ||
+			this.vendorConfig.vendorId === "mimo";
 		if (needsReasoningBackfill && (hasHistoricalToolCalls || (apiTools?.length ?? 0) > 0)) {
 			apiMessages = apiMessages.map((msg) =>
 				msg.role === "assistant" &&
