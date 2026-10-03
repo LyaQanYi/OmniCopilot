@@ -191,6 +191,26 @@ export const THINKING_EFFORT_NO_LOW_SCHEMA = {
 	},
 } as const;
 
+// None / High two-level menu for models whose native effort domain is
+// none|high only (e.g. SenseNova glm-5.2 / deepseek-v4-flash where
+// models.dev confirms low|medium|high all behave identically to high).
+export const THINKING_EFFORT_NONE_HIGH_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "high"],
+			enumItemLabels: ["None", "High"],
+			enumDescriptions: [
+				"No reasoning",
+				"Deeper reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
 // None / Low / High menu for models whose native effort domain is low|high
 // (StepFun step-3.5-flash).
 export const THINKING_EFFORT_NO_MEDIUM_SCHEMA = {
@@ -345,6 +365,7 @@ export type EffortMenu =
 	| "none-low-high-max" // DeepSeek domain (DEEPSEEK_THINKING_EFFORT_SCHEMA)
 	| "none-high-max" // DashScope non-snapshot V4 Pro etc. (THINKING_EFFORT_NO_LOW_SCHEMA)
 	| "none-low-high" // StepFun step-3.5-flash (THINKING_EFFORT_NO_MEDIUM_SCHEMA)
+	| "none-high" // SenseNova glm-5.2/deepseek-v4-flash: none|high only (THINKING_EFFORT_NONE_HIGH_SCHEMA)
 	| "low-high-max" // always-on K3/GLM-5.3 (ALWAYS_THINKING_EFFORT_SCHEMA)
 	| "high-max" // always-on GLM-5.2 family (ALWAYS_EFFORT_HIGH_MAX_SCHEMA)
 	| "low-medium-high-xhigh-max"; // MiniMax M3.1 (MINIMAX_M31_EFFORT_SCHEMA)
@@ -358,6 +379,7 @@ export const EFFORT_MENU_SCHEMAS: Record<
 	"none-low-high-max": DEEPSEEK_THINKING_EFFORT_SCHEMA,
 	"none-high-max": THINKING_EFFORT_NO_LOW_SCHEMA,
 	"none-low-high": THINKING_EFFORT_NO_MEDIUM_SCHEMA,
+	"none-high": THINKING_EFFORT_NONE_HIGH_SCHEMA,
 	"low-high-max": ALWAYS_THINKING_EFFORT_SCHEMA,
 	"high-max": ALWAYS_EFFORT_HIGH_MAX_SCHEMA,
 	"low-medium-high-xhigh-max": MINIMAX_M31_EFFORT_SCHEMA,
@@ -378,6 +400,7 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
 		| typeof THINKING_EFFORT_NO_MEDIUM_SCHEMA
+		| typeof THINKING_EFFORT_NONE_HIGH_SCHEMA
 		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof ALWAYS_EFFORT_HIGH_MAX_SCHEMA
 		| typeof MINIMAX_M31_EFFORT_SCHEMA

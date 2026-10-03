@@ -788,7 +788,9 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -802,7 +804,9 @@ const VOLCENGINE_CODING_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -891,7 +895,9 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -1003,7 +1009,9 @@ const VOLCENGINE_AGENT_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_AGENT_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -2048,6 +2056,9 @@ const STEPFUN_STEP_PLAN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -2062,6 +2073,9 @@ const STEPFUN_STEP_PLAN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -2097,6 +2111,9 @@ const STEPFUN_STEP_PLAN_CN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -2111,6 +2128,9 @@ const STEPFUN_STEP_PLAN_CN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		// models.dev: effort domain is low|medium|high (no none, no max).
+		// None is still offered via the stepfun branch's explicit disable.
+		effortMenu: "four-level",
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
@@ -2571,20 +2591,6 @@ const SENSENOVA_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: true, toolCalling: true },
 	},
 	{
-		id: "glm-5.2",
-		name: "GLM-5.2",
-		family: "glm",
-		version: "5.2",
-		tooltip: "GLM-5.2 — Open flagship GLM for long-horizon coding agents and million-token context work",
-		maxInputTokens: 1000000,
-		maxOutputTokens: 131072,
-		baseUrl: SENSENOVA_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: false,
-		needsReasoningBackfillWhenThinking: true,
-		capabilities: { imageInput: false, toolCalling: true },
-	},
-	{
 		id: "deepseek-v4-pro",
 		name: "DeepSeek V4 Pro",
 		family: "deepseek",
@@ -2601,6 +2607,24 @@ const SENSENOVA_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
+		id: "glm-5.2",
+		name: "GLM-5.2",
+		family: "glm",
+		version: "5.2",
+		tooltip:
+			"GLM-5.2 — SenseNova-hosted GLM, thinking always on with none|high effort (models.dev: low/medium/high indistinguishable)",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: SENSENOVA_BASE_URL,
+		thinking: true,
+		// models.dev: effort domain collapsed to none|high; low/medium/high
+		// produce indistinguishable output server-side.
+		thinkingEffortSupport: true,
+		effortMenu: "none-high",
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: false, toolCalling: true },
+	},
+	{
 		id: "deepseek-v4-flash",
 		name: "DeepSeek V4 Flash",
 		family: "deepseek",
@@ -2611,7 +2635,11 @@ const SENSENOVA_MODELS: ModelInfo[] = [
 		maxOutputTokens: 65536,
 		baseUrl: SENSENOVA_BASE_URL,
 		thinking: true,
-		thinkingEffortSupport: false,
+		// models.dev: host documents none|low|medium|high but live calls
+		// show no grading — low/medium/high produce indistinguishable output.
+		// Effective domain collapsed to none|high.
+		thinkingEffortSupport: true,
+		effortMenu: "none-high",
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: false, toolCalling: true },
 	},
@@ -2983,7 +3011,9 @@ const VOLCENGINE_ARK_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_ARK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
@@ -2998,7 +3028,9 @@ const VOLCENGINE_ARK_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_ARK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
+		// models.dev: effort domain is minimal|low|medium|high (no max).
+		// "minimal" is not exposed in the picker; low maps to low.
+		effortMenu: "four-level",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];

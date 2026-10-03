@@ -372,10 +372,11 @@ export class OpenAICompatibleClient {
 				// must send an explicit disable.
 				body.thinking = { type: thinking ? "enabled" : "disabled" };
 				if (thinking && effort) {
-					body.reasoning_effort =
-						effort === "max" && (model === "deepseek-v4-flash" || model === "deepseek-v4-pro")
-							? "high"
-							: effort;
+					// models.dev: deepseek-v4-flash and deepseek-v4-pro on these
+					// plan endpoints have domain minimal|low|medium|high (no max).
+					// Catalog marks them four-level so picker never sends max;
+					// pass through as-is.
+					body.reasoning_effort = effort;
 				}
 				break;
 
@@ -516,7 +517,10 @@ export class OpenAICompatibleClient {
 						body.reasoning_effort = effort;
 					}
 				} else if (model === "glm-5.2" || model === "deepseek-v4-flash") {
-					body.reasoning_effort = thinking ? "high" : "none";
+					// models.dev: both have effort domain none|high (low/medium/high
+					// produce indistinguishable output server-side). Catalog marks
+					// effortMenu: "none-high" so the picker only sends none or high.
+					body.reasoning_effort = thinking ? (effort ?? "high") : "none";
 				} else {
 					// sensenova-6.8-flash-lite: none|low|medium|high.
 					body.reasoning_effort = thinking ? (effort ?? "high") : "none";
@@ -562,11 +566,11 @@ export class OpenAICompatibleClient {
 				} else {
 					body.thinking = { type: thinking ? "enabled" : "disabled" };
 					if (thinking && effort) {
-						body.reasoning_effort =
-							effort === "max" &&
-							(model === "deepseek-v4-flash-ga-260731" || model === "deepseek-v4-pro-ga-260813")
-								? "high"
-								: effort;
+						// models.dev: deepseek-v4-flash-ga-260731 and
+						// deepseek-v4-pro-ga-260813 have domain
+						// minimal|low|medium|high (no max). Catalog marks them
+						// four-level so picker never sends max; pass through as-is.
+						body.reasoning_effort = effort;
 					}
 				}
 				break;
