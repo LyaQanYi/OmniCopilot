@@ -43,7 +43,7 @@
 | 夸娥 KUAE Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 12 家已经实测（见上方「已测试且可用」）；其余 11 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
+> 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 13 家已经实测（见上方「已测试且可用」）；其余 10 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
 
 ## 已测试且可用
 
@@ -62,6 +62,7 @@
 - **MiniMax 国际版**（`minimax.io`）
 - **Alibaba Coding Plan / CN**（`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`）
 - **MiMo Token Plan SGP / AMS 及按量**（`token-plan-sgp/ams.xiaomimimo.com`、`api.xiaomimimo.com`）
+- **商汤 SenseNova**（`token.sensenova.cn`）
 - **智谱按量**（`open.bigmodel.cn`）
 - **Z.AI 按量**（`api.z.ai`）
 
@@ -84,7 +85,7 @@
 
 - [ ] 测试 Kimi 开放平台（`moonshot-open`）
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版，`glm-coding-plan`）
-- [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量
+- [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量
 - [ ] 将 vendor 专属序列化开关下沉为 `VendorConfig` 标志位（`outputLimitField`、`acceptsReasoningContent`、`kimiHeaders`、`mimoReasoningContract`、`maxCompletionTokens`、`toolStream`），替代目前散落在 api.ts / provider.ts / extension.ts 的按 vendor ID 的 OR 判断链（review #24，0.5.0 延后）
 - [ ] 把临时序列化验证圆化为自动化测试（`node --test`）：MiMo 工具循环历史回填（thinking 开/关，含 VS Code 丢弃思考 part 的历史）、THINKING_BUDGET 映射、按模型菜单的 effort 钳制、186 模型菜单目录断言
 - [ ] 验证思考力度（DeepSeek None/High/Max；其他 None/Low/Medium/High 或 None/On）在各提供方上是否真实生效

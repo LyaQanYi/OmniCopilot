@@ -43,7 +43,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | KUAE Cloud Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 12 of them are live-tested (see Tested & Working above); the remaining 11 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
+> The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 13 of them are live-tested (see Tested & Working above); the remaining 10 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
 
 ## Tested & Working
 
@@ -62,6 +62,7 @@ The following providers have been tested and confirmed working:
 - **MiniMax International** (`minimax.io`)
 - **Alibaba Coding Plan / CN** (`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`)
 - **MiMo Token Plan SGP / AMS, pay-as-you-go** (`token-plan-sgp/ams.xiaomimimo.com`, `api.xiaomimimo.com`)
+- **SenseNova** (`token.sensenova.cn`)
 - **Zhipu AI pay-as-you-go** (`open.bigmodel.cn`)
 - **Z.AI pay-as-you-go** (`api.z.ai`)
 
@@ -85,7 +86,7 @@ The following providers have been tested and confirmed working:
 
 - [ ] Test Kimi Open Platform (`moonshot-open`)
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
-- [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go
+- [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
 - [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 186-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
