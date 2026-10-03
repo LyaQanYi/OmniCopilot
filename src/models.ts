@@ -253,7 +253,7 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		family: "kimi",
 		version: "for-coding",
 		tooltip:
-			"Kimi for Coding — K2.7 Code, reasoning_effort low/high/max, 1M context, vision support",
+			"Kimi for Coding — K2.8 Preview, thinking off or reasoning_effort low/high/max, 1M context, vision support",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 32768,
 		baseUrl: KIMI_CODING_BASE_URL,
@@ -2075,6 +2075,7 @@ const STEPFUN_STEP_PLAN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];
@@ -2123,6 +2124,7 @@ const STEPFUN_STEP_PLAN_CN_MODELS: ModelInfo[] = [
 		baseUrl: STEPFUN_STEP_PLAN_CN_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
+		effortMenu: "none-low-high",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 ];
@@ -2952,7 +2954,6 @@ const VOLCENGINE_ARK_MODELS: ModelInfo[] = [
 		baseUrl: VOLCENGINE_ARK_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
-		effortMenu: "none-low-high-max",
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{

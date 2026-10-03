@@ -87,7 +87,7 @@ The following providers have been tested and confirmed working:
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
 - [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
-- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), KIMI_EFFORT / THINKING_BUDGET mappings, per-vendor effort clamping, and the 186-model menu catalog assertion
+- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 186-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
 - [ ] Decide whether 0.5.0 ships via the marketplace pre-release channel (11 providers still untested)
 - [ ] To be continued…
@@ -97,13 +97,15 @@ The following providers have been tested and confirmed working:
 - **Multiple Providers**: 30+ platforms/endpoints, 186 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
-  - **Kimi K3** (Code Plan `k3` / `k3-256k` / `kimi-for-coding`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
+  - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
+  - **Kimi for Coding** (Code Plan `kimi-for-coding`, currently K2.8 Preview): None / Low / High / Max — None sends an explicit thinking disable
   - **GLM-5.3 family** menu: Low / High / Max — thinking always on (covers GLM-5.3-Highspeed / FlashX and the GLM-5.3 hosting on SiliconFlow, SCNet, Umans, SenseNova; the Coding endpoint auto-routes legacy GLM IDs like glm-5.1 / glm-4.7 to the 5.3 line)
   - **GLM-5.2 family** menu: High / Max — always-on thinking with a native high|max domain (Z.AI Coding Plan, Zhipu/Z.AI pay-as-you-go, SiliconFlow hosting)
   - **MiniMax M3.1** menu: Low / Medium / High / XHigh / Max — always-on thinking over the full native reasoning_effort domain
   - **SiliconFlow-hosted Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**: None / Low / High / Max — mapped to enable_thinking + thinking_budget (128–32768)
   - **SCNet / SenseNova-hosted DeepSeek V4 Pro**: None / High / Max (native high|max; low/medium clamp to high)
-  - 4-level menu (None / Low / Medium / High) for Qwen reasoning models, StepFun Step models, Ark/Volcengine doubao models, and the Umans/SenseNova effort-capable entries
+  - 4-level menu (None / Low / Medium / High) for Qwen reasoning models, StepFun Step 5 Preview / Step 3.7 Flash, Ark/Volcengine doubao models, Ark-hosted GLM-5.2, and the Umans/SenseNova effort-capable entries
+  - **StepFun Step 3.5 Flash**: None / Low / High — its native domain has no medium tier
   - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, GLM-5V-Turbo / 5-Turbo / 4.7, Tencent hy3/hy4 and hosted entries, Alibaba Coding Plan reasoning models, the whole MiMo v2.6 line) — MiniMax-M3's and MiMo's None genuinely disables thinking
   - Thinking-locked models expose no menu at all: the K2.7 Code high-speed variants (`kimi-for-coding-highspeed`, `kimi-k2.7-code`(-highspeed)), MiniMax M2.x, and some SiliconFlow CN snapshots — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`

@@ -2,7 +2,13 @@ import * as vscode from "vscode";
 import { OpenAICompatibleClient, ApiError, getKimiExtraHeaders } from "./api.js";
 import { MultiModelChatProvider } from "./provider.js";
 import { VENDOR_CONFIGS, getVendorConfig } from "./models.js";
-import { CONTEXT_LENGTH_LIMITS, DEFAULT_CONTEXT_LENGTH, type ContextLength } from "./types.js";
+import {
+	CONTEXT_LENGTH_LIMITS,
+	DEFAULT_CONTEXT_LENGTH,
+	EFFORT_MENU_SCHEMAS,
+	resolveEffortMenu,
+	type ContextLength,
+} from "./types.js";
 
 // ─── Test Connection Command ─────────────────────────────────────────────────
 
@@ -59,6 +65,12 @@ async function runConnectionTest(): Promise<void> {
 		picked.vendorId === "moonshot" || picked.vendorId === "kimi-code-plan-intl"
 			? getKimiExtraHeaders()
 			: undefined;
+	// The probe model's menu default — the same in-domain effort a normal
+	// chat sends with no picker value — so vendor branches that require an
+	// effort value (Qwen-hosted GLM/DeepSeek) serialize a valid request.
+	const probeEffort = probeModel.thinkingEffortSupport
+		? EFFORT_MENU_SCHEMAS[resolveEffortMenu(probeModel)].properties.reasoningEffort.default
+		: undefined;
 	try {
 		await client.chat(
 			probeModel.id,
@@ -74,10 +86,7 @@ async function runConnectionTest(): Promise<void> {
 				extraHeaders,
 				vendorId: picked.vendorId,
 				thinking: true,
-				// Match the picker's fallback default so vendor branches that
-				// require an effort value (Qwen-hosted GLM/DeepSeek) serialize
-				// the same request as a normal chat would.
-				thinkingEffort: "medium",
+				thinkingEffort: probeEffort === "on" ? undefined : probeEffort,
 			},
 		);
 		vscode.window.showInformationMessage(

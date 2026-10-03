@@ -17,8 +17,9 @@ export interface ModelInfo {
 	 * The picker's effort menu this model exposes, declared next to the
 	 * model instead of a vendorId/modelId branch chain in
 	 * toLanguageModelChatInformation. Only meaningful when thinking &&
-	 * !thinkingLocked && thinkingEffortSupport; omitted → generic fallback
-	 * rules apply (ALWAYS/High-Max/DeepSeek sets, then the 4-level default).
+	 * !thinkingLocked && thinkingEffortSupport; omitted → see
+	 * resolveEffortMenu. The menu is also the effort domain the provider
+	 * clamps every request into.
 	 */
 	effortMenu?: EffortMenu;
 	/**
@@ -190,6 +191,26 @@ export const THINKING_EFFORT_NO_LOW_SCHEMA = {
 	},
 } as const;
 
+// None / Low / High menu for models whose native effort domain is low|high
+// (StepFun step-3.5-flash).
+export const THINKING_EFFORT_NO_MEDIUM_SCHEMA = {
+	properties: {
+		reasoningEffort: {
+			type: "string",
+			title: "Thinking Effort",
+			enum: ["none", "low", "high"],
+			enumItemLabels: ["None", "Low", "High"],
+			enumDescriptions: [
+				"No reasoning",
+				"Faster responses",
+				"Deeper reasoning",
+			],
+			default: "high",
+			group: "navigation",
+		},
+	},
+} as const;
+
 // Three-level effort menu (no "None") for models whose thinking is always
 // on and cannot be disabled server-side: Kimi K3 (k3 / k3-256k / kimi-k3)
 // and GLM-5.3 / GLM-5.3-Flash. Effort maps to top-level reasoning_effort =
@@ -323,6 +344,7 @@ export type EffortMenu =
 	| "four-level" // None/Low/Medium/High (THINKING_EFFORT_SCHEMA)
 	| "none-low-high-max" // DeepSeek domain (DEEPSEEK_THINKING_EFFORT_SCHEMA)
 	| "none-high-max" // DashScope non-snapshot V4 Pro etc. (THINKING_EFFORT_NO_LOW_SCHEMA)
+	| "none-low-high" // StepFun step-3.5-flash (THINKING_EFFORT_NO_MEDIUM_SCHEMA)
 	| "low-high-max" // always-on K3/GLM-5.3 (ALWAYS_THINKING_EFFORT_SCHEMA)
 	| "high-max" // always-on GLM-5.2 family (ALWAYS_EFFORT_HIGH_MAX_SCHEMA)
 	| "low-medium-high-xhigh-max"; // MiniMax M3.1 (MINIMAX_M31_EFFORT_SCHEMA)
@@ -335,6 +357,7 @@ export const EFFORT_MENU_SCHEMAS: Record<
 	"four-level": THINKING_EFFORT_SCHEMA,
 	"none-low-high-max": DEEPSEEK_THINKING_EFFORT_SCHEMA,
 	"none-high-max": THINKING_EFFORT_NO_LOW_SCHEMA,
+	"none-low-high": THINKING_EFFORT_NO_MEDIUM_SCHEMA,
 	"low-high-max": ALWAYS_THINKING_EFFORT_SCHEMA,
 	"high-max": ALWAYS_EFFORT_HIGH_MAX_SCHEMA,
 	"low-medium-high-xhigh-max": MINIMAX_M31_EFFORT_SCHEMA,
@@ -354,6 +377,7 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 		| typeof THINKING_EFFORT_SCHEMA
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
+		| typeof THINKING_EFFORT_NO_MEDIUM_SCHEMA
 		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
 		| typeof ALWAYS_EFFORT_HIGH_MAX_SCHEMA
 		| typeof MINIMAX_M31_EFFORT_SCHEMA
@@ -401,6 +425,16 @@ export interface ChatOptions {
 	extraHeaders?: Record<string, string>;
 }
 
+/**
+ * Effort menu (and thus effort domain) of an effort-capable model: the
+ * catalog's effortMenu, else Low/High/Max for always-thinking IDs (a menu
+ * with None would offer an opt-out the server ignores), else the generic
+ * four-level menu.
+ */
+export function resolveEffortMenu(model: ModelInfo): EffortMenu {
+	return model.effortMenu ?? (ALWAYS_THINKING_MODEL_IDS.has(model.id) ? "low-high-max" : "four-level");
+}
+
 export function toLanguageModelChatInformation(model: ModelInfo): ModelPickerChatInformation {
 	const base: ModelPickerChatInformation = {
 		id: model.id,
@@ -418,11 +452,7 @@ export function toLanguageModelChatInformation(model: ModelInfo): ModelPickerCha
 	if (!model.thinkingEffortSupport) {
 		return { ...base, configurationSchema: THINKING_TOGGLE_SCHEMA };
 	}
-	// The catalog is the single source of truth: every non-default menu is
-	// declared per model via effortMenu (73 annotations in models.ts);
-	// unannotated effort-capable models get the generic 4-level menu.
-	const menu: EffortMenu = model.effortMenu ?? "four-level";
-	return { ...base, configurationSchema: EFFORT_MENU_SCHEMAS[menu] };
+	return { ...base, configurationSchema: EFFORT_MENU_SCHEMAS[resolveEffortMenu(model)] };
 }
 
 /**

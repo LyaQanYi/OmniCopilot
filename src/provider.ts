@@ -8,10 +8,18 @@ import type {
 	OpenAIContentPart,
 	OpenAIUsage,
 	ThinkingEffort,
+	RequestedEffort,
 	ContextLength,
 	ModelConfigurationOptions,
 } from "./types.js";
-import { toLanguageModelChatInformation, applyContextLength, DEFAULT_CONTEXT_LENGTH, ALWAYS_THINKING_MODEL_IDS } from "./types.js";
+import {
+	toLanguageModelChatInformation,
+	applyContextLength,
+	DEFAULT_CONTEXT_LENGTH,
+	ALWAYS_THINKING_MODEL_IDS,
+	EFFORT_MENU_SCHEMAS,
+	resolveEffortMenu,
+} from "./types.js";
 
 // ─── Thinking Tag Processing ─────────────────────────────────────────────────
 
@@ -266,8 +274,14 @@ function emitToolCalls(
  *      THINKING_TOGGLE_SCHEMA).
  *   2. Legacy `modelOptions.thinkingBudget` (kept for callers that bypass the
  *      picker, e.g. older programmatic clients).
- *   3. Model default — `thinking: true` with effort=`medium` for effort-capable
+ *   3. Model default — the effort menu's declared default for effort-capable
  *      models, otherwise `thinking: true` with no effort knob.
+ *
+ * This is the single effort-normalization point: effort is clamped into the
+ * model's menu (resolveEffortMenu), and anything the menu does not offer —
+ * a programmatic "medium" / "xhigh" / "max" etc. — becomes "high", which
+ * every effort menu contains. Vendor branches in applyThinkingParams only
+ * translate field names and shapes.
  */
 function resolveRequestedEffort(
 	options: ModelConfigurationOptions,
@@ -276,28 +290,30 @@ function resolveRequestedEffort(
 	const raw =
 		(options.modelConfiguration?.reasoningEffort as unknown) ??
 		(options.modelOptions?.thinkingBudget as unknown);
+	const menu =
+		EFFORT_MENU_SCHEMAS[modelDef ? resolveEffortMenu(modelDef) : "four-level"].properties.reasoningEffort;
 
-	if (raw === "none") return { thinking: false, effort: undefined };
-	if (raw === "on") return { thinking: true, effort: undefined };
-	if (raw === "low" || raw === "medium" || raw === "high" || raw === "xhigh" || raw === "max") {
-		// "xhigh" exists in exactly one endpoint domain (MiniMax M3.1's
-		// low…max). Everywhere else it would flow into applyThinkingParams
-		// as an out-of-domain reasoning_effort (a 400 on most endpoints),
-		// so clamp it to "high" unless the model's own menu declares the
-		// five-level domain. The Kimi branches additionally map it to "max"
-		// via KIMI_EFFORT.
-		const effort =
-			raw === "xhigh" && modelDef?.effortMenu !== "low-medium-high-xhigh-max"
-				? "high"
-				: raw;
-		return { thinking: true, effort };
+	let requested: RequestedEffort;
+	if (
+		raw === "none" ||
+		raw === "on" ||
+		raw === "low" ||
+		raw === "medium" ||
+		raw === "high" ||
+		raw === "xhigh" ||
+		raw === "max"
+	) {
+		requested = raw;
+	} else if (!(modelDef?.thinking ?? false)) {
+		return { thinking: false, effort: undefined };
+	} else {
+		requested = modelDef?.thinkingEffortSupport ? menu.default : "on";
 	}
 
-	if (!(modelDef?.thinking ?? false)) return { thinking: false, effort: undefined };
-	return {
-		thinking: true,
-		effort: modelDef?.thinkingEffortSupport ? "medium" : undefined,
-	};
+	if (requested === "none") return { thinking: false, effort: undefined };
+	if (requested === "on") return { thinking: true, effort: undefined };
+	const domain: readonly string[] = menu.enum;
+	return { thinking: true, effort: domain.includes(requested) ? requested : "high" };
 }
 
 function isVisionEnabled(): boolean {
