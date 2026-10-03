@@ -43,7 +43,7 @@
 | 夸娥 KUAE Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 12 家已经实测（见上方「已测试且可用」）；其余 11 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
+> 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 13 家已经实测（见上方「已测试且可用」）；其余 10 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
 
 ## 已测试且可用
 
@@ -62,6 +62,7 @@
 - **MiniMax 国际版**（`minimax.io`）
 - **Alibaba Coding Plan / CN**（`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`）
 - **MiMo Token Plan SGP / AMS 及按量**（`token-plan-sgp/ams.xiaomimimo.com`、`api.xiaomimimo.com`）
+- **商汤 SenseNova**（`token.sensenova.cn`）
 - **智谱按量**（`open.bigmodel.cn`）
 - **Z.AI 按量**（`api.z.ai`）
 
@@ -84,11 +85,11 @@
 
 - [ ] 测试 Kimi 开放平台（`moonshot-open`）
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版，`glm-coding-plan`）
-- [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、商汤、夸娥、火山 Ark 按量
+- [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量
 - [ ] 将 vendor 专属序列化开关下沉为 `VendorConfig` 标志位（`outputLimitField`、`acceptsReasoningContent`、`kimiHeaders`、`mimoReasoningContract`、`maxCompletionTokens`、`toolStream`），替代目前散落在 api.ts / provider.ts / extension.ts 的按 vendor ID 的 OR 判断链（review #24，0.5.0 延后）
 - [ ] 把临时序列化验证圆化为自动化测试（`node --test`）：MiMo 工具循环历史回填（thinking 开/关，含 VS Code 丢弃思考 part 的历史）、THINKING_BUDGET 映射、按模型菜单的 effort 钳制、186 模型菜单目录断言
 - [ ] 验证思考力度（DeepSeek None/High/Max；其他 None/Low/Medium/High 或 None/On）在各提供方上是否真实生效
-- [ ] 决定 0.5.0 是否走 marketplace pre-release 通道发布（尚有 11 家提供方未实测）
+- [ ] 决定 0.5.0 是否走 marketplace pre-release 通道发布（尚有 10 家提供方未实测）
 - [ ] 未完待续……
 
 ## 功能
@@ -218,11 +219,13 @@ src/
 
 > 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
-### 0.4.5 — 2026-09-29
+### 0.5.0 — 2026-10-03
 
-- **新增提供方：MiMo Token Plan CN**（`mimo-token-plan-cn`，小米）——首个遵循新命名约定的 vendor：ID = 显示名称的 kebab-case 全小写（存量 vendor ID 保持不变）——`mimo-v2.6-pro`（万亿参数旗舰）与 `mimo-v2.6-flash`，均 1M 上下文 / 128K 输出、全模态（视觉）输入，走套餐 OpenAI 兼容中国集群端点（`token-plan-cn.xiaomimimo.com/v1`）。套餐 Key 为 `tp-`/`ttp-` 前缀，与按量 `sk-` Key 完全隔离。mimo-v2.5 / mimo-v2.5-pro 将于 2026-10-21 下线，不予收录；ASR/TTS 非对话模型不在范围；mimo-v2.6-pro-ultraspeed 为定制服务、不在套餐清单
-- **思考与参数对齐官方「深度思考」文档**：`thinking: {type: enabled|disabled}`（默认开启——选 None 会显式发送关闭；无 effort 分档，picker 呈现 None/On 两档菜单）；输出经 `max_completion_tokens` 限制（思考+回答共享额度）；思考以 `reasoning_content` 流式返回并计入 completion tokens
-- **工具循环可靠性**：思考开启时带 `tool_calls` 的历史 assistant 消息必须回传 `reasoning_content`，否则 API 返回 400——由模型目录声明的 `needsReasoningBackfillWhenThinking` 标记覆盖，`mimo-token-plan-cn` vendor 现已序列化历史 `reasoning_content` 字段
+- **20 个新提供方，共 33 个 vendor / 186 个模型** — Moonshot AI 国际版、Kimi Code Plan (kimi.ai)、SiliconFlow 国际版 + 国内版、MiniMax 国际版、阿里巴巴 Coding Plan 国际版 + 国内版、腾讯 Coding Plan / Token Plan / Tokenhub、StepFun Step Plan 国际版 + 国内版、SCNet Token Plan、MiMo Token Plan 新加坡 + 阿姆斯特丹节点、MiMo 开放平台、Umans AI Coding Plan、LongCat、商汤 SenseNova、KUAE Cloud、智谱 AI 直连、Z.AI 直连、火山引擎 Ark 按量付费
+- **架构重构：`effortMenu` 驱动的 catalog** — 每个模型直接声明 picker 菜单和 effort 域；per-turn effort 钳制从分散的 vendor 分支收敛到上游统一处理（`resolveRequestedEffort`），各 vendor 分支只负责字段名和形状
+- **新增菜单类型** — `none-high`（SenseNova）、`none-low-high`（StepFun step-3.5-flash）、`high-max`（GLM-5.2 系）、`low-medium-high-xhigh-max`（MiniMax M3.1-Flash-Preview）
+- **按 models.dev 实测修正** — SenseNova `glm-5.2` / `deepseek-v4-flash` 域折叠为 `none|high`（低中高档实测无差异）；Volcengine plan / agent / ark DeepSeek 系列修正为 `minimal|low|medium|high`（无 max），移除 max→high 钳制；StepFun `step-5-preview` / `step-3.7-flash` 补 `effortMenu` 标注
+- **VSIX 打包** — `.vscodeignore` 补充排除 `.claude/` 工作树目录（53 KB，此前因漏排 3.8 MB）
 
 ## License
 

@@ -43,7 +43,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | KUAE Cloud Coding Plan | `kuae` | GLM-4.7 |
 
 > [!NOTE]
-> The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 12 of them are live-tested (see Tested & Working above); the remaining 11 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
+> The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 13 of them are live-tested (see Tested & Working above); the remaining 10 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
 
 ## Tested & Working
 
@@ -62,6 +62,7 @@ The following providers have been tested and confirmed working:
 - **MiniMax International** (`minimax.io`)
 - **Alibaba Coding Plan / CN** (`coding-intl.dashscope.aliyuncs.com` / `coding.dashscope.aliyuncs.com`)
 - **MiMo Token Plan SGP / AMS, pay-as-you-go** (`token-plan-sgp/ams.xiaomimimo.com`, `api.xiaomimimo.com`)
+- **SenseNova** (`token.sensenova.cn`)
 - **Zhipu AI pay-as-you-go** (`open.bigmodel.cn`)
 - **Z.AI pay-as-you-go** (`api.z.ai`)
 
@@ -85,7 +86,7 @@ The following providers have been tested and confirmed working:
 
 - [ ] Test Kimi Open Platform (`moonshot-open`)
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
-- [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, SenseNova, KUAE, Volcengine Ark pay-as-you-go
+- [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
 - [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 186-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
@@ -219,11 +220,13 @@ Contributions are welcome! Here's how you can help:
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
-### 0.4.5 — 2026-09-29
+### 0.5.0 — 2026-10-03
 
-- **New provider: MiMo Token Plan CN** (`mimo-token-plan-cn`, Xiaomi) — the first vendor to follow the new ID convention: kebab-case lowercase of the display name (existing vendor IDs stay unchanged) — `mimo-v2.6-pro` (trillion-param flagship) and `mimo-v2.6-flash`, both 1M context / 128K output with omni (vision) input, via the plan's OpenAI-compatible CN cluster endpoint (`token-plan-cn.xiaomimimo.com/v1`). Plan keys are `tp-`/`ttp-`-prefixed and isolated from pay-as-you-go `sk-` keys. mimo-v2.5 / mimo-v2.5-pro retire 2026-10-21 and are not included; ASR/TTS models stay out of scope; mimo-v2.6-pro-ultraspeed is a custom-service offering outside the plan
-- **MiMo thinking & params per the deep-thinking doc**: `thinking: {type: enabled|disabled}` (default on — None sends an explicit disable; no effort knob, so the picker shows the None/On menu); output capped via `max_completion_tokens` (thinking + answer share it); reasoning streams via `reasoning_content` and counts into completion tokens
-- **MiMo tool-loop reliability**: with thinking on, assistant turns carrying `tool_calls` must echo `reasoning_content` back or the API returns 400 — covered by the catalog-declared `needsReasoningBackfillWhenThinking` flag, and `reasoning_content` on history is now serialized for the `mimo-token-plan-cn` vendor
+- **20 new vendors, 186 models total** — Moonshot AI International, Kimi Code Plan (kimi.ai), SiliconFlow (intl + CN), MiniMax International, Alibaba Coding Plan (intl + CN), Tencent Coding Plan / Token Plan / Tokenhub, StepFun Step Plan (intl + CN), SCNet Token Plan, MiMo Token Plan (SGP + AMS), MiMo Open Platform, Umans AI Coding Plan, LongCat, SenseNova, KUAE Cloud, Zhipu AI (pay-as-you-go), Z.AI (pay-as-you-go), Volcengine Ark
+- **Architecture: `effortMenu`-driven catalog** — each model now declares its picker menu and effort domain directly; the per-turn effort clamping that was scattered across vendor branches is now handled in a single upstream pass (`resolveRequestedEffort`), so vendor branches only translate field names and shapes
+- **New picker menus** — `none-high` (SenseNova), `none-low-high` (StepFun step-3.5-flash), `high-max` (GLM-5.2 family), `low-medium-high-xhigh-max` (MiniMax M3.1-Flash-Preview)
+- **Calibrated against models.dev** — SenseNova `glm-5.2` / `deepseek-v4-flash` domain collapsed to `none|high` (low/medium/high indistinguishable server-side); Volcengine plan/agent/ark DeepSeek models corrected to `minimal|low|medium|high` (no max); StepFun `step-5-preview` / `step-3.7-flash` annotated with `four-level` menus
+- **VSIX packaging** — `.claude/` worktree directories excluded from the bundle (53 KB → was 3.8 MB due to a missing `.vscodeignore` entry)
 
 ## License
 
