@@ -218,6 +218,14 @@ src/
 
 > 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
+### 0.5.0 — 2026-10-03
+
+- **20 个新提供方，共 33 个 vendor / 186 个模型** — Moonshot AI 国际版、Kimi Code Plan (kimi.ai)、SiliconFlow 国际版 + 国内版、MiniMax 国际版、阿里巴巴 Coding Plan 国际版 + 国内版、腾讯 Coding Plan / Token Plan / Tokenhub、StepFun Step Plan 国际版 + 国内版、SCNet Token Plan、MiMo Token Plan 新加坡 + 阿姆斯特丹节点、MiMo 开放平台、Umans AI Coding Plan、LongCat、商汤 SenseNova、KUAE Cloud、智谱 AI 直连、Z.AI 直连、火山引擎 Ark 按量付费
+- **架构重构：`effortMenu` 驱动的 catalog** — 每个模型直接声明 picker 菜单和 effort 域；per-turn effort 钳制从分散的 vendor 分支收敛到上游统一处理（`resolveRequestedEffort`），各 vendor 分支只负责字段名和形状
+- **新增菜单类型** — `none-high`（SenseNova）、`none-low-high`（StepFun step-3.5-flash）、`high-max`（GLM-5.2 系）、`low-medium-high-xhigh-max`（MiniMax M3.1-Flash-Preview）
+- **按 models.dev 实测修正** — SenseNova `glm-5.2` / `deepseek-v4-flash` 域折叠为 `none|high`（低中高档实测无差异）；Volcengine plan / agent / ark DeepSeek 系列修正为 `minimal|low|medium|high`（无 max），移除 max→high 钳制；StepFun `step-5-preview` / `step-3.7-flash` 补 `effortMenu` 标注
+- **VSIX 打包** — `.vscodeignore` 补充排除 `.claude/` 工作树目录（53 KB，此前因漏排 3.8 MB）
+
 ### 0.4.5 — 2026-09-29
 
 - **新增提供方：MiMo Token Plan CN**（`mimo-token-plan-cn`，小米）——首个遵循新命名约定的 vendor：ID = 显示名称的 kebab-case 全小写（存量 vendor ID 保持不变）——`mimo-v2.6-pro`（万亿参数旗舰）与 `mimo-v2.6-flash`，均 1M 上下文 / 128K 输出、全模态（视觉）输入，走套餐 OpenAI 兼容中国集群端点（`token-plan-cn.xiaomimimo.com/v1`）。套餐 Key 为 `tp-`/`ttp-` 前缀，与按量 `sk-` Key 完全隔离。mimo-v2.5 / mimo-v2.5-pro 将于 2026-10-21 下线，不予收录；ASR/TTS 非对话模型不在范围；mimo-v2.6-pro-ultraspeed 为定制服务、不在套餐清单

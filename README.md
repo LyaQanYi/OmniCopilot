@@ -219,6 +219,14 @@ Contributions are welcome! Here's how you can help:
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
+### 0.5.0 — 2026-10-03
+
+- **20 new vendors, 186 models total** — Moonshot AI International, Kimi Code Plan (kimi.ai), SiliconFlow (intl + CN), MiniMax International, Alibaba Coding Plan (intl + CN), Tencent Coding Plan / Token Plan / Tokenhub, StepFun Step Plan (intl + CN), SCNet Token Plan, MiMo Token Plan (SGP + AMS), MiMo Open Platform, Umans AI Coding Plan, LongCat, SenseNova, KUAE Cloud, Zhipu AI (pay-as-you-go), Z.AI (pay-as-you-go), Volcengine Ark
+- **Architecture: `effortMenu`-driven catalog** — each model now declares its picker menu and effort domain directly; the per-turn effort clamping that was scattered across vendor branches is now handled in a single upstream pass (`resolveRequestedEffort`), so vendor branches only translate field names and shapes
+- **New picker menus** — `none-high` (SenseNova), `none-low-high` (StepFun step-3.5-flash), `high-max` (GLM-5.2 family), `low-medium-high-xhigh-max` (MiniMax M3.1-Flash-Preview)
+- **Calibrated against models.dev** — SenseNova `glm-5.2` / `deepseek-v4-flash` domain collapsed to `none|high` (low/medium/high indistinguishable server-side); Volcengine plan/agent/ark DeepSeek models corrected to `minimal|low|medium|high` (no max); StepFun `step-5-preview` / `step-3.7-flash` annotated with `four-level` menus
+- **VSIX packaging** — `.claude/` worktree directories excluded from the bundle (53 KB → was 3.8 MB due to a missing `.vscodeignore` entry)
+
 ### 0.4.5 — 2026-09-29
 
 - **New provider: MiMo Token Plan CN** (`mimo-token-plan-cn`, Xiaomi) — the first vendor to follow the new ID convention: kebab-case lowercase of the display name (existing vendor IDs stay unchanged) — `mimo-v2.6-pro` (trillion-param flagship) and `mimo-v2.6-flash`, both 1M context / 128K output with omni (vision) input, via the plan's OpenAI-compatible CN cluster endpoint (`token-plan-cn.xiaomimimo.com/v1`). Plan keys are `tp-`/`ttp-`-prefixed and isolated from pay-as-you-go `sk-` keys. mimo-v2.5 / mimo-v2.5-pro retire 2026-10-21 and are not included; ASR/TTS models stay out of scope; mimo-v2.6-pro-ultraspeed is a custom-service offering outside the plan
