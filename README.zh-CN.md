@@ -227,12 +227,6 @@ src/
 - **按 models.dev 实测修正** — SenseNova `glm-5.2` / `deepseek-v4-flash` 域折叠为 `none|high`（低中高档实测无差异）；Volcengine plan / agent / ark DeepSeek 系列修正为 `minimal|low|medium|high`（无 max），移除 max→high 钳制；StepFun `step-5-preview` / `step-3.7-flash` 补 `effortMenu` 标注
 - **VSIX 打包** — `.vscodeignore` 补充排除 `.claude/` 工作树目录（53 KB，此前因漏排 3.8 MB）
 
-### 0.4.5 — 2026-09-29
-
-- **新增提供方：MiMo Token Plan CN**（`mimo-token-plan-cn`，小米）——首个遵循新命名约定的 vendor：ID = 显示名称的 kebab-case 全小写（存量 vendor ID 保持不变）——`mimo-v2.6-pro`（万亿参数旗舰）与 `mimo-v2.6-flash`，均 1M 上下文 / 128K 输出、全模态（视觉）输入，走套餐 OpenAI 兼容中国集群端点（`token-plan-cn.xiaomimimo.com/v1`）。套餐 Key 为 `tp-`/`ttp-` 前缀，与按量 `sk-` Key 完全隔离。mimo-v2.5 / mimo-v2.5-pro 将于 2026-10-21 下线，不予收录；ASR/TTS 非对话模型不在范围；mimo-v2.6-pro-ultraspeed 为定制服务、不在套餐清单
-- **思考与参数对齐官方「深度思考」文档**：`thinking: {type: enabled|disabled}`（默认开启——选 None 会显式发送关闭；无 effort 分档，picker 呈现 None/On 两档菜单）；输出经 `max_completion_tokens` 限制（思考+回答共享额度）；思考以 `reasoning_content` 流式返回并计入 completion tokens
-- **工具循环可靠性**：思考开启时带 `tool_calls` 的历史 assistant 消息必须回传 `reasoning_content`，否则 API 返回 400——由模型目录声明的 `needsReasoningBackfillWhenThinking` 标记覆盖，`mimo-token-plan-cn` vendor 现已序列化历史 `reasoning_content` 字段
-
 ## License
 
 MIT
