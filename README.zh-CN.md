@@ -215,7 +215,7 @@ src/
 - VS Code 1.108.0+
 - GitHub Copilot 扩展
 
-> **运营商图标**：模型选择器中的品牌图标需要 VS Code **1.143+**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，[图标来自 models.dev](https://github.com/sst/models.dev)）。旧版本会忽略图标字段，运营商保持通用星形图标。
+> **运营商图标**：模型选择器中的品牌图标需要 VS Code **1.143+**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，[图标来自 models.dev](https://github.com/sst/models.dev)）。旧版本会忽略扩展声明的 `icon` 字段；名称匹配 VS Code 内置图标规则的运营商仍可能显示内置图标，其余运营商显示通用星形图标。
 
 ## 更新日志
 
