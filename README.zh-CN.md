@@ -87,14 +87,14 @@
 - [ ] 测试 GLM Coding Plan（Z.AI 国际版，`glm-coding-plan`）
 - [ ] 测试未实测的 models.dev 口径提供方：腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量
 - [ ] 将 vendor 专属序列化开关下沉为 `VendorConfig` 标志位（`outputLimitField`、`acceptsReasoningContent`、`kimiHeaders`、`mimoReasoningContract`、`maxCompletionTokens`、`toolStream`），替代目前散落在 api.ts / provider.ts / extension.ts 的按 vendor ID 的 OR 判断链（review #24，0.5.0 延后）
-- [ ] 把临时序列化验证圆化为自动化测试（`node --test`）：MiMo 工具循环历史回填（thinking 开/关，含 VS Code 丢弃思考 part 的历史）、THINKING_BUDGET 映射、按模型菜单的 effort 钳制、186 模型菜单目录断言
+- [ ] 把临时序列化验证圆化为自动化测试（`node --test`）：MiMo 工具循环历史回填（thinking 开/关，含 VS Code 丢弃思考 part 的历史）、THINKING_BUDGET 映射、按模型菜单的 effort 钳制、194 模型菜单目录断言
 - [ ] 验证思考力度（DeepSeek None/High/Max；其他 None/Low/Medium/High 或 None/On）在各提供方上是否真实生效
 - [ ] 决定 0.5.0 是否走 marketplace pre-release 通道发布（尚有 10 家提供方未实测）
 - [ ] 未完待续……
 
 ## 功能
 
-- **多平台支持**：接入 30+ 个大模型平台/端点，共 186 款模型
+- **多平台支持**：接入 30+ 个大模型平台/端点，共 194 款模型
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
   - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台及国际版的 kimi-k3、火山托管的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort

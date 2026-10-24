@@ -88,14 +88,14 @@ The following providers have been tested and confirmed working:
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
 - [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
-- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 186-model menu catalog assertion
+- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 194-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
 - [ ] Decide whether 0.5.0 ships via the marketplace pre-release channel (11 providers still untested)
 - [ ] To be continued…
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 186 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 194 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
