@@ -214,6 +214,12 @@ const KIMI_CODING_BASE_URL = "https://api.kimi.com/coding/v1";
 
 const KIMI_OPEN_BASE_URL = "https://api.moonshot.cn/v1";
 
+// K3.1 limits: https://www.kimi.com/code/docs/en/kimi-code/models.html
+// and https://platform.kimi.ai/docs/guide/kimi-k3-1-pro-quickstart.
+// Both Code Plan regions publish a 1,048,576-token context window, but no
+// separate output ceiling. Advertise a conservative 128K output cap there;
+// only the open platform explicitly documents up to 1M completion tokens.
+// Input and output share the context window; these are not additive budgets.
 const MOONSHOT_MODELS: ModelInfo[] = [
 	{
 		id: "k3.1-pro",
@@ -222,11 +228,8 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		version: "k3.1-pro",
 		tooltip:
 			"Kimi K3.1 Pro — 3T flagship, 1M context (Plus+; 1M needs Pro+), thinking always on (effort low/high/max, default high; disable is rejected), image and video input",
-		maxInputTokens: 1000000,
-		// Output can span the full 1M window, same "output = context"
-		// behavior as k3 on the Code endpoint (the open platform lists
-		// an output limit of 1_048_576 for kimi-k3.1-pro).
-		maxOutputTokens: 1048576,
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
 		baseUrl: KIMI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
@@ -240,8 +243,8 @@ const MOONSHOT_MODELS: ModelInfo[] = [
 		version: "k3.1-pro-highspeed",
 		tooltip:
 			"Kimi K3.1 Pro Highspeed — same K3.1 Pro intelligence at 2-3x speed, ~2x consumption (Pro+), thinking always on (effort low/high/max, default high)",
-		maxInputTokens: 1000000,
-		maxOutputTokens: 1048576,
+		maxInputTokens: 1048576,
+		maxOutputTokens: 131072,
 		baseUrl: KIMI_CODING_BASE_URL,
 		thinking: true,
 		thinkingEffortSupport: true,
@@ -318,8 +321,8 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 		family: "kimi",
 		version: "k3.1-pro",
 		tooltip:
-			"Kimi K3.1 Pro — 3T flagship, 1M context, thinking always on (effort low/high/max, default high; disable is rejected), image and video input",
-		maxInputTokens: 1000000,
+			"Kimi K3.1 Pro — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high; disable is rejected), image and video input",
+		maxInputTokens: 1048576,
 		// The open platform lists an output limit of 1_048_576 for
 		// kimi-k3.1-pro, same "output = context" behavior as kimi-k3.
 		maxOutputTokens: 1048576,
@@ -335,8 +338,8 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 		family: "kimi",
 		version: "k3.1-pro-highspeed",
 		tooltip:
-			"Kimi K3.1 Pro Highspeed — same K3.1 Pro intelligence at 2-3x output speed, thinking always on (effort low/high/max, default high)",
-		maxInputTokens: 1000000,
+			"Kimi K3.1 Pro Highspeed — same K3.1 Pro intelligence at 2-3x output speed, thinking always on (effort low/high/max, extension default high)",
+		maxInputTokens: 1048576,
 		maxOutputTokens: 1048576,
 		baseUrl: KIMI_OPEN_BASE_URL,
 		thinking: true,
@@ -1170,7 +1173,7 @@ const MOONSHOT_INTL_MODELS: ModelInfo[] = [
 		family: "kimi",
 		version: "k3.1-pro",
 		tooltip:
-			"Kimi K3.1 Pro — 3T flagship, 1M context, thinking always on (effort low/high/max, default high; disable is rejected), image and video input",
+			"Kimi K3.1 Pro — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high; disable is rejected), image and video input",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 1048576,
 		baseUrl: MOONSHOT_INTL_BASE_URL,
@@ -1186,7 +1189,7 @@ const MOONSHOT_INTL_MODELS: ModelInfo[] = [
 		family: "kimi",
 		version: "k3.1-pro-highspeed",
 		tooltip:
-			"Kimi K3.1 Pro Highspeed — same K3.1 Pro intelligence at 2-3x output speed, thinking always on (effort low/high/max, default high)",
+			"Kimi K3.1 Pro Highspeed — same K3.1 Pro intelligence at 2-3x output speed, thinking always on (effort low/high/max, extension default high)",
 		maxInputTokens: 1048576,
 		maxOutputTokens: 1048576,
 		baseUrl: MOONSHOT_INTL_BASE_URL,

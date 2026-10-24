@@ -162,9 +162,9 @@ export class OpenAICompatibleClient {
 			// MiniMax deprecates max_tokens in favor of max_completion_tokens
 			// (per the MiniMax API reference; the China-facing guides still
 			// only mention max_tokens, but the platform tolerates unknown
-			// fields). K3 documents max_completion_tokens as its
-			// output-limit field on the Kimi endpoints (Code Plan k3/k3-256k
-			// and Open Platform kimi-k3); Volcengine-hosted kimi-k3 stays on
+			// fields). K3 / K3.1 document max_completion_tokens as their
+			// output-limit field on the Kimi endpoints (Code Plan and
+			// Open Platform); Volcengine-hosted kimi-k3 stays on
 			// the Ark max_tokens convention. MiMo's docs and examples use
 			// max_completion_tokens exclusively — it caps thinking + answer
 			// combined (deep-thinking doc), like the MiniMax field.
@@ -179,7 +179,9 @@ export class OpenAICompatibleClient {
 					options.vendorId === "moonshot-open" ||
 					options.vendorId === "moonshot-intl" ||
 					options.vendorId === "kimi-code-plan-intl") &&
-					(model === "k3" || model === "k3-256k" || model === "kimi-k3"))
+					(model === "k3" || model === "k3-256k" || model === "kimi-k3" ||
+						model === "k3.1-pro" || model === "k3.1-pro-highspeed" ||
+						model === "kimi-k3.1-pro" || model === "kimi-k3.1-pro-highspeed"))
 			) {
 				body.max_completion_tokens = options.maxTokens;
 			} else {
@@ -297,12 +299,13 @@ export class OpenAICompatibleClient {
 			case "kimi-code-plan-intl":
 				// Kimi requires thinking object on every request, enabled or disabled.
 				body.thinking = { type: thinking ? "enabled" : "disabled" };
-				// k3 / k3-256k / kimi-for-coding take top-level reasoning_effort
+				// K3 / K3.1 / kimi-for-coding take top-level reasoning_effort
 				// (low | high | max, endpoint default high; kimi-for-coding —
 				// K2.8 Preview — additionally offers None via the thinking
 				// object). Other Code Plan models do not support effort.
 				if (
-					(model === "k3" || model === "k3-256k" || model === "kimi-for-coding") &&
+					(model === "k3" || model === "k3-256k" || model === "kimi-for-coding" ||
+						model === "k3.1-pro" || model === "k3.1-pro-highspeed") &&
 					thinking &&
 					effort
 				) {
@@ -312,10 +315,10 @@ export class OpenAICompatibleClient {
 
 			case "moonshot-intl":
 				// International open platform (api.moonshot.ai) — same contract
-				// as the CN one: kimi-k3 always thinks and takes top-level
+				// as the CN one: K3 / K3.1 always think and take top-level
 				// reasoning_effort (no thinking object); kimi-k2.6 accepts an
 				// explicit disable; K2.7 Code models think permanently.
-				if (model === "kimi-k3") {
+				if (model === "kimi-k3" || model === "kimi-k3.1-pro" || model === "kimi-k3.1-pro-highspeed") {
 					if (thinking && effort) {
 						body.reasoning_effort = effort;
 					}
@@ -327,14 +330,14 @@ export class OpenAICompatibleClient {
 			case "moonshot-open":
 				// Kimi Open Platform (api.moonshot.cn/v1) — per-model thinking
 				// domains (see the platform's "thinking models" doc):
-				// - kimi-k3: always thinks; top-level reasoning_effort =
+				// - K3 / K3.1: always think; top-level reasoning_effort =
 				//   low|high|max; the thinking object must NOT be sent.
 				// - kimi-k2.7-code(-highspeed): always thinks; thinking.type
 				//   accepts only "enabled" (sending "disabled" errors), so
 				//   nothing is sent — "None" just strips output client-side.
 				// - kimi-k2.6: thinking on by default; send an explicit
 				//   disable when the user picks None. No reasoning_effort.
-				if (model === "kimi-k3") {
+				if (model === "kimi-k3" || model === "kimi-k3.1-pro" || model === "kimi-k3.1-pro-highspeed") {
 					if (thinking && effort) {
 						body.reasoning_effort = effort;
 					}

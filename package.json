@@ -541,6 +541,7 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
+		"test": "npm run compile && node --test tests/*.test.cjs",
 		"watch": "tsc -watch -p ./",
 		"package": "npx @vscode/vsce package",
 		"publish": "npx @vscode/vsce publish"

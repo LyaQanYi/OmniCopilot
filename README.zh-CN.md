@@ -11,10 +11,10 @@
 | DeepSeek | `deepseek` | deepseek-flash, deepseek-v4-pro |
 | GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-4.6V |
 | GLM Coding Plan | `glm-coding-plan` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-5.2(-highspeed), GLM-5-Turbo, GLM-4.7 |
-| Kimi Code Plan | `moonshot` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
-| Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
-| Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Moonshot (国际平台) | `moonshot-intl` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
+| Kimi Code Plan | `moonshot` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
+| Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
+| Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
+| Moonshot (国际平台) | `moonshot-intl` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Alibaba Token Plan | `qwen` | auto、qwen3.8-max、qwen3.8-flash、qwen3.7-max、qwen3.7-plus、qwen3.6-flash、glm-5.3、glm-5.2、deepseek-v4-pro(-0813)、deepseek-v4-flash-0731、deepseek-v4.1-flash |
 | Alibaba Coding Plan（通义编程方案） | `alibaba-coding-plan-cn` | qwen3.7-plus、qwen3.6-plus、qwen3-coder-plus、qwen3-coder-next、qwen3-max、glm-5、kimi-k2.5、MiniMax-M2.5 |
 | Alibaba Coding Plan（国际） | `alibaba-coding-plan` | 同上 8 款模型（国际端点） |
@@ -41,6 +41,8 @@
 | 美团 LongCat | `longcat` | LongCat-2.0 |
 | 商汤 SenseNova | `sensenova` | kimi-k3、glm-5.2、deepseek-v4-pro、deepseek-v4-flash、sensenova-6.8-flash-lite |
 | 夸娥 KUAE Coding Plan | `kuae` | GLM-4.7 |
+
+> **K3.1 Pro 上限**：四个 Kimi 提供方统一声明 1,048,576 token 上下文。两地 Code Plan 均采用保守的 131,072 token 输出上限，因为 [Code Plan 模型文档](https://www.kimi.com/code/docs/en/kimi-code/models.html) 未单独公布最大输出长度。[开放平台 API](https://platform.kimi.ai/docs/guide/kimi-k3-1-pro-quickstart) 明确支持最多 1,048,576 completion token（默认 131,072），输入与输出共享上下文窗口。扩展在四个提供方上默认选择 High；开放平台 API 自身默认 Max。
 
 > [!NOTE]
 > 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 13 家已经实测（见上方「已测试且可用」）；其余 10 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
@@ -223,8 +225,8 @@ src/
 
 ### 0.5.1 — 2026-10-24
 
-- **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，默认 high）。186 → 194 个模型
-- **全运营商品牌图标**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，需 VS Code 1.143+；[图标来自 models.dev](https://github.com/sst/models.dev)）
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，扩展默认 high）。186 → 194 个模型
+- **除 KUAE 外的运营商品牌图标**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，需 VS Code 1.143+；[图标来自 models.dev](https://github.com/sst/models.dev)）
 
 ### 0.5.0 — 2026-10-03
 

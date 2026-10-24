@@ -232,7 +232,7 @@ export const THINKING_EFFORT_NO_MEDIUM_SCHEMA = {
 } as const;
 
 // Three-level effort menu (no "None") for models whose thinking is always
-// on and cannot be disabled server-side: Kimi K3 (k3 / k3-256k / kimi-k3)
+// on and cannot be disabled server-side: Kimi K3 / K3.1
 // and GLM-5.3 / GLM-5.3-Flash. Effort maps to top-level reasoning_effort =
 // "low" | "high" | "max" (Code endpoint default: high).
 export const ALWAYS_THINKING_EFFORT_SCHEMA = {
@@ -299,9 +299,13 @@ export const MINIMAX_M31_EFFORT_SCHEMA = {
 // for the provider's always-on enforcement: a legacy "none" from
 // programmatic callers can never serialize a disabling thinking object for
 // them. Picker menus come from ModelInfo.effortMenu in the catalog — every
-// always-thinking ID that exposes a menu (k3 / kimi-k3 / the GLM-5.3 family
+// always-thinking ID that exposes a menu (K3 / K3.1 / the GLM-5.3 family
 // / MiniMax-M3.1-Flash-Preview) is annotated there.
 export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
+	"k3.1-pro",
+	"k3.1-pro-highspeed",
+	"kimi-k3.1-pro",
+	"kimi-k3.1-pro-highspeed",
 	"k3",
 	"k3-256k",
 	"kimi-k3",
