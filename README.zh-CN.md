@@ -227,8 +227,11 @@ src/
 
 ### 0.5.1 — 2026-10-24
 
-- **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，扩展默认 high）。186 → 194 个模型
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，扩展默认 high）
+- **MiniMax M3.1 Flash（GA）** 登陆两个 MiniMax vendor —— 1M 上下文、五档 effort low..max（默认 max）；退役中的 M2.7 / M2.7-highspeed / M2.5 已从 MiniMax 选择器移除（官方自 2026-10-19 起将套餐请求路由到 M3.1 Flash，2026-11-18 全量下线；第三方托管的 M2.5 条目不受影响）
+- **DeepSeek Flash** 描述更新至 V4.1-Flash-1017（2026-10-17 升级；`deepseek-flash` 始终指向最新版）
 - **除 KUAE 外的运营商品牌图标**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，需 VS Code 1.143+；[图标来自 models.dev](https://github.com/sst/models.dev)）
+- 目录规模：186 → **190 个模型**
 
 ### 0.5.0 — 2026-10-03
 

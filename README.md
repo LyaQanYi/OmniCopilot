@@ -228,8 +228,11 @@ Contributions are welcome! Here's how you can help:
 
 ### 0.5.1 — 2026-10-24
 
-- **Kimi K3.1 Pro / K3.1 Pro Highspeed** on all four Kimi vendors (Kimi Code Plan on kimi.com & kimi.ai, Moonshot open platforms api.moonshot.cn & api.moonshot.ai) — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high). 186 → 194 models
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** on all four Kimi vendors (Kimi Code Plan on kimi.com & kimi.ai, Moonshot open platforms api.moonshot.cn & api.moonshot.ai) — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high)
+- **MiniMax M3.1 Flash (GA)** on both MiniMax vendors — 1M context, five effort levels low..max (default max); the retiring M2.7 / M2.7-highspeed / M2.5 were removed from the MiniMax pickers (routed to M3.1 Flash upstream since 2026-10-19, retiring 2026-11-18; hosted M2.5 entries unaffected)
+- **DeepSeek Flash** tooltip updated for the V4.1-Flash-1017 upgrade (2026-10-17; `deepseek-flash` always serves the latest)
 - **Brand icons for supported vendors (except KUAE)** in the model picker ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), needs VS Code 1.143+; [icons from models.dev](https://github.com/sst/models.dev))
+- Catalog: 186 → **190 models**
 
 ### 0.5.0 — 2026-10-03
 
