@@ -11,10 +11,10 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | DeepSeek | `deepseek` | deepseek-flash, deepseek-v4-pro |
 | GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-4.6V |
 | GLM Coding Plan | `glm-coding-plan` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-5.2(-highspeed), GLM-5-Turbo, GLM-4.7 |
-| Kimi Code Plan | `moonshot` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
-| Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
-| Moonshot (Open Platform) | `moonshot-open` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Moonshot AI (International) | `moonshot-intl` | kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
+| Kimi Code Plan | `moonshot` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
+| Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
+| Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
+| Moonshot AI (International) | `moonshot-intl` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Alibaba Token Plan | `qwen` | auto, qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash |
 | Alibaba Coding Plan (China) | `alibaba-coding-plan-cn` | qwen3.7-plus, qwen3.6-plus, qwen3-coder-plus, qwen3-coder-next, qwen3-max, glm-5, kimi-k2.5, MiniMax-M2.5 |
 | Alibaba Coding Plan | `alibaba-coding-plan` | the same 8-model set (international endpoint) |
@@ -41,6 +41,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | LongCat (Meituan) | `longcat` | LongCat-2.0 |
 | SenseNova (SenseTime) | `sensenova` | kimi-k3, glm-5.2, deepseek-v4-pro, deepseek-v4-flash, sensenova-6.8-flash-lite |
 | KUAE Cloud Coding Plan | `kuae` | GLM-4.7 |
+
+> **K3.1 Pro limits:** all four Kimi providers advertise a 1,048,576-token context window. Both Code Plan regions use a conservative 131,072-token output cap because the [Code Plan model documentation](https://www.kimi.com/code/docs/en/kimi-code/models.html) does not specify a separate output ceiling. The [open-platform API](https://platform.kimi.ai/docs/guide/kimi-k3-1-pro-quickstart) explicitly supports up to 1,048,576 completion tokens (131,072 by default), within the shared context window. The extension defaults effort to High on all four providers; the open-platform API defaults to Max.
 
 > [!NOTE]
 > The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 13 of them are live-tested (see Tested & Working above); the remaining 10 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
@@ -88,14 +90,14 @@ The following providers have been tested and confirmed working:
 - [ ] Test GLM Coding Plan, Z.AI international (`glm-coding-plan`)
 - [ ] Test the untested models.dev-sourced providers: Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go
 - [ ] Sink vendor-specific serialization knobs into `VendorConfig` flags (`outputLimitField`, `acceptsReasoningContent`, `kimiHeaders`, `mimoReasoningContract`, `maxCompletionTokens`, `toolStream`), replacing the vendor-ID OR chains currently spread across api.ts / provider.ts / extension.ts (review #24, deferred from 0.5.0)
-- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 186-model menu catalog assertion
+- [ ] Turn the ad-hoc serialization checks into automated tests (`node --test`): MiMo tool-call history backfill (thinking On/None, including history where VS Code dropped the thinking part), THINKING_BUDGET mappings, per-model effort clamping, and the 194-model menu catalog assertion
 - [ ] Verify thinking effort levels (DeepSeek None/High/Max; others None/Low/Medium/High or None/On) actually take effect across providers
 - [ ] Decide whether 0.5.0 ships via the marketplace pre-release channel (11 providers still untested)
 - [ ] To be continued…
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 186 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 194 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
@@ -221,6 +223,11 @@ Contributions are welcome! Here's how you can help:
 ## Changelog
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
+
+### 0.5.1 — 2026-10-24
+
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** on all four Kimi vendors (Kimi Code Plan on kimi.com & kimi.ai, Moonshot open platforms api.moonshot.cn & api.moonshot.ai) — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high). 186 → 194 models
+- **Brand icons for supported vendors (except KUAE)** in the model picker ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), needs VS Code 1.143+; [icons from models.dev](https://github.com/sst/models.dev))
 
 ### 0.5.0 — 2026-10-03
 
