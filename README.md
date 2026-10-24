@@ -97,7 +97,7 @@ The following providers have been tested and confirmed working:
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 194 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 196 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort

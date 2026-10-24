@@ -96,7 +96,7 @@
 
 ## 功能
 
-- **多平台支持**：接入 30+ 个大模型平台/端点，共 194 款模型
+- **多平台支持**：接入 30+ 个大模型平台/端点，共 196 款模型
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
   - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台及国际版的 kimi-k3、火山托管的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort

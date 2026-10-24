@@ -11,7 +11,7 @@ const DEEPSEEK_MODELS: ModelInfo[] = [
 		name: "DeepSeek Flash",
 		family: "deepseek",
 		version: "flash",
-		tooltip: "DeepSeek Flash — DeepSeek-V4.1-Flash, fast general-purpose model, vision support",
+		tooltip: "DeepSeek Flash — DeepSeek-V4.1-Flash-1017 (2026-10-17 update; deepseek-flash always serves the latest), fast general-purpose model, vision support",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 384000,
 		baseUrl: DEEPSEEK_BASE_URL,
@@ -622,12 +622,27 @@ const MINIMAX_BASE_URL = "https://api.minimaxi.com/v1";
 
 const MINIMAX_MODELS: ModelInfo[] = [
 	{
+		id: "MiniMax-M3.1-Flash",
+		name: "MiniMax M3.1 Flash",
+		family: "minimax",
+		version: "m3.1-flash",
+		tooltip:
+			"MiniMax M3.1 Flash — frontier multimodal coding model, 1M context, tunable thinking depth (low to max, default max), vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 524288,
+		baseUrl: MINIMAX_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-medium-high-xhigh-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
 		id: "MiniMax-M3.1-Flash-Preview",
 		name: "MiniMax M3.1 Flash Preview",
 		family: "minimax",
 		version: "m3.1-flash",
 		tooltip:
-			"MiniMax M3.1 Flash Preview — frontier multimodal coding model, 1M context, tunable thinking depth (low to max), vision support",
+			"MiniMax M3.1 Flash Preview — retired alias kept as a compatibility entry; requests are served by MiniMax-M3.1-Flash",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 512000,
 		baseUrl: MINIMAX_BASE_URL,
@@ -655,7 +670,8 @@ const MINIMAX_MODELS: ModelInfo[] = [
 		name: "MiniMax M2.7",
 		family: "minimax",
 		version: "m2.7",
-		tooltip: "MiniMax M2.7 — interleaved thinking flagship model, thinking always on",
+		tooltip:
+			"MiniMax M2.7 — interleaved thinking flagship model, thinking always on; plan requests now route to M3.1 Flash, model retires 2026-11-18",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: MINIMAX_BASE_URL,
@@ -669,7 +685,8 @@ const MINIMAX_MODELS: ModelInfo[] = [
 		name: "MiniMax M2.7 HighSpeed",
 		family: "minimax",
 		version: "m2.7-highspeed",
-		tooltip: "MiniMax M2.7 HighSpeed — fast interleaved thinking, thinking always on",
+		tooltip:
+			"MiniMax M2.7 HighSpeed — fast interleaved thinking, thinking always on; plan requests now route to M3.1 Flash, model retires 2026-11-18",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: MINIMAX_BASE_URL,
@@ -683,7 +700,8 @@ const MINIMAX_MODELS: ModelInfo[] = [
 		name: "MiniMax M2.5",
 		family: "minimax",
 		version: "m2.5",
-		tooltip: "MiniMax M2.5 — interleaved thinking balanced model, thinking always on",
+		tooltip:
+			"MiniMax M2.5 — interleaved thinking balanced model, thinking always on; plan requests now route to M3.1 Flash, model retires 2026-11-18",
 		maxInputTokens: 204800,
 		maxOutputTokens: 131072,
 		baseUrl: MINIMAX_BASE_URL,
@@ -1667,12 +1685,27 @@ const MINIMAX_INTL_BASE_URL = "https://api.minimax.io/v1";
 
 const MINIMAX_INTL_MODELS: ModelInfo[] = [
 	{
+		id: "MiniMax-M3.1-Flash",
+		name: "MiniMax M3.1 Flash",
+		family: "minimax",
+		version: "m3.1-flash",
+		tooltip:
+			"MiniMax M3.1 Flash — frontier multimodal coding model with 1M context window and tunable thinking depth (default max), vision support",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 524288,
+		baseUrl: MINIMAX_INTL_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-medium-high-xhigh-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
 		id: "MiniMax-M3.1-Flash-Preview",
 		name: "MiniMax M3.1 Flash Preview",
 		family: "minimax",
 		version: "m3.1-flash",
 		tooltip:
-			"MiniMax M3.1 Flash Preview — Frontier multimodal coding model with 1M context window and tunable thinking depth, vision support",
+			"MiniMax M3.1 Flash Preview — retired alias kept as a compatibility entry; requests are served by MiniMax-M3.1-Flash",
 		maxInputTokens: 1000000,
 		maxOutputTokens: 512000,
 		baseUrl: MINIMAX_INTL_BASE_URL,
