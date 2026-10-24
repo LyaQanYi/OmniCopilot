@@ -20,6 +20,7 @@
 		"languageModelChatProviders": [
 			{
 				"vendor": "deepseek",
+				"icon": "images/icons/deepseek.svg",
 				"displayName": "DeepSeek",
 				"configuration": {
 					"properties": {
@@ -33,6 +34,7 @@
 			},
 			{
 				"vendor": "glm-coding-plan-cn",
+				"icon": "images/icons/zhipu.svg",
 				"displayName": "GLM Coding Plan CN",
 				"configuration": {
 					"properties": {
@@ -46,6 +48,7 @@
 			},
 			{
 				"vendor": "glm-coding-plan",
+				"icon": "images/icons/zhipu.svg",
 				"displayName": "GLM Coding Plan",
 				"configuration": {
 					"properties": {
@@ -59,6 +62,7 @@
 			},
 			{
 				"vendor": "moonshot",
+				"icon": "images/icons/kimi.svg",
 				"displayName": "Kimi Code Plan",
 				"configuration": {
 					"properties": {
@@ -72,6 +76,7 @@
 			},
 			{
 				"vendor": "moonshot-open",
+				"icon": "images/icons/moonshot-ai.svg",
 				"displayName": "Moonshot (Open Platform)",
 				"configuration": {
 					"properties": {
@@ -85,6 +90,7 @@
 			},
 			{
 				"vendor": "qwen",
+				"icon": "images/icons/alibaba.svg",
 				"displayName": "Alibaba Token Plan",
 				"configuration": {
 					"properties": {
@@ -98,6 +104,7 @@
 			},
 			{
 				"vendor": "minimax",
+				"icon": "images/icons/minimax.svg",
 				"displayName": "MiniMax Token Plan CN",
 				"configuration": {
 					"properties": {
@@ -111,6 +118,7 @@
 			},
 			{
 				"vendor": "volcengine",
+				"icon": "images/icons/volcengine.svg",
 				"displayName": "Volcengine Coding Plan CN",
 				"configuration": {
 					"properties": {
@@ -124,6 +132,7 @@
 			},
 			{
 				"vendor": "volcengine-agent-plan",
+				"icon": "images/icons/volcengine.svg",
 				"displayName": "Volcengine Agent Plan CN",
 				"configuration": {
 					"properties": {
@@ -137,6 +146,7 @@
 			},
 			{
 				"vendor": "mimo-token-plan-cn",
+				"icon": "images/icons/xiaomi.svg",
 				"displayName": "MiMo Token Plan CN",
 				"configuration": {
 					"properties": {
@@ -150,6 +160,7 @@
 			},
 			{
 				"vendor": "moonshot-intl",
+				"icon": "images/icons/moonshot-ai.svg",
 				"displayName": "Moonshot AI (International)",
 				"configuration": {
 					"properties": {
@@ -163,6 +174,7 @@
 			},
 			{
 				"vendor": "kimi-code-plan-intl",
+				"icon": "images/icons/kimi-global.svg",
 				"displayName": "Kimi Code Plan (kimi.ai)",
 				"configuration": {
 					"properties": {
@@ -176,6 +188,7 @@
 			},
 			{
 				"vendor": "siliconflow",
+				"icon": "images/icons/siliconflow.svg",
 				"displayName": "SiliconFlow",
 				"configuration": {
 					"properties": {
@@ -189,6 +202,7 @@
 			},
 			{
 				"vendor": "siliconflow-cn",
+				"icon": "images/icons/siliconflow.svg",
 				"displayName": "SiliconFlow CN",
 				"configuration": {
 					"properties": {
@@ -202,6 +216,7 @@
 			},
 			{
 				"vendor": "minimax-intl",
+				"icon": "images/icons/minimax.svg",
 				"displayName": "MiniMax International",
 				"configuration": {
 					"properties": {
@@ -215,6 +230,7 @@
 			},
 			{
 				"vendor": "alibaba-coding-plan-cn",
+				"icon": "images/icons/alibaba.svg",
 				"displayName": "Alibaba Coding Plan CN",
 				"configuration": {
 					"properties": {
@@ -228,6 +244,7 @@
 			},
 			{
 				"vendor": "alibaba-coding-plan",
+				"icon": "images/icons/alibaba.svg",
 				"displayName": "Alibaba Coding Plan",
 				"configuration": {
 					"properties": {
@@ -241,6 +258,7 @@
 			},
 			{
 				"vendor": "tencent-coding-plan",
+				"icon": "images/icons/tencent-coding.svg",
 				"displayName": "Tencent Coding Plan",
 				"configuration": {
 					"properties": {
@@ -254,6 +272,7 @@
 			},
 			{
 				"vendor": "tencent-token-plan",
+				"icon": "images/icons/tencent-token.svg",
 				"displayName": "Tencent Token Plan",
 				"configuration": {
 					"properties": {
@@ -267,6 +286,7 @@
 			},
 			{
 				"vendor": "tencent-tokenhub",
+				"icon": "images/icons/tencent-token.svg",
 				"displayName": "Tencent TokenHub",
 				"configuration": {
 					"properties": {
@@ -280,6 +300,7 @@
 			},
 			{
 				"vendor": "stepfun-step-plan",
+				"icon": "images/icons/stepfun.svg",
 				"displayName": "StepFun Step Plan",
 				"configuration": {
 					"properties": {
@@ -293,6 +314,7 @@
 			},
 			{
 				"vendor": "stepfun-step-plan-cn",
+				"icon": "images/icons/stepfun.svg",
 				"displayName": "StepFun Step Plan CN",
 				"configuration": {
 					"properties": {
@@ -306,6 +328,7 @@
 			},
 			{
 				"vendor": "scnet-token-plan",
+				"icon": "images/icons/scnet.svg",
 				"displayName": "SCNet Token Plan",
 				"configuration": {
 					"properties": {
@@ -319,6 +342,7 @@
 			},
 			{
 				"vendor": "mimo-token-plan-sgp",
+				"icon": "images/icons/xiaomi.svg",
 				"displayName": "MiMo Token Plan SGP",
 				"configuration": {
 					"properties": {
@@ -332,6 +356,7 @@
 			},
 			{
 				"vendor": "mimo-token-plan-ams",
+				"icon": "images/icons/xiaomi.svg",
 				"displayName": "MiMo Token Plan AMS",
 				"configuration": {
 					"properties": {
@@ -345,6 +370,7 @@
 			},
 			{
 				"vendor": "mimo",
+				"icon": "images/icons/xiaomi.svg",
 				"displayName": "Xiaomi MiMo (Pay-as-you-go)",
 				"configuration": {
 					"properties": {
@@ -358,6 +384,7 @@
 			},
 			{
 				"vendor": "umans-ai-coding-plan",
+				"icon": "images/icons/umans.svg",
 				"displayName": "Umans AI Coding Plan",
 				"configuration": {
 					"properties": {
@@ -371,6 +398,7 @@
 			},
 			{
 				"vendor": "longcat",
+				"icon": "images/icons/longcat.svg",
 				"displayName": "LongCat",
 				"configuration": {
 					"properties": {
@@ -384,6 +412,7 @@
 			},
 			{
 				"vendor": "sensenova",
+				"icon": "images/icons/sensenova.svg",
 				"displayName": "SenseNova",
 				"configuration": {
 					"properties": {
@@ -410,6 +439,7 @@
 			},
 			{
 				"vendor": "zhipu",
+				"icon": "images/icons/zhipu.svg",
 				"displayName": "Zhipu AI (Pay-as-you-go)",
 				"configuration": {
 					"properties": {
@@ -423,6 +453,7 @@
 			},
 			{
 				"vendor": "zai",
+				"icon": "images/icons/zhipu.svg",
 				"displayName": "Z.AI (Pay-as-you-go)",
 				"configuration": {
 					"properties": {
@@ -436,6 +467,7 @@
 			},
 			{
 				"vendor": "volcengine-ark",
+				"icon": "images/icons/volcengine.svg",
 				"displayName": "Volcengine Ark (Pay-as-you-go)",
 				"configuration": {
 					"properties": {

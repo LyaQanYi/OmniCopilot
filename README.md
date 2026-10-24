@@ -216,6 +216,8 @@ Contributions are welcome! Here's how you can help:
 - VS Code 1.108.0+
 - GitHub Copilot extension
 
+> **Provider icons:** brand icons in the model picker require VS Code **1.143+** ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), [icons from models.dev](https://github.com/sst/models.dev)). On older versions the contributed `icon` field is ignored; providers whose names match a built-in icon rule may still show that built-in icon, and the rest keep the generic sparkle.
+
 ## Changelog
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
