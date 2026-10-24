@@ -18,8 +18,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Alibaba Token Plan | `qwen` | auto, qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash |
 | Alibaba Coding Plan (China) | `alibaba-coding-plan-cn` | qwen3.7-plus, qwen3.6-plus, qwen3-coder-plus, qwen3-coder-next, qwen3-max, glm-5, kimi-k2.5, MiniMax-M2.5 |
 | Alibaba Coding Plan | `alibaba-coding-plan` | the same 8-model set (international endpoint) |
-| MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash-Preview, MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| MiniMax International | `minimax-intl` | MiniMax-M3.1-Flash-Preview, MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
+| MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
+| MiniMax International | `minimax-intl` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
 | Volcengine Coding Plan CN | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-turbo, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-2.0-lite, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
 | Volcengine Agent Plan CN | `volcengine-agent-plan` | the same base 13-model set (kimi-k3 requires Medium+ plans) |
 | Volcengine Ark (Pay-as-you-go) | `volcengine-ark` | dated snapshot IDs: doubao-seed-2-1-pro/turbo, 2-0-pro/mini/lite/code, seed-evolving, glm-5-2, glm-5-3-flash, deepseek-v4 ga snapshots |
@@ -46,6 +46,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 
 > [!NOTE]
 > The 23 providers added in 0.5.0 (SiliconFlow ×2, Tencent Hunyuan ×3, StepFun ×2, SCNet, Alibaba Coding Plan ×2, MiniMax International, Moonshot international, Kimi kimi.ai, MiMo SGP/AMS/pay-as-you-go, Umans, LongCat, SenseNova, KUAE, Zhipu/Z.AI/Ark pay-as-you-go) source their model line-ups, context/output limits and thinking domains from [models.dev](https://models.dev) (community-maintained catalog, data as of 2026-10-01). 13 of them are live-tested (see Tested & Working above); the remaining 10 — **Tencent Hunyuan Coding/Token Plan/TokenHub, StepFun Step Plan (both regions), SCNet, Umans, LongCat, KUAE, Volcengine Ark pay-as-you-go** — are models.dev-sourced and follow the same OpenAI-compatible contract, but endpoints and key regimes follow each vendor's official docs and 4xx/parameter errors are worth an issue.
+
+> **MiniMax upgrade:** `MiniMax-M2.7`, `MiniMax-M2.7-highspeed`, and `MiniMax-M2.5` have been removed from the `minimax` and `minimax-intl` pickers. If you previously selected one, select `MiniMax-M3.1-Flash` in Copilot Chat after upgrading; saved selections are not automatically migrated. The Preview entry remains a compatibility alias. Third-party hosted M2.5 entries are unaffected.
 
 ## Tested & Working
 
@@ -97,7 +99,7 @@ The following providers have been tested and confirmed working:
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 194 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 190 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
@@ -233,7 +235,7 @@ Contributions are welcome! Here's how you can help:
 
 - **20 new vendors, 186 models total** — Moonshot AI International, Kimi Code Plan (kimi.ai), SiliconFlow (intl + CN), MiniMax International, Alibaba Coding Plan (intl + CN), Tencent Coding Plan / Token Plan / Tokenhub, StepFun Step Plan (intl + CN), SCNet Token Plan, MiMo Token Plan (SGP + AMS), MiMo Open Platform, Umans AI Coding Plan, LongCat, SenseNova, KUAE Cloud, Zhipu AI (pay-as-you-go), Z.AI (pay-as-you-go), Volcengine Ark
 - **Architecture: `effortMenu`-driven catalog** — each model now declares its picker menu and effort domain directly; the per-turn effort clamping that was scattered across vendor branches is now handled in a single upstream pass (`resolveRequestedEffort`), so vendor branches only translate field names and shapes
-- **New picker menus** — `none-high` (SenseNova), `none-low-high` (StepFun step-3.5-flash), `high-max` (GLM-5.2 family), `low-medium-high-xhigh-max` (MiniMax M3.1-Flash-Preview)
+- **New picker menus** — `none-high` (SenseNova), `none-low-high` (StepFun step-3.5-flash), `high-max` (GLM-5.2 family), `low-medium-high-xhigh-max` (MiniMax M3.1-Flash-Preview, now the compatibility alias for MiniMax-M3.1-Flash)
 - **Calibrated against models.dev** — SenseNova `glm-5.2` / `deepseek-v4-flash` domain collapsed to `none|high` (low/medium/high indistinguishable server-side); Volcengine plan/agent/ark DeepSeek models corrected to `minimal|low|medium|high` (no max); StepFun `step-5-preview` / `step-3.7-flash` annotated with `four-level` menus
 - **VSIX packaging** — `.claude/` worktree directories excluded from the bundle (53 KB → was 3.8 MB due to a missing `.vscodeignore` entry)
 
