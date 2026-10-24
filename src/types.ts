@@ -300,7 +300,7 @@ export const MINIMAX_M31_EFFORT_SCHEMA = {
 // programmatic callers can never serialize a disabling thinking object for
 // them. Picker menus come from ModelInfo.effortMenu in the catalog — every
 // always-thinking ID that exposes a menu (K3 / K3.1 / the GLM-5.3 family
-// / MiniMax-M3.1-Flash-Preview) is annotated there.
+// / MiniMax-M3.1-Flash and its Preview alias) is annotated there.
 export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
 	"k3.1-pro",
 	"k3.1-pro-highspeed",
@@ -318,6 +318,7 @@ export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
 	"umans-coder",
 	"umans-glm-5.3-flash",
 	"glm-5-3-flash-260828",
+	"MiniMax-M3.1-Flash",
 	"MiniMax-M3.1-Flash-Preview",
 ]);
 

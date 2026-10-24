@@ -18,8 +18,8 @@
 | Alibaba Token Plan | `qwen` | auto、qwen3.8-max、qwen3.8-flash、qwen3.7-max、qwen3.7-plus、qwen3.6-flash、glm-5.3、glm-5.2、deepseek-v4-pro(-0813)、deepseek-v4-flash-0731、deepseek-v4.1-flash |
 | Alibaba Coding Plan（通义编程方案） | `alibaba-coding-plan-cn` | qwen3.7-plus、qwen3.6-plus、qwen3-coder-plus、qwen3-coder-next、qwen3-max、glm-5、kimi-k2.5、MiniMax-M2.5 |
 | Alibaba Coding Plan（国际） | `alibaba-coding-plan` | 同上 8 款模型（国际端点） |
-| MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash-Preview, MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
-| MiniMax International | `minimax-intl` | MiniMax-M3.1-Flash-Preview, MiniMax-M3, MiniMax-M2.7, MiniMax-M2.7-highspeed, MiniMax-M2.5 |
+| MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
+| MiniMax International | `minimax-intl` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
 | 火山引擎编程计划 Coding Plan | `volcengine` | doubao-seed-2.1-pro, doubao-seed-2.1-turbo, doubao-seed-2.1-lite, doubao-seed-2.0-mini, doubao-seed-2.0-lite, doubao-seed-evolving, minimax-m3, kimi-k2.7-code, kimi-k2.8-preview, kimi-k3, glm-5.3, glm-5.3-flash, deepseek-v4-flash, deepseek-v4-pro, deepseek-v4.1-flash |
 | 火山引擎智能体计划 Agent Plan | `volcengine-agent-plan` | 与 Coding Plan 相同的 13 个基础模型（kimi-k3 需 Medium 及以上套餐） |
 | 火山引擎 Ark（按量） | `volcengine-ark` | doubao-seed-2-1-pro/turbo、2-0-pro/mini/lite/code、seed-evolving（带日期快照 ID）、glm-5-2、glm-5-3-flash、deepseek-v4 ga 快照 |
@@ -46,6 +46,8 @@
 
 > [!NOTE]
 > 0.5.0 新增的 23 个提供方（硅基流动×2、腾讯混元×3、阶跃×2、SCNet、阿里 Coding Plan×2、MiniMax 国际版、Moonshot 国际版、Kimi 国际版、MiMo SGP/AMS/按量、Umans、LongCat、商汤、夸娥、智谱/Z.AI/Ark 按量）的模型阵容、上下文/输出上限与思考参数域均取自 [models.dev](https://models.dev)（社区维护的模型目录，数据截至 2026-10-01）。其中 13 家已经实测（见上方「已测试且可用」）；其余 10 家——**腾讯混元 Coding/Token Plan/TokenHub、阶跃 Step Plan（国际+CN）、SCNet、Umans、LongCat、夸娥、火山 Ark 按量**——为 models.dev 口径、遵循同一套 OpenAI 兼容契约但未实测，端点协议与 Key 体系以各官方文档为准，遇到 4xx/参数错误欢迎提 issue。
+
+> **MiniMax 升级说明**：`minimax` 与 `minimax-intl` 的选择器已移除 `MiniMax-M2.7`、`MiniMax-M2.7-highspeed` 和 `MiniMax-M2.5`。如果此前选用了这些模型，请在升级后于 Copilot Chat 中重新选择 `MiniMax-M3.1-Flash`；已保存的选择不会自动迁移。Preview 条目保留为兼容别名，第三方托管的 M2.5 条目不受影响。
 
 ## 已测试且可用
 
@@ -232,7 +234,7 @@ src/
 
 - **20 个新提供方，共 33 个 vendor / 186 个模型** — Moonshot AI 国际版、Kimi Code Plan (kimi.ai)、SiliconFlow 国际版 + 国内版、MiniMax 国际版、阿里巴巴 Coding Plan 国际版 + 国内版、腾讯 Coding Plan / Token Plan / Tokenhub、StepFun Step Plan 国际版 + 国内版、SCNet Token Plan、MiMo Token Plan 新加坡 + 阿姆斯特丹节点、MiMo 开放平台、Umans AI Coding Plan、LongCat、商汤 SenseNova、KUAE Cloud、智谱 AI 直连、Z.AI 直连、火山引擎 Ark 按量付费
 - **架构重构：`effortMenu` 驱动的 catalog** — 每个模型直接声明 picker 菜单和 effort 域；per-turn effort 钳制从分散的 vendor 分支收敛到上游统一处理（`resolveRequestedEffort`），各 vendor 分支只负责字段名和形状
-- **新增菜单类型** — `none-high`（SenseNova）、`none-low-high`（StepFun step-3.5-flash）、`high-max`（GLM-5.2 系）、`low-medium-high-xhigh-max`（MiniMax M3.1-Flash-Preview）
+- **新增菜单类型** — `none-high`（SenseNova）、`none-low-high`（StepFun step-3.5-flash）、`high-max`（GLM-5.2 系）、`low-medium-high-xhigh-max`（MiniMax M3.1-Flash-Preview，现为 MiniMax-M3.1-Flash 的兼容别名）
 - **按 models.dev 实测修正** — SenseNova `glm-5.2` / `deepseek-v4-flash` 域折叠为 `none|high`（低中高档实测无差异）；Volcengine plan / agent / ark DeepSeek 系列修正为 `minimal|low|medium|high`（无 max），移除 max→high 钳制；StepFun `step-5-preview` / `step-3.7-flash` 补 `effortMenu` 标注
 - **VSIX 打包** — `.vscodeignore` 补充排除 `.claude/` 工作树目录（53 KB，此前因漏排 3.8 MB）
 

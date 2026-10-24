@@ -409,10 +409,11 @@ export class OpenAICompatibleClient {
 				// adds a native reasoning_effort domain low|medium|high|
 				// xhigh|max (models.dev). Thinking output arrives as
 				// interleaved <think> tags inside content.
-				if (model === "MiniMax-M3" || model === "MiniMax-M3.1-Flash-Preview") {
+				const isM31 = model === "MiniMax-M3.1-Flash" || model === "MiniMax-M3.1-Flash-Preview";
+				if (model === "MiniMax-M3" || isM31) {
 					body.thinking = { type: thinking ? "adaptive" : "disabled" };
 				}
-				if (model === "MiniMax-M3.1-Flash-Preview" && thinking && effort) {
+				if (isM31 && thinking && effort) {
 					body.reasoning_effort = effort;
 				}
 				break;
