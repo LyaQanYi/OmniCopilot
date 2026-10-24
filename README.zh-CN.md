@@ -221,6 +221,11 @@ src/
 
 > 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
+### 0.5.1 — 2026-10-24
+
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，默认 high）。186 → 194 个模型
+- **全运营商品牌图标**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，需 VS Code 1.143+；[图标来自 models.dev](https://github.com/sst/models.dev)）
+
 ### 0.5.0 — 2026-10-03
 
 - **20 个新提供方，共 33 个 vendor / 186 个模型** — Moonshot AI 国际版、Kimi Code Plan (kimi.ai)、SiliconFlow 国际版 + 国内版、MiniMax 国际版、阿里巴巴 Coding Plan 国际版 + 国内版、腾讯 Coding Plan / Token Plan / Tokenhub、StepFun Step Plan 国际版 + 国内版、SCNet Token Plan、MiMo Token Plan 新加坡 + 阿姆斯特丹节点、MiMo 开放平台、Umans AI Coding Plan、LongCat、商汤 SenseNova、KUAE Cloud、智谱 AI 直连、Z.AI 直连、火山引擎 Ark 按量付费

@@ -222,6 +222,11 @@ Contributions are welcome! Here's how you can help:
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
+### 0.5.1 — 2026-10-24
+
+- **Kimi K3.1 Pro / K3.1 Pro Highspeed** on all four Kimi vendors (Kimi Code Plan on kimi.com & kimi.ai, Moonshot open platforms api.moonshot.cn & api.moonshot.ai) — 3T flagship, 1M context, thinking always on (effort low/high/max, default high). 186 → 194 models
+- **Brand icons for every vendor** in the model picker ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), needs VS Code 1.143+; [icons from models.dev](https://github.com/sst/models.dev))
+
 ### 0.5.0 — 2026-10-03
 
 - **20 new vendors, 186 models total** — Moonshot AI International, Kimi Code Plan (kimi.ai), SiliconFlow (intl + CN), MiniMax International, Alibaba Coding Plan (intl + CN), Tencent Coding Plan / Token Plan / Tokenhub, StepFun Step Plan (intl + CN), SCNet Token Plan, MiMo Token Plan (SGP + AMS), MiMo Open Platform, Umans AI Coding Plan, LongCat, SenseNova, KUAE Cloud, Zhipu AI (pay-as-you-go), Z.AI (pay-as-you-go), Volcengine Ark
