@@ -452,7 +452,7 @@ const QWEN_MODELS: ModelInfo[] = [
 		family: "qwen",
 		version: "4-max-preview",
 		tooltip:
-			"Qwen4 Max Preview — limited preview (ends 2026-11-25; alias qwen4.0-max-preview), 1M context, vision and PDF input, hybrid thinking with effort low/medium/xhigh (default xhigh)",
+			"Qwen4 Max Preview — limited preview (ends 2026-11-25; alias qwen4.0-max-preview), 1M context, vision input, hybrid thinking with effort low/medium/xhigh (default xhigh)",
 		maxInputTokens: 1000000,
 		// Live-checked cap on the Token Plan endpoint: max_tokens limits
 		// thinking plus the final answer combined, 393,216 total.
