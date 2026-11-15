@@ -232,6 +232,7 @@ Contributions are welcome! Here's how you can help:
 - **MiniMax M3.1 Flash (GA)** on both MiniMax vendors — 1M context, five effort levels low..max (default max); the retiring M2.7 / M2.7-highspeed / M2.5 were removed from the MiniMax pickers (routed to M3.1 Flash upstream since 2026-10-19, retiring 2026-11-18; hosted M2.5 entries unaffected)
 - **DeepSeek Flash** tooltip updated for the V4.1-Flash-1017 upgrade (2026-10-17; `deepseek-flash` always serves the latest)
 - **Brand icons for supported vendors (except KUAE)** in the model picker ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), needs VS Code 1.143+; [icons from models.dev](https://github.com/sst/models.dev))
+- **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
 - Catalog: 186 → **190 models**
 
 ### 0.5.0 — 2026-10-03
