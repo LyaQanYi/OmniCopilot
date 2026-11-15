@@ -272,6 +272,18 @@ export class OpenAICompatibleClient {
 				// mode) and a wider domain for glm-5.2. Each model's menu
 				// encodes exactly that domain (non-snapshot v4-pro offers
 				// High/Max only), so the clamped value passes through.
+				// qwen4-max-preview is a hybrid of the two shapes below: the
+				// enable_thinking toggle, but a native reasoning_effort domain
+				// of low|medium|xhigh (default xhigh; high and max are xhigh
+				// aliases, and thinking_budget cannot be combined with
+				// reasoning_effort).
+				if (model === "qwen4-max-preview") {
+					body.enable_thinking = thinking;
+					if (thinking && effort) {
+						body.reasoning_effort = effort;
+					}
+					break;
+				}
 				if (
 					thinking &&
 					effort &&
@@ -280,7 +292,8 @@ export class OpenAICompatibleClient {
 						model === "deepseek-v4-pro" ||
 						model === "deepseek-v4-pro-0813" ||
 						model === "deepseek-v4-flash-0731" ||
-						model === "deepseek-v4.1-flash")
+						model === "deepseek-v4.1-flash" ||
+						model === "deepseek-v4.1-flash-1017")
 				) {
 					body.reasoning_effort = effort;
 					break;
