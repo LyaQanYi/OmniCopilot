@@ -109,6 +109,7 @@ The following providers have been tested and confirmed working:
   - **MiniMax M3.1** menu: Low / Medium / High / XHigh / Max — always-on thinking over the full native reasoning_effort domain
   - **SiliconFlow-hosted Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**: None / Low / High / Max — mapped to enable_thinking + thinking_budget (128–32768)
   - **SCNet / SenseNova-hosted DeepSeek V4 Pro**: None / High / Max (native high|max; low/medium clamp to high)
+  - **Qwen4 Max** (`qwen`): None / Low / High / XHigh (GA, default High; limited preview `qwen4-max-preview` offers None / Low / Medium / XHigh, default XHigh) — hybrid `enable_thinking` toggle plus native `reasoning_effort`
   - 4-level menu (None / Low / Medium / High) for Qwen reasoning models, StepFun Step 5 Preview / Step 3.7 Flash, Ark/Volcengine doubao models, Ark-hosted GLM-5.2, and the Umans/SenseNova effort-capable entries
   - **StepFun Step 3.5 Flash**: None / Low / High — its native domain has no medium tier
   - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, GLM-5V-Turbo / 5-Turbo / 4.7, Tencent hy3/hy4 and hosted entries, Alibaba Coding Plan reasoning models, the whole MiMo v2.6 line) — MiniMax-M3's and MiMo's None genuinely disables thinking
@@ -226,13 +227,18 @@ Contributions are welcome! Here's how you can help:
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
+### Unreleased
+
+- **Alibaba Token Plan (`qwen`)** refresh: added **Qwen4 Max** (GA, 1M context, vision input, hybrid thinking `low/high/xhigh`, default `high`), **Qwen4 Max Preview** (limited preview through 2026-11-25, hybrid thinking `low/medium/xhigh`, default `xhigh`), and **DeepSeek V4.1 Flash 1017** (night-discount snapshot)
+- **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
+- Catalog: 190 → **193 models**
+
 ### 0.5.1 — 2026-10-24
 
 - **Kimi K3.1 Pro / K3.1 Pro Highspeed** on all four Kimi vendors (Kimi Code Plan on kimi.com & kimi.ai, Moonshot open platforms api.moonshot.cn & api.moonshot.ai) — 3T flagship, 1M context, thinking always on (effort low/high/max, extension default high)
 - **MiniMax M3.1 Flash (GA)** on both MiniMax vendors — 1M context, five effort levels low..max (default max); the retiring M2.7 / M2.7-highspeed / M2.5 were removed from the MiniMax pickers (routed to M3.1 Flash upstream since 2026-10-19, retiring 2026-11-18; hosted M2.5 entries unaffected)
 - **DeepSeek Flash** tooltip updated for the V4.1-Flash-1017 upgrade (2026-10-17; `deepseek-flash` always serves the latest)
 - **Brand icons for supported vendors (except KUAE)** in the model picker ([microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578), needs VS Code 1.143+; [icons from models.dev](https://github.com/sst/models.dev))
-- **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
 - Catalog: 186 → **190 models**
 
 ### 0.5.0 — 2026-10-03

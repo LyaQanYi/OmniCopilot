@@ -108,6 +108,7 @@
   - **MiniMax M3.1** 菜单：Low / Medium / High / XHigh / Max 五档（思考恒开，原生 reasoning_effort 全域）
   - **硅基流动托管的 Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**：None / Low / High / Max——映射到 enable_thinking + thinking_budget（128–32768）
   - **SCNet / 商汤托管的 DeepSeek V4 Pro**：None / High / Max（原生域 high|max，low/medium 自动收敛到 high）
+  - **Qwen4 Max**（`qwen`）：None / Low / High / XHigh（GA，默认 High；限时预览版 `qwen4-max-preview` 为 None / Low / Medium / XHigh，默认 XHigh）—— 混合 `enable_thinking` 开关 + 原生 `reasoning_effort`
   - 4 档菜单（None / Low / Medium / High）：通义千问推理款、阶跃 Step 5 Preview / Step 3.7 Flash、Ark/火山 doubao 系、Ark 托管的 GLM-5.2、Umans 与商汤的 Qwen/effort 款
   - **阶跃 Step 3.5 Flash**：None / Low / High——原生域没有 medium 档
   - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、GLM-5V/5-Turbo、GLM-4.7、腾讯混元 hy3/hy4 与托管款、Alibaba Coding Plan 推理款、MiMo v2.6 全系）——MiniMax-M3 与 MiMo 的 None 是真关闭思考
@@ -225,13 +226,18 @@ src/
 
 > 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
+### 未发布
+
+- **Alibaba Token Plan（`qwen`）** 更新：新增 **Qwen4 Max**（GA，1M 上下文、视觉输入、混合思考 `low/high/xhigh`，默认 `high`）、**Qwen4 Max Preview**（限时预览至 2026-11-25，混合思考 `low/medium/xhigh`，默认 `xhigh`）和 **DeepSeek V4.1 Flash 1017**（夜间折扣快照）
+- **修复：思考过程现在显示为一整个可折叠块**，不再碎成一长串每行只有几个字的「Thought for 1s」。所有运营商的所有思考模型都受影响；被工具调用隔开的思考仍会分块显示
+- 目录规模：190 → **193 个模型**
+
 ### 0.5.1 — 2026-10-24
 
 - **Kimi K3.1 Pro / K3.1 Pro Highspeed** 登陆全部四个 Kimi vendor（kimi.com 与 kimi.ai 的 Kimi Code Plan、api.moonshot.cn 与 api.moonshot.ai 开放平台）—— 3T 旗舰、1M 上下文、恒开思考（effort low/high/max，扩展默认 high）
 - **MiniMax M3.1 Flash（GA）** 登陆两个 MiniMax vendor —— 1M 上下文、五档 effort low..max（默认 max）；退役中的 M2.7 / M2.7-highspeed / M2.5 已从 MiniMax 选择器移除（官方自 2026-10-19 起将套餐请求路由到 M3.1 Flash，2026-11-18 全量下线；第三方托管的 M2.5 条目不受影响）
 - **DeepSeek Flash** 描述更新至 V4.1-Flash-1017（2026-10-17 升级；`deepseek-flash` 始终指向最新版）
 - **除 KUAE 外的运营商品牌图标**（[microsoft/vscode#341578](https://github.com/microsoft/vscode/pull/341578)，需 VS Code 1.143+；[图标来自 models.dev](https://github.com/sst/models.dev)）
-- **修复：思考过程现在显示为一整个可折叠块**，不再碎成一长串每行只有几个字的「Thought for 1s」。所有运营商的所有思考模型都受影响；被工具调用隔开的思考仍会分块显示
 - 目录规模：186 → **190 个模型**
 
 ### 0.5.0 — 2026-10-03

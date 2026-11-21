@@ -410,7 +410,7 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 
 // Supported-model list per the official Token Plan (personal) overview,
 // https://help.aliyun.com/zh/model-studio/token-plan-personal-overview
-// (updated 2026-11-13). Night-window Credits discounts apply automatically
+// (updated 2026-11-21). Night-window Credits discounts apply automatically
 // server-side, 22:00-08:00: qwen3.8-max/flash 40%, deepseek-v4-pro-0813 /
 // deepseek-v4-flash-0731 / deepseek-v4.1-flash(-1017) 50%. qwen4-max-preview
 // is a limited preview (2026-11-11 10:00 through 2026-11-25 24:00, UTC+8;

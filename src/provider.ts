@@ -312,9 +312,10 @@ function emitToolCalls(
  *
  * This is the single effort-normalization point: effort is clamped into the
  * model's menu (resolveEffortMenu), and anything the menu does not offer —
- * a programmatic "medium" / "xhigh" / "max" etc. — becomes "high", which
- * every effort menu contains. Vendor branches in applyThinkingParams only
- * translate field names and shapes.
+ * a programmatic "medium" / "xhigh" / "max" etc. — falls back to "high" when
+ * the model's menu includes "high", otherwise to the menu's declared default
+ * (e.g. "xhigh" for qwen4-max-preview). Vendor branches in applyThinkingParams
+ * only translate field names and shapes.
  */
 function resolveRequestedEffort(
 	options: ModelConfigurationOptions,
@@ -346,7 +347,15 @@ function resolveRequestedEffort(
 	if (requested === "none") return { thinking: false, effort: undefined };
 	if (requested === "on") return { thinking: true, effort: undefined };
 	const domain: readonly string[] = menu.enum;
-	return { thinking: true, effort: domain.includes(requested) ? requested : "high" };
+	if (domain.includes(requested)) {
+		return { thinking: true, effort: requested };
+	}
+	const fallback: ThinkingEffort | undefined = domain.includes("high")
+		? "high"
+		: menu.default === "on"
+			? undefined
+			: menu.default;
+	return { thinking: true, effort: fallback };
 }
 
 function isVisionEnabled(): boolean {
@@ -457,7 +466,12 @@ function buildOpenAIMessages(
 				ThinkingPartCtor &&
 				part instanceof ThinkingPartCtor
 			) {
-				reasoningContent += (part as any).value;
+				const rawThinking = (part as any).value;
+				if (Array.isArray(rawThinking)) {
+					reasoningContent += rawThinking.join("");
+				} else if (typeof rawThinking === "string") {
+					reasoningContent += rawThinking;
+				}
 			} else if (part instanceof vscode.LanguageModelToolCallPart) {
 				if (!toolCalls) toolCalls = [];
 				toolCalls.push({

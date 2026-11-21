@@ -79,6 +79,19 @@ for (const legacy of [false, true]) {
 	});
 }
 
+test("qwen/qwen4-max-preview: out-of-domain high and max clamp to menu default xhigh", async (t) => {
+	for (const options of [
+		{ modelConfiguration: { reasoningEffort: "high" } },
+		{ modelConfiguration: { reasoningEffort: "max" } },
+		{ modelOptions: { thinkingBudget: "high" } },
+	]) {
+		const { body } = await captureRequest(t, "qwen4-max-preview", options);
+		assert.equal(body.enable_thinking, true);
+		assert.equal(body.reasoning_effort, "xhigh");
+		assert.equal("thinking_budget" in body, false);
+	}
+});
+
 test("qwen/qwen4-max: GA menu domain and default", async (t) => {
 	const { model, body } = await captureRequest(t, "qwen4-max", {});
 	const menu = model.configurationSchema.properties.reasoningEffort;
@@ -108,6 +121,17 @@ test("qwen/qwen4-max: None disables thinking", async (t) => {
 	assert.equal(body.enable_thinking, false);
 	assert.equal("reasoning_effort" in body, false);
 	assert.equal("thinking_budget" in body, false);
+});
+
+test("qwen/qwen4-max: out-of-domain medium and max clamp to high", async (t) => {
+	for (const effort of ["medium", "max"]) {
+		const { body } = await captureRequest(t, "qwen4-max", {
+			modelConfiguration: { reasoningEffort: effort },
+		});
+		assert.equal(body.enable_thinking, true);
+		assert.equal(body.reasoning_effort, "high");
+		assert.equal("thinking_budget" in body, false);
+	}
 });
 
 test("qwen/deepseek-v4.1-flash-1017: effort reaches the API like its sibling", async (t) => {
