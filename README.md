@@ -15,7 +15,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Moonshot AI (International) | `moonshot-intl` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Alibaba Token Plan | `qwen` | auto, qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash |
+| Alibaba Token Plan | `qwen` | auto, qwen4-max, qwen4-max-preview (until 2026-11-25), qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash(-1017) |
 | Alibaba Coding Plan (China) | `alibaba-coding-plan-cn` | qwen3.7-plus, qwen3.6-plus, qwen3-coder-plus, qwen3-coder-next, qwen3-max, glm-5, kimi-k2.5, MiniMax-M2.5 |
 | Alibaba Coding Plan | `alibaba-coding-plan` | the same 8-model set (international endpoint) |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
@@ -99,7 +99,7 @@ The following providers have been tested and confirmed working:
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 190 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 193 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
@@ -109,6 +109,7 @@ The following providers have been tested and confirmed working:
   - **MiniMax M3.1** menu: Low / Medium / High / XHigh / Max — always-on thinking over the full native reasoning_effort domain
   - **SiliconFlow-hosted Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**: None / Low / High / Max — mapped to enable_thinking + thinking_budget (128–32768)
   - **SCNet / SenseNova-hosted DeepSeek V4 Pro**: None / High / Max (native high|max; low/medium clamp to high)
+  - **Qwen4 Max** (`qwen`): None / Low / High / XHigh (GA, default High; limited preview `qwen4-max-preview` offers None / Low / Medium / XHigh, default XHigh) — hybrid `enable_thinking` toggle plus native `reasoning_effort`
   - 4-level menu (None / Low / Medium / High) for Qwen reasoning models, StepFun Step 5 Preview / Step 3.7 Flash, Ark/Volcengine doubao models, Ark-hosted GLM-5.2, and the Umans/SenseNova effort-capable entries
   - **StepFun Step 3.5 Flash**: None / Low / High — its native domain has no medium tier
   - 2-level menu (None / On) for models that only expose a thinking on/off knob (Kimi K2.6, MiniMax-M3, pre-5.3 GLM, GLM-5V-Turbo / 5-Turbo / 4.7, Tencent hy3/hy4 and hosted entries, Alibaba Coding Plan reasoning models, the whole MiMo v2.6 line) — MiniMax-M3's and MiMo's None genuinely disables thinking
@@ -225,6 +226,12 @@ Contributions are welcome! Here's how you can help:
 ## Changelog
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
+
+### Unreleased
+
+- **Alibaba Token Plan (`qwen`)** refresh: added **Qwen4 Max** (GA, 1M context, vision input, hybrid thinking `low/high/xhigh`, default `high`), **Qwen4 Max Preview** (limited preview through 2026-11-25, hybrid thinking `low/medium/xhigh`, default `xhigh`), and **DeepSeek V4.1 Flash 1017** (night-discount snapshot)
+- **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
+- Catalog: 190 → **193 models**
 
 ### 0.5.1 — 2026-10-24
 

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { randomUUID } from "node:crypto";
 import { OpenAICompatibleClient, ApiError, mapApiError, getKimiExtraHeaders } from "./api.js";
 import type {
 	ModelInfo,
@@ -88,16 +89,48 @@ function deepSanitizeSchema(obj: unknown): unknown {
 // Runtime detection: LanguageModelThinkingPart is a proposed API that may
 // graduate to stable in a future VS Code release. When available, thinking
 // content renders as a native collapsible UI; otherwise it falls back to text.
-const ThinkingPartCtor: (new (value: string) => unknown) | undefined =
-	(vscode as any).LanguageModelThinkingPart;
+const ThinkingPartCtor:
+	| (new (value: string, id?: string) => unknown)
+	| undefined = (vscode as any).LanguageModelThinkingPart;
+
+/**
+ * Tracks the id of the thinking block currently being streamed.
+ *
+ * Every thinking delta MUST carry the same non-empty id as its siblings.
+ * Copilot Chat forwards a missing id as `""`, and the chat renderer
+ * (`renderThinkingPart`: `e.id || (e.id = Date.now().toString())`) then
+ * stamps each delta with its own timestamp. Its reuse check
+ * (`hasSameContent` → `e.id !== this.id`) treats every new id as a new
+ * thinking item, so a reasoning stream is shown one token-sized
+ * "Thought for 1s" row per delta instead of one merged block.
+ *
+ * A new id starts after answer text or a tool call, so interleaved
+ * thinking → tool → thinking renders as distinct blocks, like the
+ * built-in providers.
+ */
+class ThinkingSegment {
+	private id: string | undefined;
+
+	current(): string {
+		return (this.id ??= randomUUID());
+	}
+
+	end(): void {
+		this.id = undefined;
+	}
+}
 
 function reportThinkingPart(
 	progress: vscode.Progress<vscode.LanguageModelResponsePart>,
 	part: ThinkingParsedPart,
+	segment: ThinkingSegment,
 ): void {
 	if (part.type === "thinking" && ThinkingPartCtor) {
-		progress.report(new ThinkingPartCtor(part.value) as any);
+		progress.report(
+			new ThinkingPartCtor(part.value, segment.current()) as any,
+		);
 	} else {
+		segment.end();
 		progress.report(new vscode.LanguageModelTextPart(part.value));
 	}
 }
@@ -279,9 +312,10 @@ function emitToolCalls(
  *
  * This is the single effort-normalization point: effort is clamped into the
  * model's menu (resolveEffortMenu), and anything the menu does not offer —
- * a programmatic "medium" / "xhigh" / "max" etc. — becomes "high", which
- * every effort menu contains. Vendor branches in applyThinkingParams only
- * translate field names and shapes.
+ * a programmatic "medium" / "xhigh" / "max" etc. — falls back to "high" when
+ * the model's menu includes "high", otherwise to the menu's declared default
+ * (e.g. "xhigh" for qwen4-max-preview). Vendor branches in applyThinkingParams
+ * only translate field names and shapes.
  */
 function resolveRequestedEffort(
 	options: ModelConfigurationOptions,
@@ -313,7 +347,15 @@ function resolveRequestedEffort(
 	if (requested === "none") return { thinking: false, effort: undefined };
 	if (requested === "on") return { thinking: true, effort: undefined };
 	const domain: readonly string[] = menu.enum;
-	return { thinking: true, effort: domain.includes(requested) ? requested : "high" };
+	if (domain.includes(requested)) {
+		return { thinking: true, effort: requested };
+	}
+	const fallback: ThinkingEffort | undefined = domain.includes("high")
+		? "high"
+		: menu.default === "on"
+			? undefined
+			: menu.default;
+	return { thinking: true, effort: fallback };
 }
 
 function isVisionEnabled(): boolean {
@@ -424,7 +466,12 @@ function buildOpenAIMessages(
 				ThinkingPartCtor &&
 				part instanceof ThinkingPartCtor
 			) {
-				reasoningContent += (part as any).value;
+				const rawThinking = (part as any).value;
+				if (Array.isArray(rawThinking)) {
+					reasoningContent += rawThinking.join("");
+				} else if (typeof rawThinking === "string") {
+					reasoningContent += rawThinking;
+				}
 			} else if (part instanceof vscode.LanguageModelToolCallPart) {
 				if (!toolCalls) toolCalls = [];
 				toolCalls.push({
@@ -666,6 +713,7 @@ export class MultiModelChatProvider
 				buffer: "",
 				insideThinking: false,
 			};
+			const thinkingSegment = new ThinkingSegment();
 			// Last non-null usage from the stream (final chunk when
 			// stream_options.include_usage was accepted by the endpoint).
 			let reportedUsage: OpenAIUsage | undefined;
@@ -688,10 +736,11 @@ export class MultiModelChatProvider
 
 					if (reasoningContent) {
 						if (thinking) {
-							reportThinkingPart(progress, {
-								type: "thinking",
-								value: reasoningContent,
-							});
+							reportThinkingPart(
+								progress,
+								{ type: "thinking", value: reasoningContent },
+								thinkingSegment,
+							);
 						}
 						// thinking=false (user picked "None"): drop reasoning output
 					}
@@ -708,10 +757,11 @@ export class MultiModelChatProvider
 							);
 							thinkingState = result.state;
 							for (const part of result.parts) {
-								reportThinkingPart(progress, part);
+								reportThinkingPart(progress, part, thinkingSegment);
 							}
 						} else {
 							// Plain answer text — emitted verbatim, never scanned.
+							thinkingSegment.end();
 							progress.report(
 								new vscode.LanguageModelTextPart(textContent),
 							);
@@ -734,6 +784,7 @@ export class MultiModelChatProvider
 					}
 
 					if (choice.finish_reason === "tool_calls") {
+						thinkingSegment.end();
 						emitToolCalls(progress, toolCallBuilders);
 					}
 				}
@@ -755,7 +806,7 @@ export class MultiModelChatProvider
 					!thinking,
 				);
 				for (const part of flushResult.parts) {
-					reportThinkingPart(progress, part);
+					reportThinkingPart(progress, part, thinkingSegment);
 				}
 			}
 			// Flush any pending tool calls not yet emitted
