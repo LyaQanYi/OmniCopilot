@@ -15,7 +15,7 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Moonshot AI (International) | `moonshot-intl` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Alibaba Token Plan | `qwen` | auto, qwen4-max-preview (until 2026-11-25), qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash(-1017) |
+| Alibaba Token Plan | `qwen` | auto, qwen4-max, qwen4-max-preview (until 2026-11-25), qwen3.8-max, qwen3.8-flash, qwen3.7-max, qwen3.7-plus, qwen3.6-flash, glm-5.3, glm-5.2, deepseek-v4-pro(-0813), deepseek-v4-flash-0731, deepseek-v4.1-flash(-1017) |
 | Alibaba Coding Plan (China) | `alibaba-coding-plan-cn` | qwen3.7-plus, qwen3.6-plus, qwen3-coder-plus, qwen3-coder-next, qwen3-max, glm-5, kimi-k2.5, MiniMax-M2.5 |
 | Alibaba Coding Plan | `alibaba-coding-plan` | the same 8-model set (international endpoint) |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
@@ -99,7 +99,7 @@ The following providers have been tested and confirmed working:
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 192 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 193 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort

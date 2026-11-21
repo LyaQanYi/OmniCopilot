@@ -447,6 +447,27 @@ const QWEN_MODELS: ModelInfo[] = [
 		capabilities: { imageInput: false, toolCalling: true },
 	},
 	{
+		id: "qwen4-max",
+		name: "Qwen4 Max",
+		family: "qwen",
+		version: "4-max",
+		tooltip:
+			"Qwen4 Max — GA flagship, 1M context, vision input, hybrid thinking with effort low/high/xhigh (default high)",
+		maxInputTokens: 983616,
+		// Thinking-mode caps per the official model page (updated
+		// 2026-11-21): max input 983,616 and max output — thinking plus
+		// the final answer combined — 262,144.
+		maxOutputTokens: 262144,
+		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "none-low-high-xhigh",
+		// preserve_thinking defaults true on Qwen4, so replay history
+		// reasoning_content like the hosted DeepSeek models do.
+		needsReasoningBackfillWhenThinking: true,
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
 		id: "qwen4-max-preview",
 		name: "Qwen4 Max Preview",
 		family: "qwen",

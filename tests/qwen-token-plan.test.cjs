@@ -79,6 +79,37 @@ for (const legacy of [false, true]) {
 	});
 }
 
+test("qwen/qwen4-max: GA menu domain and default", async (t) => {
+	const { model, body } = await captureRequest(t, "qwen4-max", {});
+	const menu = model.configurationSchema.properties.reasoningEffort;
+	assert.deepEqual(menu.enum, ["none", "low", "high", "xhigh"]);
+	assert.equal(menu.default, "high");
+	// Default picker effort: hybrid toggle on + native effort, never a budget.
+	assert.equal(body.enable_thinking, true);
+	assert.equal(body.reasoning_effort, "high");
+	assert.equal("thinking_budget" in body, false);
+});
+
+for (const effort of ["low", "high", "xhigh"]) {
+	test(`qwen/qwen4-max: picker effort ${effort}`, async (t) => {
+		const { body } = await captureRequest(t, "qwen4-max", {
+			modelConfiguration: { reasoningEffort: effort },
+		});
+		assert.equal(body.enable_thinking, true);
+		assert.equal(body.reasoning_effort, effort);
+		assert.equal("thinking_budget" in body, false);
+	});
+}
+
+test("qwen/qwen4-max: None disables thinking", async (t) => {
+	const { body } = await captureRequest(t, "qwen4-max", {
+		modelConfiguration: { reasoningEffort: "none" },
+	});
+	assert.equal(body.enable_thinking, false);
+	assert.equal("reasoning_effort" in body, false);
+	assert.equal("thinking_budget" in body, false);
+});
+
 test("qwen/deepseek-v4.1-flash-1017: effort reaches the API like its sibling", async (t) => {
 	const { model, body } = await captureRequest(t, "deepseek-v4.1-flash-1017", {
 		modelConfiguration: { reasoningEffort: "max" },
