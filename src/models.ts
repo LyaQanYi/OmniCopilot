@@ -43,6 +43,20 @@ const ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/coding/paas/v4";
 
 const ZHIPU_MODELS: ModelInfo[] = [
 	{
+		id: "glm-5.4",
+		name: "GLM-5.4",
+		family: "glm",
+		version: "5.4",
+		tooltip: "GLM-5.4 — flagship, multimodal (image input), thinking always on, 1M context (official guidance: set the client context window to 512000 for best coding results)",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZHIPU_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
+	{
 		id: "glm-5.3",
 		name: "GLM-5.3",
 		family: "glm",
@@ -108,6 +122,20 @@ const ZAI_CODING_BASE_URL = "https://api.z.ai/api/coding/paas/v4";
 
 // Same model lineup as the CN plan; only the endpoint differs.
 const ZAI_MODELS: ModelInfo[] = [
+	{
+		id: "glm-5.4",
+		name: "GLM-5.4",
+		family: "glm",
+		version: "5.4",
+		tooltip: "GLM-5.4 — flagship, multimodal (image input), thinking always on, 1M context (official guidance: set the client context window to 512000 for best coding results)",
+		maxInputTokens: 1000000,
+		maxOutputTokens: 131072,
+		baseUrl: ZAI_CODING_BASE_URL,
+		thinking: true,
+		thinkingEffortSupport: true,
+		effortMenu: "low-high-max",
+		capabilities: { imageInput: true, toolCalling: true },
+	},
 	{
 		id: "glm-5.3",
 		name: "GLM-5.3",

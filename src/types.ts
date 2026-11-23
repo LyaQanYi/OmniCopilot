@@ -356,6 +356,7 @@ export const ALWAYS_THINKING_MODEL_IDS: ReadonlySet<string> = new Set([
 	"k3",
 	"k3-256k",
 	"kimi-k3",
+	"glm-5.4",
 	"glm-5.3",
 	"glm-5.3-flash",
 	"glm-5.3-highspeed",
