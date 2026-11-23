@@ -46,51 +46,7 @@ async function captureRequest(t, modelId, options) {
 	return { model, body: requests[0].body };
 }
 
-test("qwen/qwen4-max-preview: menu domain and default", async (t) => {
-	const { model, body } = await captureRequest(t, "qwen4-max-preview", {});
-	const menu = model.configurationSchema.properties.reasoningEffort;
-	assert.deepEqual(menu.enum, ["none", "low", "medium", "xhigh"]);
-	assert.equal(menu.default, "xhigh");
-	// Default picker effort: hybrid toggle on + native effort, never a budget.
-	assert.equal(body.enable_thinking, true);
-	assert.equal(body.reasoning_effort, "xhigh");
-	assert.equal("thinking_budget" in body, false);
-});
 
-for (const effort of ["low", "medium", "xhigh"]) {
-	test(`qwen/qwen4-max-preview: picker effort ${effort}`, async (t) => {
-		const { body } = await captureRequest(t, "qwen4-max-preview", {
-			modelConfiguration: { reasoningEffort: effort },
-		});
-		assert.equal(body.enable_thinking, true);
-		assert.equal(body.reasoning_effort, effort);
-		assert.equal("thinking_budget" in body, false);
-	});
-}
-
-for (const legacy of [false, true]) {
-	test(`qwen/qwen4-max-preview: ${legacy ? "legacy" : "picker"} None disables thinking`, async (t) => {
-		const { body } = await captureRequest(t, "qwen4-max-preview", legacy
-			? { modelOptions: { thinkingBudget: "none" } }
-			: { modelConfiguration: { reasoningEffort: "none" } });
-		assert.equal(body.enable_thinking, false);
-		assert.equal("reasoning_effort" in body, false);
-		assert.equal("thinking_budget" in body, false);
-	});
-}
-
-test("qwen/qwen4-max-preview: out-of-domain high and max clamp to menu default xhigh", async (t) => {
-	for (const options of [
-		{ modelConfiguration: { reasoningEffort: "high" } },
-		{ modelConfiguration: { reasoningEffort: "max" } },
-		{ modelOptions: { thinkingBudget: "high" } },
-	]) {
-		const { body } = await captureRequest(t, "qwen4-max-preview", options);
-		assert.equal(body.enable_thinking, true);
-		assert.equal(body.reasoning_effort, "xhigh");
-		assert.equal("thinking_budget" in body, false);
-	}
-});
 
 test("qwen/qwen4-max: GA menu domain and default", async (t) => {
 	const { model, body } = await captureRequest(t, "qwen4-max", {});
