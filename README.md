@@ -104,7 +104,7 @@ The following providers have been tested and confirmed working:
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
   - **Kimi for Coding** (Code Plan `kimi-for-coding`, currently K2.8 Preview): None / Low / High / Max — None sends an explicit thinking disable
-  - **GLM-5.3 family** menu: Low / High / Max — thinking always on (covers GLM-5.3-Highspeed / FlashX and the GLM-5.3 hosting on SiliconFlow, SCNet, Umans, SenseNova; the Coding endpoint auto-routes legacy GLM IDs like glm-5.1 / glm-4.7 to the 5.3 line)
+  - **GLM-5.4 / GLM-5.3 family** menu: Low / High / Max — thinking always on (covers GLM-5.4 on both Coding Plans, GLM-5.3-Highspeed / FlashX, and the GLM-5.3 hosting on SiliconFlow, SCNet, Umans, SenseNova; the Coding endpoint auto-routes legacy GLM IDs like glm-5.1 / glm-4.7 to the 5.3 line)
   - **GLM-5.2 family** menu: High / Max — always-on thinking with a native high|max domain (Z.AI Coding Plan, Zhipu/Z.AI pay-as-you-go, SiliconFlow hosting)
   - **MiniMax M3.1** menu: Low / Medium / High / XHigh / Max — always-on thinking over the full native reasoning_effort domain
   - **SiliconFlow-hosted Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**: None / Low / High / Max — mapped to enable_thinking + thinking_budget (128–32768)
@@ -116,7 +116,7 @@ The following providers have been tested and confirmed working:
   - Thinking-locked models expose no menu at all: the K2.7 Code high-speed variants (`kimi-for-coding-highspeed`, `kimi-k2.7-code`(-highspeed)), MiniMax M2.x, and some SiliconFlow CN snapshots — their "None" would silently reroute the model or keep thinking on anyway
 - **Thinking UI**: Models with reasoning capabilities show collapsible thinking sections via `LanguageModelThinkingPart`
 - **Context Gauge**: Streams `stream_options: { include_usage: true }` and reports the real token usage back to Copilot Chat, so the context-window indicator shows actual usage instead of 0; falls back to CJK-aware token estimation (Chinese ≈ 1 token/char) before the first real usage arrives
-- **Vision Support**: Every model flagged image-capable in the catalog (deepseek-flash, the GLM-5.3-Flash/FlashX/4.6V/5V-Turbo line, Kimi K2.5+/K3, MiniMax-M3/M3.1, the Qwen vision models, all doubao models, the MiMo v2.6 line, step-5/3.7, the Umans line-up, SenseNova 6.8, …) can read images attached in Copilot Chat
+- **Vision Support**: Every model flagged image-capable in the catalog (deepseek-flash, the GLM-5.4/5.3-Flash/FlashX/4.6V/5V-Turbo line, Kimi K2.5+/K3, MiniMax-M3/M3.1, the Qwen vision models, all doubao models, the MiMo v2.6 line, step-5/3.7, the Umans line-up, SenseNova 6.8, …) can read images attached in Copilot Chat
 - **Tool Calling**: Function calling support for compatible models
 
 ## Usage
@@ -229,9 +229,10 @@ Contributions are welcome! Here's how you can help:
 
 ### Unreleased
 
-- **Alibaba Token Plan (`qwen`)** refresh: added **Qwen4 Max** (GA, 1M context, vision input, hybrid thinking `low/high/xhigh`, default `high`), **Qwen4 Max Preview** (limited preview through 2026-11-25, hybrid thinking `low/medium/xhigh`, default `xhigh`), and **DeepSeek V4.1 Flash 1017** (night-discount snapshot)
+- **GLM-5.4** on both GLM Coding Plans (`glm-coding-plan-cn` and `glm-coding-plan`) — 1M context, vision input, thinking always on (`low/high/max`, extension default `high`)
+- **Alibaba Token Plan (`qwen`)** refresh: added **Qwen4 Max** (GA, 1M context, vision input, hybrid thinking `low/high/xhigh`, default `high`) and **DeepSeek V4.1 Flash 1017** (night-discount snapshot)
 - **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
-- Catalog: 190 → **193 models**
+- Catalog: 190 → **194 models**
 
 ### 0.5.1 — 2026-10-24
 

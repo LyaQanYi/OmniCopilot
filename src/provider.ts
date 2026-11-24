@@ -313,9 +313,8 @@ function emitToolCalls(
  * This is the single effort-normalization point: effort is clamped into the
  * model's menu (resolveEffortMenu), and anything the menu does not offer —
  * a programmatic "medium" / "xhigh" / "max" etc. — falls back to "high" when
- * the model's menu includes "high", otherwise to the menu's declared default
- * (e.g. "xhigh" for qwen4-max-preview). Vendor branches in applyThinkingParams
- * only translate field names and shapes.
+ * the model's menu includes "high", otherwise to the menu's declared default.
+ * Vendor branches in applyThinkingParams only translate field names and shapes.
  */
 function resolveRequestedEffort(
 	options: ModelConfigurationOptions,

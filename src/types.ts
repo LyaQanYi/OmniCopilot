@@ -233,8 +233,7 @@ export const THINKING_EFFORT_NO_MEDIUM_SCHEMA = {
 
 // None / Low / High / XHigh menu for qwen4-max (GA): the official model
 // page lists the native reasoning_effort domain as low|high|xhigh with
-// default high (minimal→low, medium→high, max→xhigh) — note the GA domain
-// differs from the preview's low|medium|xhigh. Hybrid toggle via
+// default high (minimal→low, medium→high, max→xhigh). Hybrid toggle via
 // enable_thinking=false.
 export const QWEN4_MAX_EFFORT_SCHEMA = {
 	properties: {

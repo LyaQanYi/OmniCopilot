@@ -46,8 +46,6 @@ async function captureRequest(t, modelId, options) {
 	return { model, body: requests[0].body };
 }
 
-
-
 test("qwen/qwen4-max: GA menu domain and default", async (t) => {
 	const { model, body } = await captureRequest(t, "qwen4-max", {});
 	const menu = model.configurationSchema.properties.reasoningEffort;
