@@ -440,9 +440,7 @@ const MOONSHOT_OPEN_MODELS: ModelInfo[] = [
 // https://help.aliyun.com/zh/model-studio/token-plan-personal-overview
 // (updated 2026-11-21). Night-window Credits discounts apply automatically
 // server-side, 22:00-08:00: qwen3.8-max/flash 40%, deepseek-v4-pro-0813 /
-// deepseek-v4-flash-0731 / deepseek-v4.1-flash(-1017) 50%. qwen4-max-preview
-// is a limited preview (2026-11-11 10:00 through 2026-11-25 24:00, UTC+8;
-// alias qwen4.0-max-preview). Image/audio/video models (qwen-image-3.0-pro,
+// deepseek-v4-flash-0731 / deepseek-v4.1-flash(-1017) 50%. Image/audio/video models (qwen-image-3.0-pro,
 // wan2.7-image*, qwen-audio-3.0-*, happyhorse-1.1-*, decision-model-preview)
 // are omitted — this extension is chat-only.
 const QWEN_TOKEN_PLAN_BASE_URL = "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1";
@@ -492,27 +490,6 @@ const QWEN_MODELS: ModelInfo[] = [
 		effortMenu: "none-low-high-xhigh",
 		// preserve_thinking defaults true on Qwen4, so replay history
 		// reasoning_content like the hosted DeepSeek models do.
-		needsReasoningBackfillWhenThinking: true,
-		capabilities: { imageInput: true, toolCalling: true },
-	},
-	{
-		id: "qwen4-max-preview",
-		name: "Qwen4 Max Preview",
-		family: "qwen",
-		version: "4-max-preview",
-		tooltip:
-			"Qwen4 Max Preview — limited preview (ends 2026-11-25; alias qwen4.0-max-preview), 1M context, vision input, hybrid thinking with effort low/medium/xhigh (default xhigh)",
-		maxInputTokens: 1000000,
-		// Live-checked cap on the Token Plan endpoint: max_tokens limits
-		// thinking plus the final answer combined, 393,216 total.
-		maxOutputTokens: 393216,
-		baseUrl: QWEN_TOKEN_PLAN_BASE_URL,
-		thinking: true,
-		thinkingEffortSupport: true,
-		effortMenu: "none-low-medium-xhigh",
-		// Qwen4 preserves reasoning across turns: history reasoning_content
-		// must be replayed unchanged, so backfill it like the hosted DeepSeek
-		// models do.
 		needsReasoningBackfillWhenThinking: true,
 		capabilities: { imageInput: true, toolCalling: true },
 	},

@@ -15,7 +15,7 @@
 | Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
 | Moonshot (国际平台) | `moonshot-intl` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
-| Alibaba Token Plan | `qwen` | auto、qwen4-max、qwen4-max-preview（至 2026-11-25）、qwen3.8-max、qwen3.8-flash、qwen3.7-max、qwen3.7-plus、qwen3.6-flash、glm-5.3、glm-5.2、deepseek-v4-pro(-0813)、deepseek-v4-flash-0731、deepseek-v4.1-flash(-1017) |
+| Alibaba Token Plan | `qwen` | auto、qwen4-max、qwen3.8-max、qwen3.8-flash、qwen3.7-max、qwen3.7-plus、qwen3.6-flash、glm-5.3、glm-5.2、deepseek-v4-pro(-0813)、deepseek-v4-flash-0731、deepseek-v4.1-flash(-1017) |
 | Alibaba Coding Plan（通义编程方案） | `alibaba-coding-plan-cn` | qwen3.7-plus、qwen3.6-plus、qwen3-coder-plus、qwen3-coder-next、qwen3-max、glm-5、kimi-k2.5、MiniMax-M2.5 |
 | Alibaba Coding Plan（国际） | `alibaba-coding-plan` | 同上 8 款模型（国际端点） |
 | MiniMax Token Plan CN | `minimax` | MiniMax-M3.1-Flash, MiniMax-M3.1-Flash-Preview, MiniMax-M3 |
@@ -98,24 +98,24 @@
 
 ## 功能
 
-- **多平台支持**：接入 30+ 个大模型平台/端点，共 195 款模型
+- **多平台支持**：接入 30+ 个大模型平台/端点，共 194 款模型
 - **每模型独立的思考力度选择**：在 Copilot 模型选择器里 hover 任一支持思考的模型，**就地**为这一轮对话选思考等级——不再需要切全局开关
   - **DeepSeek V4** 菜单：None / Low / High / Max（对齐 V4 API 的 reasoning_effort 取值；思考默认开启，None 显式关闭）
   - **Kimi K3**（Code Plan 的 k3 / k3-256k、开放平台及国际版的 kimi-k3、火山托管的 kimi-k3）：Low / High / Max——无 None 档，思考始终开启；两端都映射到 reasoning_effort
   - **Kimi for Coding**（Code Plan 的 kimi-for-coding，当前为 K2.8 Preview）：None / Low / High / Max——None 显式关闭思考
-  - **GLM-5.3 家族**菜单：Low / High / Max——无 None 档，思考始终开启（含 GLM-5.3-Highspeed / FlashX、硅基流动与 SCNet/Umans/商汤等托管的 GLM-5.3；Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到 5.3 系）
+  - **GLM-5.4 / GLM-5.3 家族**菜单：Low / High / Max——无 None 档，思考始终开启（含两个 Coding Plan 上的 GLM-5.4、GLM-5.3-Highspeed / FlashX、硅基流动与 SCNet/Umans/商汤等托管的 GLM-5.3；Coding 端点会把 glm-5.1、glm-4.7 等旧 ID 自动路由到 5.3 系）
   - **GLM-5.2 家族**菜单：High / Max——思考恒开且原生域只有 high|max（Z.AI Coding Plan、智谱/Z.AI 按量、硅基流动托管）
   - **MiniMax M3.1** 菜单：Low / Medium / High / XHigh / Max 五档（思考恒开，原生 reasoning_effort 全域）
   - **硅基流动托管的 Kimi/DeepSeek/Qwen/MiniMax/LongCat/Hy3/gpt-oss**：None / Low / High / Max——映射到 enable_thinking + thinking_budget（128–32768）
   - **SCNet / 商汤托管的 DeepSeek V4 Pro**：None / High / Max（原生域 high|max，low/medium 自动收敛到 high）
-  - **Qwen4 Max**（`qwen`）：None / Low / High / XHigh（GA，默认 High；限时预览版 `qwen4-max-preview` 为 None / Low / Medium / XHigh，默认 XHigh）—— 混合 `enable_thinking` 开关 + 原生 `reasoning_effort`
+  - **Qwen4 Max**（`qwen`）：None / Low / High / XHigh（默认 High）—— 混合 `enable_thinking` 开关 + 原生 `reasoning_effort`
   - 4 档菜单（None / Low / Medium / High）：通义千问推理款、阶跃 Step 5 Preview / Step 3.7 Flash、Ark/火山 doubao 系、Ark 托管的 GLM-5.2、Umans 与商汤的 Qwen/effort 款
   - **阶跃 Step 3.5 Flash**：None / Low / High——原生域没有 medium 档
   - 2 档菜单（None / On）：仅支持思考开关、无 effort 等级的模型（Kimi K2.6、MiniMax-M3、5.3 之前的 GLM、GLM-5V/5-Turbo、GLM-4.7、腾讯混元 hy3/hy4 与托管款、Alibaba Coding Plan 推理款、MiMo v2.6 全系）——MiniMax-M3 与 MiMo 的 None 是真关闭思考
   - 思考锁定的模型不提供菜单：K2.7 Code 高速档（Code Plan 的 kimi-for-coding-highspeed、开放平台/国际版的 kimi-k2.7-code(-highspeed)）、MiniMax M2.x、硅基流动 CN 的部分快照款——它们的"None"要么被静默换模型、要么思考照样运行
 - **思考 UI**：支持推理的模型会通过 `LanguageModelThinkingPart` 展示可折叠的思考过程
 - **上下文用量显示**：请求携带 `stream_options: { include_usage: true }` 并把真实 token 用量回报给 Copilot Chat，上下文指示条显示实际用量而不是 0；首轮拿到真实用量前以 CJK 感知估算兜底（中文 ≈ 1 token/字）
-- **视觉支持**：目录中标注 `imageInput` 的模型（deepseek-flash、GLM-5.3-Flash/FlashX/4.6V/5V-Turbo、Kimi K2.5+/K3、MiniMax-M3/M3.1、Qwen 视觉款、doubao 全系、MiMo v2.6 全系、step-5/3.7、Umans 系、商汤 6.8 等）可以读取 Copilot Chat 中附加的图片
+- **视觉支持**：目录中标注 `imageInput` 的模型（deepseek-flash、GLM-5.4/5.3-Flash/FlashX/4.6V/5V-Turbo、Kimi K2.5+/K3、MiniMax-M3/M3.1、Qwen 视觉款、doubao 全系、MiMo v2.6 全系、step-5/3.7、Umans 系、商汤 6.8 等）可以读取 Copilot Chat 中附加的图片
 - **工具调用**：兼容模型的函数调用支持
 
 ## 使用方法
@@ -228,9 +228,10 @@ src/
 
 ### 未发布
 
-- **Alibaba Token Plan（`qwen`）** 更新：新增 **Qwen4 Max**（GA，1M 上下文、视觉输入、混合思考 `low/high/xhigh`，默认 `high`）、**Qwen4 Max Preview**（限时预览至 2026-11-25，混合思考 `low/medium/xhigh`，默认 `xhigh`）和 **DeepSeek V4.1 Flash 1017**（夜间折扣快照）
+- **GLM-5.4** 登陆两个 GLM Coding Plan vendor（`glm-coding-plan-cn`、`glm-coding-plan`）—— 1M 上下文、视觉输入、恒开思考（`low/high/max`，扩展默认 `high`）
+- **Alibaba Token Plan（`qwen`）** 更新：新增 **Qwen4 Max**（GA，1M 上下文、视觉输入、混合思考 `low/high/xhigh`，默认 `high`）和 **DeepSeek V4.1 Flash 1017**（夜间折扣快照）
 - **修复：思考过程现在显示为一整个可折叠块**，不再碎成一长串每行只有几个字的「Thought for 1s」。所有运营商的所有思考模型都受影响；被工具调用隔开的思考仍会分块显示
-- 目录规模：190 → **193 个模型**
+- 目录规模：190 → **194 个模型**
 
 ### 0.5.1 — 2026-10-24
 

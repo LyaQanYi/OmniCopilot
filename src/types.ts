@@ -231,33 +231,9 @@ export const THINKING_EFFORT_NO_MEDIUM_SCHEMA = {
 	},
 } as const;
 
-// None / Low / Medium / XHigh menu for qwen4-max-preview: the native
-// reasoning_effort domain is low|medium|xhigh (default xhigh; high and max
-// are aliases of xhigh per the Qwen4 thinking doc) with a genuine off
-// toggle via enable_thinking=false.
-export const QWEN4_MAX_PREVIEW_EFFORT_SCHEMA = {
-	properties: {
-		reasoningEffort: {
-			type: "string",
-			title: "Thinking Effort",
-			enum: ["none", "low", "medium", "xhigh"],
-			enumItemLabels: ["None", "Low", "Medium", "XHigh"],
-			enumDescriptions: [
-				"No reasoning",
-				"Faster responses",
-				"Balanced",
-				"Deepest reasoning (API default)",
-			],
-			default: "xhigh",
-			group: "navigation",
-		},
-	},
-} as const;
-
 // None / Low / High / XHigh menu for qwen4-max (GA): the official model
 // page lists the native reasoning_effort domain as low|high|xhigh with
-// default high (minimal→low, medium→high, max→xhigh) — note the GA domain
-// differs from the preview's low|medium|xhigh. Hybrid toggle via
+// default high (minimal→low, medium→high, max→xhigh). Hybrid toggle via
 // enable_thinking=false.
 export const QWEN4_MAX_EFFORT_SCHEMA = {
 	properties: {
@@ -418,7 +394,6 @@ export type EffortMenu =
 	| "none-low-high-max" // DeepSeek domain (DEEPSEEK_THINKING_EFFORT_SCHEMA)
 	| "none-high-max" // DashScope non-snapshot V4 Pro etc. (THINKING_EFFORT_NO_LOW_SCHEMA)
 	| "none-low-high" // StepFun step-3.5-flash (THINKING_EFFORT_NO_MEDIUM_SCHEMA)
-	| "none-low-medium-xhigh" // qwen4-max-preview (QWEN4_MAX_PREVIEW_EFFORT_SCHEMA)
 	| "none-low-high-xhigh" // qwen4-max GA (QWEN4_MAX_EFFORT_SCHEMA)
 	| "none-high" // SenseNova glm-5.2/deepseek-v4-flash: none|high only (THINKING_EFFORT_NONE_HIGH_SCHEMA)
 	| "low-high-max" // always-on K3/GLM-5.3 (ALWAYS_THINKING_EFFORT_SCHEMA)
@@ -434,7 +409,6 @@ export const EFFORT_MENU_SCHEMAS: Record<
 	"none-low-high-max": DEEPSEEK_THINKING_EFFORT_SCHEMA,
 	"none-high-max": THINKING_EFFORT_NO_LOW_SCHEMA,
 	"none-low-high": THINKING_EFFORT_NO_MEDIUM_SCHEMA,
-	"none-low-medium-xhigh": QWEN4_MAX_PREVIEW_EFFORT_SCHEMA,
 	"none-low-high-xhigh": QWEN4_MAX_EFFORT_SCHEMA,
 	"none-high": THINKING_EFFORT_NONE_HIGH_SCHEMA,
 	"low-high-max": ALWAYS_THINKING_EFFORT_SCHEMA,
@@ -457,7 +431,6 @@ export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 		| typeof DEEPSEEK_THINKING_EFFORT_SCHEMA
 		| typeof THINKING_EFFORT_NO_LOW_SCHEMA
 		| typeof THINKING_EFFORT_NO_MEDIUM_SCHEMA
-		| typeof QWEN4_MAX_PREVIEW_EFFORT_SCHEMA
 		| typeof QWEN4_MAX_EFFORT_SCHEMA
 		| typeof THINKING_EFFORT_NONE_HIGH_SCHEMA
 		| typeof ALWAYS_THINKING_EFFORT_SCHEMA
