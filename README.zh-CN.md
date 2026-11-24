@@ -226,11 +226,12 @@ src/
 
 > 完整历史版本日志见 [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) 页面。
 
-### 未发布
+### 0.5.2 — 2026-11-24
 
 - **GLM-5.4** 登陆两个 GLM Coding Plan vendor（`glm-coding-plan-cn`、`glm-coding-plan`）—— 1M 上下文、视觉输入、恒开思考（`low/high/max`，扩展默认 `high`）
 - **Alibaba Token Plan（`qwen`）** 更新：新增 **Qwen4 Max**（GA，1M 上下文、视觉输入、混合思考 `low/high/xhigh`，默认 `high`）和 **DeepSeek V4.1 Flash 1017**（夜间折扣快照）
 - **修复：思考过程现在显示为一整个可折叠块**，不再碎成一长串每行只有几个字的「Thought for 1s」。所有运营商的所有思考模型都受影响；被工具调用隔开的思考仍会分块显示
+- **移除 `qwen4-max-preview`**（2026-11-25 预览期结束，由 GA 版 Qwen4 Max 接替）
 - 目录规模：190 → **194 个模型**
 
 ### 0.5.1 — 2026-10-24
