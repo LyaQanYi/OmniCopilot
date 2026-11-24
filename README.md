@@ -227,11 +227,12 @@ Contributions are welcome! Here's how you can help:
 
 > Full release history lives on the [Releases](https://github.com/LyaQanYi/OmniCopilot/releases) page.
 
-### Unreleased
+### 0.5.2 — 2026-11-24
 
 - **GLM-5.4** on both GLM Coding Plans (`glm-coding-plan-cn` and `glm-coding-plan`) — 1M context, vision input, thinking always on (`low/high/max`, extension default `high`)
 - **Alibaba Token Plan (`qwen`)** refresh: added **Qwen4 Max** (GA, 1M context, vision input, hybrid thinking `low/high/xhigh`, default `high`) and **DeepSeek V4.1 Flash 1017** (night-discount snapshot)
 - **Fix: thinking now streams as one collapsible block** instead of a long list of "Thought for 1s" rows holding a few characters each. Affected every thinking model on every vendor; thinking separated by a tool call still shows as separate blocks
+- **Removed `qwen4-max-preview`** ahead of its 2026-11-25 sunset (the GA Qwen4 Max replaces it)
 - Catalog: 190 → **194 models**
 
 ### 0.5.1 — 2026-10-24
