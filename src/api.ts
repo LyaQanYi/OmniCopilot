@@ -554,6 +554,7 @@ export class OpenAICompatibleClient {
 				// toggle models (4.7 / 5-turbo / 5v-turbo) take the
 				// thinking object.
 				if (
+					model === "glm-5.4" ||
 					model === "glm-5.3" ||
 					model === "glm-5.3-flash" ||
 					model === "glm-5.3-flashx" ||

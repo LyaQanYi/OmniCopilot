@@ -9,8 +9,8 @@ A VS Code extension that lets you use models from multiple LLM platforms in GitH
 | Provider | Vendor ID | Models |
 |----------|-----------|--------|
 | DeepSeek | `deepseek` | deepseek-flash, deepseek-v4-pro |
-| GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-4.6V |
-| GLM Coding Plan | `glm-coding-plan` | GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-5.2(-highspeed), GLM-5-Turbo, GLM-4.7 |
+| GLM Coding Plan CN | `glm-coding-plan-cn` | GLM-5.4, GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-4.6V |
+| GLM Coding Plan | `glm-coding-plan` | GLM-5.4, GLM-5.3, GLM-5.3-Flash, GLM-5.3-Highspeed, GLM-5.2(-highspeed), GLM-5-Turbo, GLM-4.7 |
 | Kimi Code Plan | `moonshot` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Kimi Code Plan (kimi.ai) | `kimi-code-plan-intl` | k3.1-pro, k3.1-pro-highspeed, k3, k3-256k, kimi-for-coding, kimi-for-coding-highspeed |
 | Moonshot (Open Platform) | `moonshot-open` | kimi-k3.1-pro, kimi-k3.1-pro-highspeed, kimi-k3, kimi-k2.7-code, kimi-k2.7-code-highspeed, kimi-k2.6 |
@@ -99,7 +99,7 @@ The following providers have been tested and confirmed working:
 
 ## Features
 
-- **Multiple Providers**: 30+ platforms/endpoints, 193 models in total
+- **Multiple Providers**: 30+ platforms/endpoints, 195 models in total
 - **Per-Model Thinking Effort**: Hover any thinking-capable model in the Copilot picker to pick the effort level for the next turn — no need to flip a global switch
   - **DeepSeek V4** menu: None / Low / High / Max (matches the V4 API's reasoning_effort domain; thinking is on by default, None disables it explicitly)
   - **Kimi K3** (Code Plan `k3` / `k3-256k`, Open Platform & international `kimi-k3`, Volcengine-hosted `kimi-k3`): Low / High / Max — no None option, thinking is always on; effort maps to reasoning_effort
